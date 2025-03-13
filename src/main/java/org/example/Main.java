@@ -13,24 +13,13 @@ public class Main {
         String configFilePath = args[0];
         ConfigurationFile.initialise(configFilePath);
 
-        JsonObject message1 = new JsonObject();
-        message1.addProperty("role", "developer");
-        message1.addProperty("content", "You are a helpful assistant");
-        JsonObject message2 = new JsonObject();
-        message2.addProperty("role", "user");
-        message2.addProperty("content", "Hello!");
-        JsonArray messages = new JsonArray();
-        messages.add(message1);
-        messages.add(message2);
-
-        JsonObject jsonInput = new JsonObject();
-        jsonInput.addProperty("model", ConfigurationFile.getValue("MODEL"));
-        jsonInput.add("messages", messages);
-        Gson gson = new Gson();
-        String jsonInputString = gson.toJson(jsonInput);
 
         LLMCompletionSession session = new LLMCompletionSession();
-        String response = session.sendMessage(jsonInputString);
-        System.out.println(response);
+        String m1 = "Hi my name is Daniel";
+        System.out.println(m1);
+        System.out.println(session.sendMessage("user", m1));
+        String m2 = "What are you up to?";
+        System.out.println(m2);
+        System.out.println(session.sendMessage("user", m2));
     }
 }

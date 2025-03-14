@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.Completion.CompletionSession;
+
 public class Main {
     public static void main(String[] args) {
         if(args.length < 1) {
@@ -9,7 +11,8 @@ public class Main {
         String configFilePath = args[0];
         ConfigurationFile.initialise(configFilePath);
 
-        LLMCompletionSession session = new LLMCompletionSession();
+
+        CompletionSession session = new CompletionSession();
         String m1 = "Hi my name is Daniel";
         System.out.println(m1);
         System.out.println(session.sendMessage("user", m1));

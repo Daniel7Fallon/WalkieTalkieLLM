@@ -8,7 +8,7 @@ import java.util.Map;
 
 public final class ConfigurationFile {
     //Stores configuration
-    private static  final Map<String, String> configMap = new HashMap<>();
+    private static final Map<String, String> configMap = new HashMap<>();
 
     //Must be called before any other method
     public static void initialise(String filePath) {

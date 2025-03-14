@@ -1,8 +1,9 @@
-package org.example;
+package org.example.Completion;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.example.ConfigurationFile;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -11,7 +12,7 @@ import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LLMCompletionSession {
+public class CompletionSession {
     String completionsEndPoint = ConfigurationFile.getValue("COMPLETIONS_URL");
     String orgKey = ConfigurationFile.getValue("ORG_KEY");
     String apiKey = ConfigurationFile.getValue("API_KEY");
@@ -61,19 +62,15 @@ public class LLMCompletionSession {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             //System.out.println("Response Code: " + response.statusCode());
             //System.out.println("Response Body: " + response.body());
-            String responseContent = parseAssistantResponse(response.body());
+
+            CompletionResponse completionResponse = gson.fromJson(response.body(), CompletionResponse.class);
+            String responseContent = completionResponse.getFirstMessageContent();
             messageList.add(new CompletionMessage("assistant", responseContent));
             return responseContent;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return "Message failed";
-    }
-
-    private String parseAssistantResponse(String responseBody) {
-        int startIndex = responseBody.indexOf("\"content\": \"") + 12;//11 skips past "content..."
-        int endIndex = responseBody.indexOf("\"", startIndex);
-        return responseBody.substring(startIndex, endIndex);
     }
 
 

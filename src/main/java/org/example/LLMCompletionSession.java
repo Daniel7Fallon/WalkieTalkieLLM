@@ -59,8 +59,8 @@ public class LLMCompletionSession {
 
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            //System.out.println("Response Code: " + response.statusCode());
-            //System.out.println("Response Body: " + response.body());
+            System.out.println("Response Code: " + response.statusCode());
+            System.out.println("Response Body: " + response.body());
             String responseContent = parseAssistantResponse(response.body());
             messageList.add(new CompletionMessage("assistant", responseContent));
             return responseContent;

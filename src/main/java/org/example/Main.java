@@ -9,7 +9,6 @@ public class Main {
         String configFilePath = args[0];
         ConfigurationFile.initialise(configFilePath);
 
-
         LLMCompletionSession session = new LLMCompletionSession();
         String m1 = "Hi my name is Daniel";
         System.out.println(m1);

@@ -19,5 +19,8 @@ public class Main {
         String m2 = "What are you up to?";
         System.out.println(m2);
         System.out.println(session.sendMessage("user", m2));
+        String m3 = "Give me a numbered list of 20 words please.";
+        System.out.println(m3);
+        System.out.println(session.sendMessage("user", m3));
     }
 }

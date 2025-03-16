@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.example.ConfigurationFile;
+import org.example.ResponseValidator;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -65,6 +66,11 @@ public class CompletionSession {
 
             CompletionResponse completionResponse = gson.fromJson(response.body(), CompletionResponse.class);
             String responseContent = completionResponse.getFirstMessageContent();
+
+            if (ResponseValidator.isDenial(responseContent)) {
+                System.err.println("[DENIAL DETECTED] Assistant refused to answer");
+                return "[RESPONSE] Request denied by assistant" + responseContent;
+            }
             messageList.add(new CompletionMessage("assistant", responseContent));
             return responseContent;
         } catch (Exception e) {

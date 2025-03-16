@@ -3,7 +3,8 @@ java -jar <path-to-jar> <path-to-configuration-file>
 
 Example configuration file:
 ```
-#Hashtag denotes a comment
+#Hashtag denotes a comment.
+#Key-Value pairs are tab-separated.
 
 SOURCELANGUAGE	ENGLISH
 TARGETLANGUAGE	GERMAN
@@ -19,8 +20,6 @@ API_KEY	abc-useyourownkey-123
 MODEL	gpt-4o-mini
 
 ```
-Key-Value pairs are tab-separated.
-
 
 Dependencies:
 Gson
@@ -28,10 +27,13 @@ Gson
 
 Note: Using Maven Shade Plugin to package dependencies in an uber-jar
 
+The main functionality of the program is in these classes:
+-ConfigurationFile: Reads the configuration file and stores its contents in an internal map.
+-CompletionSession: Manages talking to the API and maintaining context.
+-CompletionResponse: Gson serialises JSON response from completion API onto this class and provides methods for conveniently accessing fields.
+-MessageParser: Parses content of responses into formats more usable in our program. Currently only parses and serialises lists.
+-ResponseValidator: Detects "soft" denials of service via regex.
+CompletionSession and CompletionResponse packaged inside Completion package.
 
-
-
-#To Write
-#Code structure explanation
 
 

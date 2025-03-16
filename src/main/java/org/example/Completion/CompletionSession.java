@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,7 +51,10 @@ public class CompletionSession {
         String jsonInputString = gson.toJson(jsonInput);
 
 
-        HttpClient client = HttpClient.newHttpClient();
+        HttpClient client = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_2)
+                .connectTimeout(Duration.ofSeconds(20))
+                .build();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(completionsEndPoint))
                 .header("Content-Type", "application/json")
@@ -69,7 +73,7 @@ public class CompletionSession {
 
             if (ResponseValidator.isDenial(responseContent)) {
                 System.err.println("[DENIAL DETECTED] Assistant refused to answer");
-                return "[ERROR] Request denied by assistant" + responseContent;
+                return "[ERROR] Denial: " + responseContent;
             }
             messageList.add(new CompletionMessage("assistant", responseContent));
             return responseContent;

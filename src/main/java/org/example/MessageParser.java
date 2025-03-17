@@ -33,10 +33,8 @@ public class MessageParser {
         if (input == null || input.trim().isEmpty()) {
             return output;
         }
-        List<String> items = parseNumberedList(input);
-        for (String item : items) {
-            output.add(item);
-        }
+        output.addAll(parseNumberedList(input));
+
         return output;
     }
 

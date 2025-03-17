@@ -16,6 +16,9 @@ public class NumberedList {
     public void add(String item) {
         list.add(item);
     }
+    public void addAll(List<String> items) {
+        list.addAll(items);
+    }
 
     @Override
     public String toString() {

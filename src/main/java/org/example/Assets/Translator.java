@@ -3,6 +3,7 @@ package org.example.Assets;
 import org.example.Completion.CompletionSession;
 import org.example.ConfigurationFile;
 import org.example.MessageParser;
+import org.example.NumberedList;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class Translator {
             String response = translationSession.sendMessage("user", messageContent.toString());
             System.out.println(response);
 
-            MessageParser.NumberedList numberedList = MessageParser.createNumberedList(response);
+            NumberedList numberedList = MessageParser.createNumberedList(response);
 
 
         } catch (IOException e) {

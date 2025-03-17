@@ -10,19 +10,6 @@ public class MessageParser {
     // Can change the expression later
     private static final String NUMBERED_LIST_REGEX = "\\d+\\.\\s*([^\\d]+?)(?=\\s*\\d+\\.|$)";
 
-    public static class NumberedList {
-        private final List<String> items;
-
-        public NumberedList(List<String> items) {
-            // Make the list immutable for good measure
-            this.items = Collections.unmodifiableList(items);
-        }
-
-        public List<String> getItems() {
-            return items;
-        }
-    }
-
     private static List<String> parseNumberedList(String input) {
         List<String> result = new ArrayList<>();
 

@@ -1,14 +1,10 @@
-package org.example.Assets;
+package org.example;
 
+import org.example.Assets.Vignette;
 import org.example.Completion.CompletionSession;
-import org.example.ConfigurationFile;
-import org.example.MessageParser;
-import org.example.NumberedList;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class Translator {
 
@@ -43,7 +39,6 @@ public class Translator {
         for (Vignette vignette : vignettes) {
             for (String leftText : vignette.getLeftText()) {
                 if (!translationExists(leftText, filePath)) {
-                //if(true) {
                     messageContent.append(++i).append(". " + leftText + "\n");
                     sourceTexts.add(leftText);
                 } else {
@@ -82,5 +77,16 @@ public class Translator {
                 writer.write(line + "\n");
             }
         }
+    }
+
+    public static String getTranslation(String sourceText, String filePath) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] tokens = line.split("\t");
+                if (sourceText.equals(tokens[0].trim())) return tokens[1].trim();
+            }
+        }
+        return null;
     }
 }

@@ -68,7 +68,6 @@ public class CompletionSession {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             //System.out.println("Response Code: " + response.statusCode());
             //System.out.println("Response Body: " + response.body());
-
             CompletionResponse completionResponse = gson.fromJson(response.body(), CompletionResponse.class);
             String responseContent = completionResponse.getFirstMessageContent();
 

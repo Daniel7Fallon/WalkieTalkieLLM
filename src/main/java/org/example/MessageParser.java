@@ -29,11 +29,15 @@ public class MessageParser {
 
     // Return a class containing the numbered list
     public static NumberedList createNumberedList(String input) {
+        NumberedList output = new NumberedList();
         if (input == null || input.trim().isEmpty()) {
-            return new NumberedList(Collections.emptyList());
+            return output;
         }
         List<String> items = parseNumberedList(input);
-        return new NumberedList(items);
+        for (String item : items) {
+            output.add(item);
+        }
+        return output;
     }
 
     // Will add more methods relevant to processing responses as needed

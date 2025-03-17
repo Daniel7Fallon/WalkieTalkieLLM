@@ -15,7 +15,7 @@ public class Translator {
     public static void translateVignetteList(List<Vignette> vignettes, String filePath) {
         try(FileWriter writer = new FileWriter(filePath, true)) {
 
-            List<String> sourceTexts = new ArrayList<>();
+            NumberedList sourceTexts = new NumberedList();
 
             StringBuilder messageContent = new StringBuilder();
             messageContent.append("I am going to give you a numbered list of words or phrases in "
@@ -40,24 +40,11 @@ public class Translator {
             System.out.println(response);
 
             NumberedList numberedList = MessageParser.createNumberedList(response);
-
+            System.out.println(numberedList);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-        /*
-        open or create file.
-        int i = 0;
-        for(Vignette vignette: vignettes) {
-          check if translation already exists
-          add source text to message with appropriate index (++i)
-
-        parse list response
-        append to file, pairing up translations
-        close file
-         */
     }
 
     public static boolean translationExists(String sourceText, String filePath) {

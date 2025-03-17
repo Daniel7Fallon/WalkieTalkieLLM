@@ -45,12 +45,6 @@ public class AssetMapFile {
         return vignettes;
     }
 
-    public static void printVignettes() {
-        for(Vignette vignette : vignettes) {
-            System.out.println(vignette);
-        }
-    }
-
     public static List<Vignette> getVignettesInRange(int start, int end) {
         List<Vignette> result = new ArrayList<>();
         for(int i = start; i <= end; i++) {

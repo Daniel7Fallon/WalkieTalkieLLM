@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.Assets.AssetMapFile;
 import org.example.Assets.Translator;
+import org.example.Assets.Vignette;
 import org.example.Completion.CompletionSession;
 
 import java.io.PrintStream;
@@ -19,9 +20,25 @@ public class Main {
         ConfigurationFile.initialize(configFilePath);
         String assetMappingPath = args[1];
         AssetMapFile.initialize(assetMappingPath);
-        //AssetMapFile.printVignettes();
         String translationFilePath = args[2];
-        Translator.translateVignetteList(AssetMapFile.getVignettesInRange(0, 10), translationFilePath);
+        for(Vignette v: AssetMapFile.getVignettesInRange(0, 20)) {
+            System.out.println(v);
+        }
+        try {
+            Translator.translateVignetteList(AssetMapFile.getVignettesInRange(0, 10), translationFilePath);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            Translator.translateVignetteList(AssetMapFile.getVignettesInRange(0, 5), translationFilePath);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            Translator.translateVignetteList(AssetMapFile.getVignettesInRange(0, 20), translationFilePath);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
         CompletionSession session = new CompletionSession();

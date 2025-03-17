@@ -19,6 +19,9 @@ public class NumberedList {
     public void addAll(List<String> items) {
         list.addAll(items);
     }
+    public int size() {
+        return list.size();
+    }
 
     @Override
     public String toString() {
@@ -27,6 +30,7 @@ public class NumberedList {
         for (String s : list) {
             sb.append(++i).append(". ").append(s).append("\n");
         }
+        if(sb.length()>0) sb.deleteCharAt(sb.length()-1);
         return sb.toString();
     }
 }

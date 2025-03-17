@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.Assets.AssetMapFile;
+import org.example.Assets.Translator;
 import org.example.Completion.CompletionSession;
 
 import java.io.PrintStream;
@@ -9,12 +11,17 @@ import java.nio.charset.StandardCharsets;
 
 public class Main {
     public static void main(String[] args) {
-        if(args.length < 1) {
-            System.out.println("Usage: java -jar <pathToJar> <pathToConfigFile>");
+        if(args.length < 3) {
+            System.out.println("Usage: java -jar <pathToJar> <pathToConfigFile> <pathToPosePairingWithBackgrounds.tsv> <pathToTranslations.txt>");
             return;
         }
         String configFilePath = args[0];
-        ConfigurationFile.initialise(configFilePath);
+        ConfigurationFile.initialize(configFilePath);
+        String assetMappingPath = args[1];
+        AssetMapFile.initialize(assetMappingPath);
+        //AssetMapFile.printVignettes();
+        String translationFilePath = args[2];
+        Translator.translateVignetteList(AssetMapFile.getVignettesInRange(0, 10), translationFilePath);
 
 
         CompletionSession session = new CompletionSession();
@@ -26,6 +33,7 @@ public class Main {
         } else {
             System.out.println(response);
         }
+
 
         String m2 = "What are you up to?";
         System.out.println(m2);

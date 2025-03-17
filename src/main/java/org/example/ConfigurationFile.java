@@ -11,7 +11,7 @@ public final class ConfigurationFile {
     private static final Map<String, String> configMap = new HashMap<>();
 
     //Must be called before any other method
-    public static void initialise(String filePath) {
+    public static void initialize(String filePath) {
         try(BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -26,7 +26,6 @@ public final class ConfigurationFile {
                 }
             }
             System.out.println("Configuration file loaded successfully.");
-            System.out.println("ConfigMap contents: " + configMap);
         } catch (IOException e) {
             System.err.println("Error reading config file: " + e.getMessage());
         }

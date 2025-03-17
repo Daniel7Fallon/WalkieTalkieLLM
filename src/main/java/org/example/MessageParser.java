@@ -10,11 +10,11 @@ public class MessageParser {
     // Can change the expression later
     private static final String NUMBERED_LIST_REGEX = "\\d+\\.\\s*([^\\d]+?)(?=\\s*\\d+\\.|$)";
 
-    private static List<String> parseNumberedList(String input) {
-        List<String> result = new ArrayList<>();
+    public static List<String> parseNumberedList(String input) {
+        if(input == null || input.trim().isEmpty()) return Collections.emptyList();
 
-        // Regular expression to match numbered list items
-        Pattern pattern = Pattern.compile(NUMBERED_LIST_REGEX);
+        List<String> result = new ArrayList<>();
+        Pattern pattern = Pattern.compile(NUMBERED_LIST_REGEX); // Regular expression to match numbered list items
         Matcher matcher = pattern.matcher(input);
 
         while (matcher.find()) {
@@ -25,17 +25,6 @@ public class MessageParser {
         }
 
         return result;
-    }
-
-    // Return a class containing the numbered list
-    public static NumberedList createNumberedList(String input) {
-        NumberedList output = new NumberedList();
-        if (input == null || input.trim().isEmpty()) {
-            return output;
-        }
-        output.addAll(parseNumberedList(input));
-
-        return output;
     }
 
     // Will add more methods relevant to processing responses as needed

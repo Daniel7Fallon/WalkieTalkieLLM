@@ -17,6 +17,7 @@ public class Translator {
 
             NumberedList sourceTexts = new NumberedList();
 
+            //Build message for CompletionSession
             StringBuilder messageContent = new StringBuilder();
             messageContent.append("I am going to give you a numbered list of words or phrases in "
                     + ConfigurationFile.getValue("SOURCELANGUAGE").toLowerCase()
@@ -34,13 +35,12 @@ public class Translator {
                     }
                 }
             }
-            System.out.println(messageContent.toString());
             CompletionSession translationSession = new CompletionSession();
             String response = translationSession.sendMessage("user", messageContent.toString());
-            System.out.println(response);
 
-            NumberedList numberedList = MessageParser.createNumberedList(response);
-            System.out.println(numberedList);
+            NumberedList targetTexts = new NumberedList();
+            targetTexts.addAll(MessageParser.parseNumberedList(response));
+            System.out.println(targetTexts);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -58,6 +58,10 @@ public class Translator {
             e.printStackTrace();
         }
         return false;
+    }
+
+    private static void appendTranslations(NumberedList sourceList, NumberedList targetList, String filePath) {
+
     }
 
 

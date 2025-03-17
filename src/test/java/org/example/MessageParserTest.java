@@ -11,7 +11,8 @@ class MessageParserTest {
     void testNumberedList_SingleLine() {
         String input = "1. First item 2. Second item 3. Third item";
 
-        NumberedList numberedList = MessageParser.createNumberedList(input);
+        NumberedList numberedList = new NumberedList();
+        numberedList.addAll(MessageParser.parseNumberedList(input));
         List<String> result = numberedList.getList();
 
         assertEquals(3, result.size());
@@ -24,7 +25,8 @@ class MessageParserTest {
     void testNumberedList_MultiLine() {
         String input = "Certainly! Here is what you asked for: 1. First item\n2. Second item\n3. Third item";
 
-        NumberedList numberedList = MessageParser.createNumberedList(input);
+        NumberedList numberedList = new NumberedList();
+        numberedList.addAll(MessageParser.parseNumberedList(input));
         List<String> result = numberedList.getList();
 
         assertEquals(3, result.size());
@@ -37,7 +39,8 @@ class MessageParserTest {
     void testNumberedList_EmptyInput() {
         String input = "";
 
-        NumberedList numberedList = MessageParser.createNumberedList(input);
+        NumberedList numberedList = new NumberedList();
+        numberedList.addAll(MessageParser.parseNumberedList(input));
         List<String> result = numberedList.getList();
 
         assertTrue(result.isEmpty());
@@ -47,7 +50,8 @@ class MessageParserTest {
     void testNumberedList_NoNumbers() {
         String input = "This is not a numbered list.";
 
-        NumberedList numberedList = MessageParser.createNumberedList(input);
+        NumberedList numberedList = new NumberedList();
+        numberedList.addAll(MessageParser.parseNumberedList(input));
         List<String> result = numberedList.getList();
 
         assertTrue(result.isEmpty());
@@ -57,7 +61,8 @@ class MessageParserTest {
     void testNumberedList_ExtraSpaces() {
         String input = "1.   First item   2.  Second item   3. Third item";
 
-        NumberedList numberedList = MessageParser.createNumberedList(input);
+        NumberedList numberedList = new NumberedList();
+        numberedList.addAll(MessageParser.parseNumberedList(input));
         List<String> result = numberedList.getList();
 
         assertEquals(3, result.size());
@@ -70,7 +75,8 @@ class MessageParserTest {
     void testNumberedList_MissingText() {
         String input = "1. 2. Second item 3.";
 
-        NumberedList numberedList = MessageParser.createNumberedList(input);
+        NumberedList numberedList = new NumberedList();
+        numberedList.addAll(MessageParser.parseNumberedList(input));
         List<String> result = numberedList.getList();
 
         for (String item: result) {

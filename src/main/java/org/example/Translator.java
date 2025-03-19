@@ -34,10 +34,6 @@ public class Translator {
             }
         }
         NumberedList targetTexts = translateNumberedList(sourceTexts, sLang, tLang);
-        System.out.println(sLang);
-        System.out.println(sourceTexts.toString() + "\n");
-        System.out.println(tLang);
-        System.out.println(targetTexts.toString() + "\n");
         Dictionary.appendTranslations(sLang, sourceTexts, tLang, targetTexts);
 
         //Second translation:
@@ -52,13 +48,8 @@ public class Translator {
                 if (!Dictionary.translationExists(sourceText, sLang, tLang)) {
                     sourceTexts.add(sourceText);
                 }
-
             }
             targetTexts = translateNumberedList(sourceTexts, sLang, tLang);
-            System.out.println(sLang);
-            System.out.println(sourceTexts.toString() + "\n");
-            System.out.println(tLang);
-            System.out.println(targetTexts.toString() + "\n");
             Dictionary.appendTranslations(sLang, sourceTexts, tLang, targetTexts);
         }
     }

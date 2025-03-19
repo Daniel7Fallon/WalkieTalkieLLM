@@ -14,9 +14,6 @@ public class Main {
         AssetMapFile.initialize();
         Dictionary.initialize();
 
-        for(Vignette v: AssetMapFile.getVignettesInRange(0, 5)) {
-            System.out.println(v);
-        }
         try {
             String sourceLanguage = ConfigurationFile.getValue("SOURCELANGUAGE");
             String targetLanguage = ConfigurationFile.getValue("TARGETLANGUAGE");

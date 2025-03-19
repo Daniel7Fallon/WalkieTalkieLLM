@@ -1,8 +1,7 @@
 package org.example.Assets;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,8 +10,13 @@ public class AssetMapFile {
     private static final List<Vignette> vignettes = new ArrayList<>();
 
     //Deserialises pose pairings with backgrounds.tsv
-    public static void initialize(String filePath) {
-        try(BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+    public static void initialize() {
+        InputStream inputStream = AssetMapFile.class.getClassLoader().getResourceAsStream("pose pairings with backgrounds.tsv");
+        if (inputStream == null) {
+            System.out.println("Could not find pose pairings with backgrounds.tsv");
+            return;
+        }
+        try(BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             String line = br.readLine(); //skip first line
             while ((line = br.readLine()) != null) {
                 String[] tokens = line.split("\t", 5);

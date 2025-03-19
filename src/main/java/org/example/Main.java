@@ -5,16 +5,15 @@ import org.example.Assets.Vignette;
 
 public class Main {
     public static void main(String[] args) {
-        if(args.length < 3) {
-            System.out.println("Usage: java -jar <pathToJar> <pathToConfigFile> <pathToPosePairingWithBackgrounds.tsv> <pathToTranslations.txt>");
+        if(args.length < 2) {
+            System.out.println("Usage: java -jar <pathToJar> <pathToConfigFile> <pathToTranslations.txt>");
             System.out.println("Application will create a file if no file for the translation exists");
             return;
         }
         String configFilePath = args[0];
         ConfigurationFile.initialize(configFilePath);
-        String assetMappingPath = args[1];
-        AssetMapFile.initialize(assetMappingPath);
-        String translationFilePath = args[2];
+        AssetMapFile.initialize();
+        String translationFilePath = args[1];
 
         for(Vignette v: AssetMapFile.getVignettesInRange(0, 5)) {
             System.out.println(v);

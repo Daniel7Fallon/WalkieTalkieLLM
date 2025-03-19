@@ -21,11 +21,13 @@ public class Main {
             String sourceLanguage = ConfigurationFile.getValue("SOURCELANGUAGE");
             String targetLanguage = ConfigurationFile.getValue("TARGETLANGUAGE");
 
-            Translator.translateVignetteList(AssetMapFile.getVignettesInRange(0, 5), sourceLanguage, targetLanguage);
-            Translator.translateVignetteList(AssetMapFile.getVignettesInRange(0, 10), sourceLanguage, targetLanguage);
-            String test = "a charmer";
-            System.out.println(test + " in " + ConfigurationFile.getValue("TARGETLANGUAGE").toLowerCase() + " is " + Dictionary.getTranslation(test, sourceLanguage, targetLanguage));
-        } catch (Exception e) {
+            System.out.println("\nTranslating first 5 vignettes");
+            Translator.translateVignetteList(AssetMapFile.getVignettesInRange(0, 5));
+            System.out.println("\nTranslating first 10 vignettes");
+            Translator.translateVignetteList(AssetMapFile.getVignettesInRange(0, 10));
+            System.out.println("\nDone");
+
+         } catch (Exception e) {
             e.printStackTrace();
         }
 

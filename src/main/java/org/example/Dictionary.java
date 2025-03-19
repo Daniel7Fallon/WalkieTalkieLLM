@@ -19,7 +19,7 @@ public class Dictionary {
         }
     }
 
-    public static void createNewTranslationFile(String sourceLanguage, String targetLanguage) {
+    public static void createNewTranslationFile(String sourceLanguage, String targetLanguage) throws IOException {
         String fileName = sourceLanguage + "To" + targetLanguage + ".txt";
         File file = new File(translationsDirectoryPath, fileName);
         try {
@@ -29,7 +29,7 @@ public class Dictionary {
                 System.out.println("Translation file already exists: " + fileName);
             }
         } catch (IOException e) {
-            System.out.println("Error creating translation file: " + e.getMessage());
+            throw new IOException("Error creating translation file: " + e.getMessage());
         }
     }
 
@@ -60,7 +60,6 @@ public class Dictionary {
     public static void appendTranslations(String sourceLanguage, NumberedList sourceList, String targetLanguage, NumberedList targetList) throws IOException {
         if(sourceList.size() != targetList.size()) throw new IllegalArgumentException("Source text list and target text list of different sizes.");
         String fileName = sourceLanguage + "To" + targetLanguage + ".txt";
-
         try(FileWriter writer = new FileWriter(translationsDirectoryPath + "/" + fileName, true)) {
             for (int i = 1; i <= sourceList.size(); i++) {
                 String line = sourceList.getByPosition(i) + "\t" + targetList.getByPosition(i);

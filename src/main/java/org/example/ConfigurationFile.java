@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.Utils.StringUtil;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -43,6 +45,9 @@ public final class ConfigurationFile {
         if(model == null || model.isEmpty()) throw new IllegalArgumentException("MODEL parameter is missing in configuration file.");
         String translationsFolder = configMap.get("TRANSLATIONS_FOLDER");
         if(translationsFolder == null || translationsFolder.isEmpty()) throw new IllegalArgumentException("TRANSLATIONS_FOLDER parameter is missing in configuration file.");
+
+        configMap.put("SOURCELANGUAGE", StringUtil.capitalize(sourceLanguage));
+        configMap.put("TARGETLANGUAGE", StringUtil.capitalize(targetLanguage));
     }
 
     public static String getValue(String key) {

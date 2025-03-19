@@ -26,17 +26,27 @@ public final class ConfigurationFile {
                 }
             }
             System.out.println("Configuration file loaded successfully.");
+
         } catch (IOException e) {
             System.err.println("Error reading config file: " + e.getMessage());
         }
+
+        String sourceLanguage = configMap.get("SOURCELANGUAGE");
+        if(sourceLanguage == null || sourceLanguage.isEmpty()) throw new IllegalArgumentException("SOURCELANGUAGE parameter is missing in configuration file.");
+        String targetLanguage = configMap.get("TARGETLANGUAGE");
+        if(targetLanguage == null || targetLanguage.isEmpty()) throw new IllegalArgumentException("TARGETLANGUAGE parameter is missing in configuration file.");
+        String completionsUrl = configMap.get("COMPLETIONS_URL");
+        if(completionsUrl == null || completionsUrl.isEmpty()) throw new IllegalArgumentException("COMPLETIONS_URL parameter is missing in configuration file.");
+        String apiKey = configMap.get("API_KEY");
+        if(apiKey == null || apiKey.isEmpty()) throw new IllegalArgumentException("API_KEY parameter is missing in configuration file.");
+        String model = configMap.get("MODEL");
+        if(model == null || model.isEmpty()) throw new IllegalArgumentException("MODEL parameter is missing in configuration file.");
+        String translationsFolder = configMap.get("TRANSLATIONS_FOLDER");
+        if(translationsFolder == null || translationsFolder.isEmpty()) throw new IllegalArgumentException("TRANSLATIONS_FOLDER parameter is missing in configuration file.");
     }
 
     public static String getValue(String key) {
-        String value = configMap.get(key);
-        if(value == null) {
-            throw new IllegalArgumentException("Config Property " + key + " not found.");
-        }
-        return value;
+        return configMap.get(key);
     }
     public static boolean containsKey(String key) {
         return configMap.containsKey(key);

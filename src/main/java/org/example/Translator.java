@@ -13,44 +13,46 @@ public class Translator {
     public static void translateVignetteList(List<Vignette> vignettes) throws IOException {
         String sourceLanguage = ConfigurationFile.getValue("SOURCELANGUAGE");
         String targetLanguage = ConfigurationFile.getValue("TARGETLANGUAGE");
-
-        String sLang = "English";
-        String tLang;
-        //First translation:
-        //If source == English => English to target
-        //If source != English => English to source
         if(sourceLanguage.equals("English")) {
-            tLang = targetLanguage;
-        } else {
-            tLang = sourceLanguage;
-        }
-        Dictionary.createNewTranslationFile(sLang, tLang);//Ensure file exists
-        NumberedList sourceTexts = new NumberedList();
-        for (Vignette vignette : vignettes) {
-            for (String leftText : vignette.getLeftText()) {
-                if (!Dictionary.translationExists(leftText, sLang, tLang)) {
-                    sourceTexts.add(leftText);
+            Dictionary.createNewTranslationFile(sourceLanguage, targetLanguage);//Ensure file exists
+            NumberedList sourceTexts = new NumberedList();
+            for (Vignette vignette : vignettes) {
+                for (String leftText : vignette.getLeftText()) {
+                    if (!Dictionary.translationExists(leftText, sourceLanguage, targetLanguage)) {
+                        sourceTexts.add(leftText);
+                    }
                 }
             }
-        }
-        NumberedList targetTexts = translateNumberedList(sourceTexts, sLang, tLang);
-        Dictionary.appendTranslations(sLang, sourceTexts, tLang, targetTexts);
+            NumberedList targetTexts = translateNumberedList(sourceTexts, sourceLanguage, targetLanguage);
+            Dictionary.appendTranslations(sourceLanguage, sourceTexts, targetLanguage, targetTexts);
 
-        //Second translation:
-        //If source != English => source to target
-        if(!sourceLanguage.equals("English")) {
-            sLang = sourceLanguage;
-            tLang = targetLanguage;
-            Dictionary.createNewTranslationFile(sLang, tLang);//Ensure file exists
-            //Output from previous translation is new input
-            sourceTexts = new NumberedList();
-            for (String sourceText: targetTexts.getList()) {
-                if (!Dictionary.translationExists(sourceText, sLang, tLang)) {
+        } else {//English is not source language
+            Dictionary.createNewTranslationFile("English", sourceLanguage);//Ensure file exists
+            NumberedList englishTexts = new NumberedList();
+            for (Vignette vignette : vignettes) {
+                for (String leftText : vignette.getLeftText()) {
+                    if (!Dictionary.translationExists(leftText, "English", sourceLanguage)) {
+                        englishTexts.add(leftText);
+                    }
+                }
+            }
+            NumberedList sourceTexts = translateNumberedList(englishTexts, "English", sourceLanguage);
+            Dictionary.appendTranslations("English", englishTexts, sourceLanguage, sourceTexts);
+
+            Dictionary.createNewTranslationFile(sourceLanguage, targetLanguage);//Ensure file exists
+            NumberedList fullSourceList = new NumberedList();
+            for (Vignette vignette : vignettes) {
+                for (String leftText : vignette.getLeftText()) {
+                    fullSourceList.add(Dictionary.getTranslation(leftText, "English", sourceLanguage));
+                }
+            }
+            for(String sourceText: fullSourceList.getList()) {
+                if (!Dictionary.translationExists(sourceText, sourceLanguage, targetLanguage)) {
                     sourceTexts.add(sourceText);
                 }
             }
-            targetTexts = translateNumberedList(sourceTexts, sLang, tLang);
-            Dictionary.appendTranslations(sLang, sourceTexts, tLang, targetTexts);
+            NumberedList targetTexts = translateNumberedList(sourceTexts, sourceLanguage, targetLanguage);
+            Dictionary.appendTranslations(sourceLanguage, sourceTexts, targetLanguage, targetTexts);
         }
     }
 
@@ -76,7 +78,4 @@ public class Translator {
         targetTexts.addAll(MessageParser.parseNumberedList(response));
         return targetTexts;
     }
-
-
-
 }

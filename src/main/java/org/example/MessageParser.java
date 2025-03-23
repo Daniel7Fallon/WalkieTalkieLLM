@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class MessageParser {
     // Can change the expression later
-    private static final String NUMBERED_LIST_REGEX = "\\d+\\.\\s*([^\\d]+?)(?=\\s*\\d+\\.|$)";
+    private static final String NUMBERED_LIST_REGEX = "\\d+\\.\\s*(.*?)(?=\\s*\\d+\\.|$)";
 
     public static List<String> parseNumberedList(String input) {
         if(input == null || input.trim().isEmpty()) return Collections.emptyList();
@@ -20,7 +20,11 @@ public class MessageParser {
         while (matcher.find()) {
             String item = matcher.group(1).trim();
             if (!item.isEmpty()) {
-                result.add(item);
+                String[] parts = item.split("/", 2);
+                String primary = parts[0].trim();
+                if (!primary.isEmpty()) {
+                    result.add(primary);
+                }
             }
         }
 

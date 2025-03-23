@@ -86,4 +86,48 @@ class MessageParserTest {
         assertEquals(1, result.size());
         assertEquals("Second item", result.get(0));
     }
+
+    @Test
+    void testNumberedList_WithSlashSeparatedList() {
+        String input = "1. ein Charmeur / eine Charmeur\n2. der Hund / die Hündin";
+        List<String> result = MessageParser.parseNumberedList(input);
+        assertEquals(List.of("ein Charmeur", "der Hund"), result);
+    }
+
+    @Test
+    void testNumberedList_SlashWithSpaces() {
+        String input = "1. option1 / option2\n2. choiceA / choiceB";
+        List<String> result = MessageParser.parseNumberedList(input);
+        assertEquals(List.of("option1", "choiceA"), result);
+    }
+
+    @Test
+    void testNumberedList_MultipleSlashes() {
+        String input = "1. cat/dog/mouse\n2. red/green/blue";
+        List<String> result = MessageParser.parseNumberedList(input);
+        assertEquals(List.of("cat", "red"), result);
+    }
+
+    @Test
+    void testNumberedList_SlashOnly() {
+        List<String> result1 = MessageParser.parseNumberedList("1. / empty option");
+        assertTrue(result1.isEmpty(), "Should handle empty first part");
+
+        List<String> result2 = MessageParser.parseNumberedList("1.    /   ");
+        assertTrue(result2.isEmpty(), "Should handle whitespace-only");
+    }
+
+    @Test
+    void testNumberedList_SlashAtEnd() {
+        List<String> result = MessageParser.parseNumberedList("1. First item/");
+        assertEquals(List.of("First item"), result);
+    }
+
+    @Test
+    void testNumberedList_MixedFormats() {
+        String input = "1. Normal item 2. Multi/choice 3. Third item";
+        List<String> result = MessageParser.parseNumberedList(input);
+        assertEquals(List.of("Normal item", "Multi", "Third item"), result);
+    }
+
 }

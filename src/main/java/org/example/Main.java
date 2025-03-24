@@ -3,9 +3,6 @@ package org.example;
 import org.example.Assets.VignetteManager;
 import org.example.Assets.VignetteSchema;
 
-import java.util.List;
-import java.util.ArrayList;
-
 public class Main {
     public static void main(String[] args) {
         if(args.length < 1) {
@@ -24,12 +21,15 @@ public class Main {
             System.out.println("\nTranslating first 10 vignettes");
             Translator.translateListAndWrite(VignetteManager.getLeftTextsInVignetteSchemasInRange(0, 10));
 
-            System.out.println("\nDone");
-
-         } catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
+        VignetteSchema firstVS = VignetteManager.getVignetteSchemas().getFirst();
+        System.out.println("First VignetteSchema: " + firstVS);
+        for(int i = 0; i < 5; i++) {
+            System.out.println((i + 1) + ". " + firstVS.getRandVignette());
+        }
 
     }
 }

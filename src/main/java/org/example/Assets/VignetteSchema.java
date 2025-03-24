@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.Random;
 
 public class VignetteSchema {
-    static private Random rand = new Random();
+    static private final Random rand = new Random();
 
-    private String leftPose = null;
-    private List<String> combinedTexts = null;
-    private List<String> leftTexts = null;
-    private List<String> rightPoses = null;
-    private List<String> backgrounds = null;
+    private final String leftPose;
+    private final List<String> combinedTexts;
+    private final List<String> leftTexts;
+    private final List<String> rightPoses;
+    private final List<String> backgrounds;
 
     public VignetteSchema(String leftPose, List<String> combinedTexts, List<String> leftTexts, List<String> rightPoses, List<String> backgrounds) {
         this.leftPose = leftPose;
@@ -20,13 +20,12 @@ public class VignetteSchema {
         this.backgrounds = backgrounds;
     }
 
-    public Vignette getVignette() {
-        String lP = leftPose;
-        String cT = combinedTexts.get(rand.nextInt(combinedTexts.size()));
-        String lT = leftTexts.get(rand.nextInt(leftTexts.size()));
-        String rT = rightPoses.get(rand.nextInt(rightPoses.size()));
-        String bT = backgrounds.get(rand.nextInt(backgrounds.size()));
-        return new Vignette(lP, cT, lT, rT, bT);
+    public Vignette getRandVignette() {
+        String cT = ((combinedTexts.isEmpty()) ? null : combinedTexts.get(rand.nextInt(combinedTexts.size())) );
+        String lT = ((leftTexts.isEmpty()) ? null : leftTexts.get(rand.nextInt(leftTexts.size())) );
+        String rT = ((rightPoses.isEmpty()) ? null : rightPoses.get(rand.nextInt(rightPoses.size())) );
+        String bT = ((backgrounds.isEmpty()) ? null : backgrounds.get(rand.nextInt(backgrounds.size())) );
+        return new Vignette(leftPose, cT, lT, rT, bT);
     }
 
     public String getLeftPose() {
@@ -47,8 +46,6 @@ public class VignetteSchema {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("LP: " + leftPose + " | CT: " + combinedTexts + " | LT: " + leftTexts + " | RP: " + rightPoses + " | BG: " + backgrounds);
-        return sb.toString();
+        return "LP: " + leftPose + " | CTs: " + combinedTexts + " | LTs: " + leftTexts + " | RPs: " + rightPoses + " | BGs: " + backgrounds;
     }
 }

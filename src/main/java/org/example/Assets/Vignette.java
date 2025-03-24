@@ -32,4 +32,8 @@ public class Vignette {
     public String getBackgrounds() {
         return background;
     }
+
+    public String toString() {
+        return "LP: " + leftPose + " | CT: " + combinedText + " | LT: " + leftText + " | RP: " + rightPose + " | BG: " + background;
+    }
 }

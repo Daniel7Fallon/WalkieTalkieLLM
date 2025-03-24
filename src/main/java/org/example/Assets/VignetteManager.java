@@ -50,7 +50,7 @@ public class VignetteManager {
 
     public static List<VignetteSchema> getVignetteSchemasInRange(int start, int end) {
         List<VignetteSchema> result = new ArrayList<>();
-        for(int i = start; i <= end; i++) {
+        for(int i = start; i < end; i++) {
             result.add(vignetteSchemas.get(i));
         }
         return result;

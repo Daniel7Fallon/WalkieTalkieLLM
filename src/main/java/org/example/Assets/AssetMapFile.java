@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AssetMapFile {
-    private static final List<Vignette> vignettes = new ArrayList<>();
+    private static final List<VignetteSchema> vignetteSchemas = new ArrayList<>();
 
     //Deserialises pose pairings with backgrounds.tsv
     public static void initialize() {
@@ -24,7 +24,7 @@ public class AssetMapFile {
                 List<String> leftText = parseCell(tokens[2]);
                 List<String> rightPose = parseCell(tokens[3]);
                 List<String> backgrounds = parseCell(tokens[4]);
-                vignettes.add(new Vignette(leftPose, combinedText, leftText, rightPose, backgrounds));
+                vignetteSchemas.add(new VignetteSchema(leftPose, combinedText, leftText, rightPose, backgrounds));
             }
             System.out.println("AssetMapping file loaded successfully.");
         } catch (IOException e) {
@@ -44,14 +44,14 @@ public class AssetMapFile {
         return output;
     }
 
-    public static List<Vignette> getVignettes() {
-        return vignettes;
+    public static List<VignetteSchema> getVignetteSchemas() {
+        return vignetteSchemas;
     }
 
-    public static List<Vignette> getVignettesInRange(int start, int end) {
-        List<Vignette> result = new ArrayList<>();
+    public static List<VignetteSchema> getVignetteSchemasInRange(int start, int end) {
+        List<VignetteSchema> result = new ArrayList<>();
         for(int i = start; i <= end; i++) {
-            result.add(vignettes.get(i));
+            result.add(vignetteSchemas.get(i));
         }
         return result;
     }

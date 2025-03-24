@@ -1,7 +1,10 @@
 package org.example;
 
 import org.example.Assets.AssetMapFile;
-import org.example.Assets.Vignette;
+import org.example.Assets.VignetteSchema;
+
+import java.util.List;
+import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
@@ -19,9 +22,18 @@ public class Main {
             String targetLanguage = ConfigurationFile.getValue("TARGETLANGUAGE");
 
             System.out.println("\nTranslating first 5 vignettes");
-            Translator.translateVignetteList(AssetMapFile.getVignettesInRange(0, 5));
+            List<String> vignetteSchemaLeftTexts = new ArrayList<>();
+            for(VignetteSchema vs : AssetMapFile.getVignetteSchemasInRange(0,5)) {
+                vignetteSchemaLeftTexts.addAll(vs.getLeftTexts());
+            }
+            Translator.translateListAndWrite(vignetteSchemaLeftTexts);
+
             System.out.println("\nTranslating first 10 vignettes");
-            Translator.translateVignetteList(AssetMapFile.getVignettesInRange(0, 10));
+            vignetteSchemaLeftTexts = new ArrayList<>();
+            for(VignetteSchema vs : AssetMapFile.getVignetteSchemasInRange(0,10)) {
+                vignetteSchemaLeftTexts.addAll(vs.getLeftTexts());
+            }
+            Translator.translateListAndWrite(vignetteSchemaLeftTexts);
             System.out.println("\nDone");
 
          } catch (Exception e) {

@@ -1,6 +1,6 @@
 package org.example;
 
-import org.example.Assets.Vignette;
+import org.example.Assets.VignetteSchema;
 import org.example.Completion.CompletionSession;
 
 import java.io.*;
@@ -10,17 +10,15 @@ public class Translator {
     //Translates the leftText entries from the given vignettes and serialises them.
     //EnglishTo<Target> if source is English
     //EnglishTo<Source>, <Source>To<Target> if english is not source
-    public static void translateVignetteList(List<Vignette> vignettes) throws IOException {
+    public static void translateListAndWrite(List<String> input) throws IOException {
         String sourceLanguage = ConfigurationFile.getValue("SOURCELANGUAGE");
         String targetLanguage = ConfigurationFile.getValue("TARGETLANGUAGE");
         if(sourceLanguage.equals("English")) {
             Dictionary.createNewTranslationFile(sourceLanguage, targetLanguage);//Ensure file exists
             NumberedList sourceTexts = new NumberedList();
-            for (Vignette vignette : vignettes) {
-                for (String leftText : vignette.getLeftText()) {
+                for (String leftText : input) {
                     if (!Dictionary.translationExists(leftText, sourceLanguage, targetLanguage)) {
                         sourceTexts.add(leftText);
-                    }
                 }
             }
             NumberedList targetTexts = translateNumberedList(sourceTexts, sourceLanguage, targetLanguage);
@@ -29,22 +27,20 @@ public class Translator {
         } else {//English is not source language
             Dictionary.createNewTranslationFile("English", sourceLanguage);//Ensure file exists
             NumberedList englishTexts = new NumberedList();
-            for (Vignette vignette : vignettes) {
-                for (String leftText : vignette.getLeftText()) {
-                    if (!Dictionary.translationExists(leftText, "English", sourceLanguage)) {
-                        englishTexts.add(leftText);
-                    }
+            for (String leftText : input) {
+                if (!Dictionary.translationExists(leftText, "English", sourceLanguage)) {
+                    englishTexts.add(leftText);
                 }
             }
             NumberedList sourceTexts = translateNumberedList(englishTexts, "English", sourceLanguage);
             Dictionary.appendTranslations("English", englishTexts, sourceLanguage, sourceTexts);
 
+            //Second translation:
             Dictionary.createNewTranslationFile(sourceLanguage, targetLanguage);//Ensure file exists
+            sourceTexts = new NumberedList();//Recompute to ensure no translations are skipped
             NumberedList fullSourceList = new NumberedList();
-            for (Vignette vignette : vignettes) {
-                for (String leftText : vignette.getLeftText()) {
-                    fullSourceList.add(Dictionary.getTranslation(leftText, "English", sourceLanguage));
-                }
+            for (String leftText : input) {
+                fullSourceList.add(Dictionary.getTranslation(leftText, "English", sourceLanguage));
             }
             for(String sourceText: fullSourceList.getList()) {
                 if (!Dictionary.translationExists(sourceText, sourceLanguage, targetLanguage)) {

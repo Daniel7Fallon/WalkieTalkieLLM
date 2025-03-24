@@ -5,12 +5,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AssetMapFile {
+public class VignetteManager {
     private static final List<VignetteSchema> vignetteSchemas = new ArrayList<>();
 
     //Deserialises pose pairings with backgrounds.tsv
     public static void initialize() {
-        InputStream inputStream = AssetMapFile.class.getClassLoader().getResourceAsStream("pose pairings with backgrounds.tsv");
+        InputStream inputStream = VignetteManager.class.getClassLoader().getResourceAsStream("pose pairings with backgrounds.tsv");
         if (inputStream == null) {
             System.out.println("Could not find pose pairings with backgrounds.tsv");
             return;
@@ -52,6 +52,15 @@ public class AssetMapFile {
         List<VignetteSchema> result = new ArrayList<>();
         for(int i = start; i <= end; i++) {
             result.add(vignetteSchemas.get(i));
+        }
+        return result;
+    }
+
+    public static List<String> getLeftTextsInVignetteSchemasInRange(int start, int end) {
+        List<String> result = new ArrayList<>();
+        List<VignetteSchema> vignetteSchemas = getVignetteSchemasInRange(start, end);
+        for(VignetteSchema vs : vignetteSchemas) {
+            result.addAll(vs.getLeftTexts());
         }
         return result;
     }

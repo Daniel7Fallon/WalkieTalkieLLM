@@ -1,6 +1,6 @@
 package org.example;
 
-import org.example.Assets.AssetMapFile;
+import org.example.Assets.VignetteManager;
 import org.example.Assets.VignetteSchema;
 
 import java.util.List;
@@ -14,26 +14,16 @@ public class Main {
         }
         String configFilePath = args[0];
         ConfigurationFile.initialize(configFilePath);
-        AssetMapFile.initialize();
+        VignetteManager.initialize();
         Dictionary.initialize();
 
         try {
-            String sourceLanguage = ConfigurationFile.getValue("SOURCELANGUAGE");
-            String targetLanguage = ConfigurationFile.getValue("TARGETLANGUAGE");
-
             System.out.println("\nTranslating first 5 vignettes");
-            List<String> vignetteSchemaLeftTexts = new ArrayList<>();
-            for(VignetteSchema vs : AssetMapFile.getVignetteSchemasInRange(0,5)) {
-                vignetteSchemaLeftTexts.addAll(vs.getLeftTexts());
-            }
-            Translator.translateListAndWrite(vignetteSchemaLeftTexts);
+            Translator.translateListAndWrite(VignetteManager.getLeftTextsInVignetteSchemasInRange(0, 5));
 
             System.out.println("\nTranslating first 10 vignettes");
-            vignetteSchemaLeftTexts = new ArrayList<>();
-            for(VignetteSchema vs : AssetMapFile.getVignetteSchemasInRange(0,10)) {
-                vignetteSchemaLeftTexts.addAll(vs.getLeftTexts());
-            }
-            Translator.translateListAndWrite(vignetteSchemaLeftTexts);
+            Translator.translateListAndWrite(VignetteManager.getLeftTextsInVignetteSchemasInRange(0, 10));
+
             System.out.println("\nDone");
 
          } catch (Exception e) {

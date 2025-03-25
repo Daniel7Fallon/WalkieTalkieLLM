@@ -21,6 +21,10 @@ public class Translator {
                         sourceTexts.add(leftText);
                 }
             }
+            if (sourceTexts.size() == 0) {
+                System.out.println("All translations from " + sourceLanguage + " to " + targetLanguage + " already exist.");
+                return;
+            }
             NumberedList targetTexts = translateNumberedList(sourceTexts, sourceLanguage, targetLanguage);
             Dictionary.appendTranslations(sourceLanguage, sourceTexts, targetLanguage, targetTexts);
 
@@ -32,20 +36,30 @@ public class Translator {
                     englishTexts.add(leftText);
                 }
             }
-            NumberedList sourceTexts = translateNumberedList(englishTexts, "English", sourceLanguage);
-            Dictionary.appendTranslations("English", englishTexts, sourceLanguage, sourceTexts);
+            if (englishTexts.size() > 0) {
+                NumberedList sourceTexts = translateNumberedList(englishTexts, "English", sourceLanguage);
+                Dictionary.appendTranslations("English", englishTexts, sourceLanguage, sourceTexts);
+            } else {
+                System.out.println("All translations from English to " + sourceLanguage + " already exist.");
+            }
 
             //Second translation:
-            Dictionary.createNewTranslationFile(sourceLanguage, targetLanguage);//Ensure file exists
-            sourceTexts = new NumberedList();//Recompute to ensure no translations are skipped
             NumberedList fullSourceList = new NumberedList();
             for (String leftText : input) {
                 fullSourceList.add(Dictionary.getTranslation(leftText, "English", sourceLanguage));
             }
+
+            Dictionary.createNewTranslationFile(sourceLanguage, targetLanguage);
+            NumberedList sourceTexts = new NumberedList();
+
             for(String sourceText: fullSourceList.getList()) {
                 if (!Dictionary.translationExists(sourceText, sourceLanguage, targetLanguage)) {
                     sourceTexts.add(sourceText);
                 }
+            }
+            if (sourceTexts.size() == 0) {
+                System.out.println("All translations from " + sourceLanguage + " to " + targetLanguage + " already exist.");
+                return;
             }
             NumberedList targetTexts = translateNumberedList(sourceTexts, sourceLanguage, targetLanguage);
             Dictionary.appendTranslations(sourceLanguage, sourceTexts, targetLanguage, targetTexts);
@@ -54,6 +68,9 @@ public class Translator {
 
     private static NumberedList translateNumberedList(NumberedList sourceTexts, String sourceLanguage, String targetLanguage) throws IOException {
         //Build message for CompletionSession
+        if (sourceTexts.size() == 0) {
+            return new NumberedList();
+        }
         StringBuilder messageContent = new StringBuilder();
         messageContent.append("I am going to give you a numbered list of words or phrases in "
                 + sourceLanguage

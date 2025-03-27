@@ -21,6 +21,9 @@ public class Main {
             System.out.println("\nTranslating first 10 vignettes");
             Translator.translateListAndWrite(VignetteManager.getLeftTextsInVignetteSchemasInRange(0, 10));
 
+            System.out.println("\nTranslating first 10 vignettes");
+            Translator.translateListAndWrite(VignetteManager.getLeftTextsInVignetteSchemasInRange(0, 10));
+
         } catch (Exception e) {
             e.printStackTrace();
         }

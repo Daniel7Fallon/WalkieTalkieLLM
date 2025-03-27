@@ -23,6 +23,10 @@ public class NumberedList {
         return list.size();
     }
 
+    public boolean isEmpty() {
+        return list.isEmpty();
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

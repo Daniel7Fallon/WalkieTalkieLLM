@@ -21,12 +21,12 @@ public class Translator {
                         sourceTexts.add(leftText);
                 }
             }
-            if (sourceTexts.size() == 0) {
+            if (sourceTexts.isEmpty()) {
                 System.out.println("All translations from " + sourceLanguage + " to " + targetLanguage + " already exist.");
-                return;
+            } else {
+                NumberedList targetTexts = translateNumberedList(sourceTexts, sourceLanguage, targetLanguage);
+                Dictionary.appendTranslations(sourceLanguage, sourceTexts, targetLanguage, targetTexts);
             }
-            NumberedList targetTexts = translateNumberedList(sourceTexts, sourceLanguage, targetLanguage);
-            Dictionary.appendTranslations(sourceLanguage, sourceTexts, targetLanguage, targetTexts);
 
         } else {//English is not source language
             Dictionary.createNewTranslationFile("English", sourceLanguage);//Ensure file exists
@@ -36,11 +36,11 @@ public class Translator {
                     englishTexts.add(leftText);
                 }
             }
-            if (englishTexts.size() > 0) {
+            if (englishTexts.isEmpty()) {
+                System.out.println("All translations from English to " + sourceLanguage + " already exist.");
+            } else {
                 NumberedList sourceTexts = translateNumberedList(englishTexts, "English", sourceLanguage);
                 Dictionary.appendTranslations("English", englishTexts, sourceLanguage, sourceTexts);
-            } else {
-                System.out.println("All translations from English to " + sourceLanguage + " already exist.");
             }
 
             //Second translation:
@@ -57,12 +57,12 @@ public class Translator {
                     sourceTexts.add(sourceText);
                 }
             }
-            if (sourceTexts.size() == 0) {
+            if (sourceTexts.isEmpty()) {
                 System.out.println("All translations from " + sourceLanguage + " to " + targetLanguage + " already exist.");
-                return;
+            } else {
+                NumberedList targetTexts = translateNumberedList(sourceTexts, sourceLanguage, targetLanguage);
+                Dictionary.appendTranslations(sourceLanguage, sourceTexts, targetLanguage, targetTexts);
             }
-            NumberedList targetTexts = translateNumberedList(sourceTexts, sourceLanguage, targetLanguage);
-            Dictionary.appendTranslations(sourceLanguage, sourceTexts, targetLanguage, targetTexts);
         }
     }
 

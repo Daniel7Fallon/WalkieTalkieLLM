@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.Assets.VignetteManager;
 import org.example.Assets.VignetteSchema;
+import org.example.Comic.XMLGenerator;
 
 public class Main {
     public static void main(String[] args) {
@@ -38,6 +39,8 @@ public class Main {
         for(int i = 0; i < 5; i++) {
             System.out.println((i + 1) + ". " + firstVS.getRandVignette());
         }
+
+        XMLGenerator.generateXML(XMLGenerator.createDocument());
 
     }
 }

@@ -9,11 +9,12 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class XMLGenerator {
 
-    private void generateXML(Document document) {
+    public static void generateXML(Document document) {
         XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat()); // Make the XML look nice and human-readable
         try (FileWriter writer = new FileWriter("lesson.xml")) {
             xmlOutputter.output(document, writer);
@@ -23,12 +24,12 @@ public class XMLGenerator {
         }
     }
 
-    private Document createDocument(VignetteManager vignetteManager) {
+    public static Document createDocument() {
         Element root = new Element("comic");
         Document document = new Document(root);
         List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemas();
 
-        root.addContent(getFigures(vignetteManager));
+        root.addContent(getFigures());
         root.addContent(getScenes(vignetteSchemas));
 
 
@@ -38,31 +39,34 @@ public class XMLGenerator {
         return document;
     }
 
-    private Element getFigures(VignetteManager vignetteManager) {
+    private static Element getFigures() {
+        List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemasInRange(0, 20);
+
         Element figuresElement = new Element("figures");
+        Figure rightFigure = new Figure();
+        Figure leftFigure = new Figure();
 
-        /*
-        // Assuming VignetteManager has a method to get all figures
-        List<VignetteSchema.Figure> figures = vignetteManager.getFigures();
+        Element leftFigureElement = new Element("figure");
+        leftFigureElement.addContent(new Element("name").setText(leftFigure.getName()));
+        leftFigureElement.addContent(new Element("appearance").setText(leftFigure.getAppearance()));
+        leftFigureElement.addContent(new Element("skin").setText(leftFigure.getSkin()));
+        leftFigureElement.addContent(new Element("hair").setText(leftFigure.getHair()));
+        leftFigureElement.addContent(new Element("pose").setText(vignetteSchemas.getFirst().getLeftPose()));
+        leftFigureElement.addContent(new Element("facing").setText("right"));
 
-        for (VignetteSchema.Figure figure : figures) {
-            Element figureElement = new Element("figure");
-
-            figureElement.addContent(new Element("name").setText(figure.getName()));
-            figureElement.addContent(new Element("appearance").setText(figure.getAppearance()));
-            figureElement.addContent(new Element("skin").setText(figure.getSkin()));
-            figureElement.addContent(new Element("hair").setText(figure.getHair()));
-            figureElement.addContent(new Element("pose").setText(figure.getPose()));
-            figureElement.addContent(new Element("facing").setText(figure.getFacing()));
-
-            figuresElement.addContent(figureElement);
-        }
-        */
+        Element rightFigureElement = new Element("figure");
+        rightFigureElement.addContent(new Element("name").setText(rightFigure.getName()));
+        rightFigureElement.addContent(new Element("appearance").setText(rightFigure.getAppearance()));
+        rightFigureElement.addContent(new Element("skin").setText(rightFigure.getSkin()));
+        rightFigureElement.addContent(new Element("hair").setText(rightFigure.getHair()));
+        rightFigureElement.addContent(new Element("pose").setText(vignetteSchemas.getFirst().getRightPoses().getFirst()));
+        rightFigureElement.addContent(new Element("facing").setText("right"));
+        figuresElement.addContent(rightFigureElement);
 
         return figuresElement;
     }
 
-    private Element getScenes(List<VignetteSchema> vignetteSchemas) {
+    private static Element getScenes(List<VignetteSchema> vignetteSchemas) {
         Element scenes = new Element("scenes");
 
         for (VignetteSchema vignetteSchema : vignetteSchemas) {
@@ -73,7 +77,7 @@ public class XMLGenerator {
     }
 
     // Scene can contain a scene and/or a rubric
-    private Element getScene(VignetteSchema vignetteSchema) {
+    private static Element getScene(VignetteSchema vignetteSchema) {
         Element scene = new Element("scene");
 
         /*

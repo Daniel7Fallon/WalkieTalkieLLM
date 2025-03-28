@@ -1,5 +1,6 @@
 package org.example.Comic;
 
+import org.example.Assets.Vignette;
 import org.example.Assets.VignetteManager;
 
 import org.example.Assets.VignetteSchema;
@@ -32,34 +33,31 @@ public class XMLGenerator {
         root.addContent(getFigures());
         root.addContent(getScenes(vignetteSchemas));
 
-
-        // TODO
-
-
         return document;
     }
 
     private static Element getFigures() {
         List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemasInRange(0, 20);
+        Vignette vignette = vignetteSchemas.getFirst().getRandVignette();
 
         Element figuresElement = new Element("figures");
         Figure rightFigure = new Figure();
         Figure leftFigure = new Figure();
 
         Element leftFigureElement = new Element("figure");
-        leftFigureElement.addContent(new Element("name").setText(leftFigure.getName()));
-        leftFigureElement.addContent(new Element("appearance").setText(leftFigure.getAppearance()));
-        leftFigureElement.addContent(new Element("skin").setText(leftFigure.getSkin()));
-        leftFigureElement.addContent(new Element("hair").setText(leftFigure.getHair()));
-        leftFigureElement.addContent(new Element("pose").setText(vignetteSchemas.getFirst().getLeftPose()));
+        addIfNotNull(leftFigureElement, "name", leftFigure.getName());
+        addIfNotNull(leftFigureElement, "appearance", leftFigure.getAppearance());
+        addIfNotNull(leftFigureElement, "skin", leftFigure.getSkin());
+        addIfNotNull(leftFigureElement, "hair", leftFigure.getHair());
+        addIfNotNull(leftFigureElement, "pose", vignette.getLeftPose());
         leftFigureElement.addContent(new Element("facing").setText("right"));
 
         Element rightFigureElement = new Element("figure");
-        rightFigureElement.addContent(new Element("name").setText(rightFigure.getName()));
-        rightFigureElement.addContent(new Element("appearance").setText(rightFigure.getAppearance()));
-        rightFigureElement.addContent(new Element("skin").setText(rightFigure.getSkin()));
-        rightFigureElement.addContent(new Element("hair").setText(rightFigure.getHair()));
-        rightFigureElement.addContent(new Element("pose").setText(vignetteSchemas.getFirst().getRightPoses().getFirst()));
+        addIfNotNull(rightFigureElement, "name", rightFigure.getName());
+        addIfNotNull(rightFigureElement, "appearance", rightFigure.getAppearance());
+        addIfNotNull(rightFigureElement, "skin", rightFigure.getSkin());
+        addIfNotNull(rightFigureElement, "hair", rightFigure.getHair());
+        addIfNotNull(rightFigureElement, "pose", vignette.getRightPose());
         rightFigureElement.addContent(new Element("facing").setText("right"));
         figuresElement.addContent(rightFigureElement);
 
@@ -70,33 +68,22 @@ public class XMLGenerator {
         Element scenes = new Element("scenes");
 
         for (VignetteSchema vignetteSchema : vignetteSchemas) {
-            scenes.addContent(getScene(vignetteSchema));
+            scenes.addContent(getScene(vignetteSchema.getRandVignette()));
         }
 
         return scenes;
     }
 
     // Scene can contain a scene and/or a rubric
-    private static Element getScene(VignetteSchema vignetteSchema) {
+    private static Element getScene(Vignette vignette) {
         Element scene = new Element("scene");
 
-        /*
-            Rubric Structure:
-
-            <rubric>
-                <image><\image>
-                <above><\above>
-                <below><\below>
-                <duration><\duration>
-            <\rubric>
-         */
-
-        // TODO
+        //generatePanel();
 
         return scene;
     }
 
-    private Element generatePanel (VignetteSchema vignetteSchema) {
+    private Element generatePanel () {
         Element panel = new Element("panel");
 
         /*
@@ -136,6 +123,11 @@ public class XMLGenerator {
         return panel;
     }
 
-
+    // Helper method to add element only if value is not null
+    private static void addIfNotNull(Element parent, String childName, String value) {
+        if (value != null) {
+            parent.addContent(new Element(childName).setText(value));
+        }
+    }
 
 }

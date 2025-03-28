@@ -1,4 +1,4 @@
-package org.example;
+package org.example.Comic;
 
 import org.example.Assets.VignetteManager;
 

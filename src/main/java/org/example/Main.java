@@ -10,19 +10,24 @@ public class Main {
             return;
         }
         String configFilePath = args[0];
-        ConfigurationFile.initialize(configFilePath);
+        try {
+            ConfigurationFile.initialize(configFilePath);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid config file: " + e.getMessage());
+            return;
+        }
         VignetteManager.initialize();
         Dictionary.initialize();
 
         try {
             System.out.println("\nTranslating first 5 vignettes");
-            Translator.translateListAndWrite(VignetteManager.getLeftTextsInVignetteSchemasInRange(0, 5));
+            Translator.translateVignetteSchemasInRange(0,5);
 
             System.out.println("\nTranslating first 10 vignettes");
-            Translator.translateListAndWrite(VignetteManager.getLeftTextsInVignetteSchemasInRange(0, 10));
+            Translator.translateVignetteSchemasInRange(0,10);
 
-            System.out.println("\nTranslating first 10 vignettes");
-            Translator.translateListAndWrite(VignetteManager.getLeftTextsInVignetteSchemasInRange(0, 10));
+            System.out.println("\nTranslating first 100 vignettes");
+            Translator.translateVignetteSchemasInRange(0,100);
 
         } catch (Exception e) {
             e.printStackTrace();

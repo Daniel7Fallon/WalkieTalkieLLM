@@ -1,16 +1,40 @@
 package org.example;
 
+import org.example.Assets.VignetteManager;
 import org.example.Assets.VignetteSchema;
 import org.example.Completion.CompletionSession;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Translator {
+
+    //Translates leftTexts and combinedTexts of vignetteSchemas in range given
+    public static void translateVignetteSchemasInRange(int start, int end) throws IOException{
+        int batchSize = Integer.parseInt(ConfigurationFile.getValue("TRANSLATION_BATCH_SIZE"));
+        List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemasInRange(start, end);
+        List<String> toTranslate = VignetteManager.getLeftAndCombinedTexts(vignetteSchemas);
+        List<String> batch = new ArrayList<>();
+        //Translate in batches
+        for(int i = 0; i < toTranslate.size(); i++) {
+            batch.add(toTranslate.get(i));
+            if(batch.size() == batchSize) {
+                translateListAndWrite(batch);
+                batch = new ArrayList<>();
+            }
+        }
+        //Translate last batch if it doesn't reach max size
+        if(!batch.isEmpty()) {
+            translateListAndWrite(batch);
+        }
+    }
+
+
     //Translates the leftText entries from the given vignettes and serialises them.
     //EnglishTo<Target> if source is English
     //EnglishTo<Source>, <Source>To<Target> if english is not source
-    public static void translateListAndWrite(List<String> input) throws IOException {
+    private static void translateListAndWrite(List<String> input) throws IOException {
         String sourceLanguage = ConfigurationFile.getValue("SOURCELANGUAGE");
         String targetLanguage = ConfigurationFile.getValue("TARGETLANGUAGE");
         if(sourceLanguage.equals("English")) {

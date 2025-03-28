@@ -56,11 +56,11 @@ public class VignetteManager {
         return result;
     }
 
-    public static List<String> getLeftTextsInVignetteSchemasInRange(int start, int end) {
+    public static List<String> getLeftAndCombinedTexts(List<VignetteSchema> input) {
         List<String> result = new ArrayList<>();
-        List<VignetteSchema> vignetteSchemas = getVignetteSchemasInRange(start, end);
-        for(VignetteSchema vs : vignetteSchemas) {
-            result.addAll(vs.getLeftTexts());
+        for(VignetteSchema vignetteSchema : input) {
+            result.addAll(vignetteSchema.getLeftTexts());
+            result.addAll(vignetteSchema.getCombinedTexts());
         }
         return result;
     }

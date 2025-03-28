@@ -46,8 +46,17 @@ public final class ConfigurationFile {
         String translationsFolder = configMap.get("TRANSLATIONS_FOLDER");
         if(translationsFolder == null || translationsFolder.isEmpty()) throw new IllegalArgumentException("TRANSLATIONS_FOLDER parameter is missing in configuration file.");
 
+        String translationBatchSize = configMap.get("TRANSLATION_BATCH_SIZE");
+        if(translationBatchSize == null || translationBatchSize.isEmpty()) throw new IllegalArgumentException("TRANSLATION_BATCH_SIZE parameter is missing in configuration file.");
+
         configMap.put("SOURCELANGUAGE", StringUtil.capitalize(sourceLanguage));
         configMap.put("TARGETLANGUAGE", StringUtil.capitalize(targetLanguage));
+        try{
+            Integer.parseInt(translationBatchSize);
+        } catch(NumberFormatException e) {
+            throw new IllegalArgumentException("TRANSLATION_BATCH_SIZE parameter must be an integer.");
+        }
+        System.out.println(configMap);
     }
 
     public static String getValue(String key) {

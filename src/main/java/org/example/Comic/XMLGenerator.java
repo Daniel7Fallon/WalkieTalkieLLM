@@ -1,105 +1,141 @@
 package org.example.Comic;
 
+import org.example.Assets.Vignette;
 import org.example.Assets.VignetteManager;
 
 import org.example.Assets.VignetteSchema;
+import org.example.Dictionary;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class XMLGenerator {
+    private static final int VIGNETTE_SCHEMA_START = 0;
+    private static final int VIGNETTE_SCHEMA_END = 20;
+    private static final String OUTPUT_FILENAME = "lesson.xml";
 
-    public static void generateXML(Document document) {
-        XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat()); // Make the XML look nice and human-readable
-        try (FileWriter writer = new FileWriter("lesson.xml")) {
+    public static void createLesson(List<Figure> figures) {
+        Element root = new Element("comic");
+        Document document = new Document(root);
+        List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemasInRange(VIGNETTE_SCHEMA_START, VIGNETTE_SCHEMA_END);
+
+        root.addContent(createFiguresElement(figures, vignetteSchemas.getFirst().getRandVignette()));
+        root.addContent(createScenesElement(vignetteSchemas, figures));
+
+        generateXML(document);
+    }
+
+    private static void generateXML(Document document) {
+        XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
+        try (FileWriter writer = new FileWriter(OUTPUT_FILENAME)) {
             xmlOutputter.output(document, writer);
-            System.out.println("Successfully generated xml.");
+            System.out.println("Successfully generated XML.");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Failed to generate XML: " + e.getMessage());
         }
     }
 
-    public static Document createDocument() {
-        Element root = new Element("comic");
-        Document document = new Document(root);
-        List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemas();
-
-        root.addContent(getFigures());
-        root.addContent(getScenes(vignetteSchemas));
-
-
-        // TODO
-
-
-        return document;
-    }
-
-    private static Element getFigures() {
-        List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemasInRange(0, 20);
-
+    private static Element createFiguresElement(List<Figure> figures, Vignette vignette) {
         Element figuresElement = new Element("figures");
-        Figure rightFigure = new Figure();
-        Figure leftFigure = new Figure();
+        Figure leftFigure = figures.get(0);
+        Figure rightFigure = figures.get(1);
 
-        Element leftFigureElement = new Element("figure");
-        leftFigureElement.addContent(new Element("name").setText(leftFigure.getName()));
-        leftFigureElement.addContent(new Element("appearance").setText(leftFigure.getAppearance()));
-        leftFigureElement.addContent(new Element("skin").setText(leftFigure.getSkin()));
-        leftFigureElement.addContent(new Element("hair").setText(leftFigure.getHair()));
-        leftFigureElement.addContent(new Element("pose").setText(vignetteSchemas.getFirst().getLeftPose()));
-        leftFigureElement.addContent(new Element("facing").setText("right"));
-
-        Element rightFigureElement = new Element("figure");
-        rightFigureElement.addContent(new Element("name").setText(rightFigure.getName()));
-        rightFigureElement.addContent(new Element("appearance").setText(rightFigure.getAppearance()));
-        rightFigureElement.addContent(new Element("skin").setText(rightFigure.getSkin()));
-        rightFigureElement.addContent(new Element("hair").setText(rightFigure.getHair()));
-        rightFigureElement.addContent(new Element("pose").setText(vignetteSchemas.getFirst().getRightPoses().getFirst()));
-        rightFigureElement.addContent(new Element("facing").setText("right"));
-        figuresElement.addContent(rightFigureElement);
+        figuresElement.addContent(createFigureElement(leftFigure, vignette.getLeftPose(), "right"));
+        figuresElement.addContent(createFigureElement(rightFigure, vignette.getRightPose(), "left"));
 
         return figuresElement;
     }
 
-    private static Element getScenes(List<VignetteSchema> vignetteSchemas) {
-        Element scenes = new Element("scenes");
+    private static Element createFigureElement(Figure figure, String pose, String facing) {
+        Element figureElement = new Element("figure");
+        addIfNotNull(figureElement, "name", figure.getName());
+        addIfNotNull(figureElement, "appearance", figure.getAppearance());
+        addIfNotNull(figureElement, "skin", figure.getSkin());
+        addIfNotNull(figureElement, "hair", figure.getHair());
+        addIfNotNull(figureElement, "pose", pose);
+        figureElement.addContent(new Element("facing").setText(facing));
+        return figureElement;
+    }
 
-        for (VignetteSchema vignetteSchema : vignetteSchemas) {
-            scenes.addContent(getScene(vignetteSchema));
+    private static Element createScenesElement(List<VignetteSchema> vignetteSchemas, List<Figure> figures) {
+        Element scenesElement = new Element("scenes");
+
+        vignetteSchemas.stream()
+                .map(VignetteSchema::getRandVignette)
+                .map(vignette -> createSceneElement(vignette, figures))
+                .forEach(scenesElement::addContent);
+
+        return scenesElement;
+    }
+
+    private static Element createSceneElement(Vignette vignette, List<Figure> figures) {
+        Element sceneElement = new Element("scene");
+        sceneElement.addContent(createPanelFromTemplate(vignette, figures, PanelTemplate.INTRO));
+        sceneElement.addContent(createPanelFromTemplate(vignette, figures, PanelTemplate.LEFT_SPEAKS));
+        sceneElement.addContent(createPanelFromTemplate(vignette, figures, PanelTemplate.BOTH_SPEAK));
+        return sceneElement;
+    }
+
+    // Can create templates later for different types of scenes
+    private static Element createPanelFromTemplate(Vignette vignette, List<Figure> figures, PanelTemplate template) {
+        Element panelElement = new Element("panel");
+
+        try {
+            String[] sourceAndTarget = null;
+            if (vignette.getLeftText() != null) {
+                sourceAndTarget = Dictionary.getSourceAndTargetTranslations(vignette.getLeftText());
+            }
+
+            // Left side
+            String leftText = template.isLeftSpeaks() ? (sourceAndTarget != null ? sourceAndTarget[1] : null) : null;
+            panelElement.addContent(createPanelSide("left", figures.get(0), vignette.getLeftPose(), leftText, "right"));
+
+            // Right side
+            String rightText = template.isRightSpeaks() ? (sourceAndTarget != null ? sourceAndTarget[0] : null) : null;
+            panelElement.addContent(createPanelSide("right", figures.get(1), vignette.getRightPose(), rightText, "left"));
+
+            addIfNotNull(panelElement, "setting", vignette.getBackgrounds());
+            panelElement.addContent(new Element("border").setText("white"));
+            panelElement.addContent(new Element("duration").setText("500")); // Make this not static later
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
-        return scenes;
+        return panelElement;
     }
 
-    // Scene can contain a scene and/or a rubric
-    private static Element getScene(VignetteSchema vignetteSchema) {
-        Element scene = new Element("scene");
+    private static Element createPanelSide(String side, Figure figure, String pose, String text, String facing) {
+        Element sideElement = new Element(side);
 
-        /*
-            Rubric Structure:
+        Element figureElement = new Element("figure");
+        addIfNotNull(figureElement, "id", figure.getName());
+        addIfNotNull(figureElement, "pose", pose);
+        addIfNotNull(figureElement, "facing", facing);
+        sideElement.addContent(figureElement);
 
-            <rubric>
-                <image><\image>
-                <above><\above>
-                <below><\below>
-                <duration><\duration>
-            <\rubric>
-         */
+        if (text != null) {
+            Element balloonElement = new Element("balloon");
+            balloonElement.setAttribute("status", "speech");
+            addIfNotNull(balloonElement, "content", text);
+            sideElement.addContent(balloonElement);
+        }
 
-        // TODO
-
-        return scene;
+        return sideElement;
     }
 
-    private Element generatePanel (VignetteSchema vignetteSchema) {
-        Element panel = new Element("panel");
+    private static void addIfNotNull(Element parent, String childName, String value) {
+        if (value != null) {
+            parent.addContent(new Element(childName).setText(value));
+        }
+    }
+}
 
-        /*
+/*
             Structure to generate:
 
             <panel>
@@ -132,10 +168,3 @@ public class XMLGenerator {
             </panel>
 
          */
-
-        return panel;
-    }
-
-
-
-}

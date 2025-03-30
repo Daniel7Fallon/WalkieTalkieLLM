@@ -10,83 +10,107 @@ import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class XMLGenerator {
+    private static final int VIGNETTE_SCHEMA_START = 0;
+    private static final int VIGNETTE_SCHEMA_END = 20;
+    private static final String OUTPUT_FILENAME = "lesson.xml";
 
     public static void generateXML(Document document) {
-        XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat()); // Make the XML look nice and human-readable
-        try (FileWriter writer = new FileWriter("lesson.xml")) {
+        XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
+        try (FileWriter writer = new FileWriter(OUTPUT_FILENAME)) {
             xmlOutputter.output(document, writer);
-            System.out.println("Successfully generated xml.");
+            System.out.println("Successfully generated XML.");
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Failed to generate XML: " + e.getMessage());
         }
     }
 
-    public static Document createDocument() {
+    public static Document createDocument(List<Figure> figures) {
         Element root = new Element("comic");
         Document document = new Document(root);
-        List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemas();
+        List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemasInRange(VIGNETTE_SCHEMA_START, VIGNETTE_SCHEMA_END);
 
-        root.addContent(getFigures());
-        root.addContent(getScenes(vignetteSchemas));
+        root.addContent(createFiguresElement(figures, vignetteSchemas.getFirst().getRandVignette()));
+        root.addContent(createScenesElement(vignetteSchemas, figures));
 
         return document;
     }
 
-    private static Element getFigures() {
-        List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemasInRange(0, 20);
-        Vignette vignette = vignetteSchemas.getFirst().getRandVignette();
-
+    private static Element createFiguresElement(List<Figure> figures, Vignette vignette) {
         Element figuresElement = new Element("figures");
-        Figure rightFigure = new Figure();
-        Figure leftFigure = new Figure();
+        Figure leftFigure = figures.get(0);
+        Figure rightFigure = figures.get(1);
 
-        Element leftFigureElement = new Element("figure");
-        addIfNotNull(leftFigureElement, "name", leftFigure.getName());
-        addIfNotNull(leftFigureElement, "appearance", leftFigure.getAppearance());
-        addIfNotNull(leftFigureElement, "skin", leftFigure.getSkin());
-        addIfNotNull(leftFigureElement, "hair", leftFigure.getHair());
-        addIfNotNull(leftFigureElement, "pose", vignette.getLeftPose());
-        leftFigureElement.addContent(new Element("facing").setText("right"));
-
-        Element rightFigureElement = new Element("figure");
-        addIfNotNull(rightFigureElement, "name", rightFigure.getName());
-        addIfNotNull(rightFigureElement, "appearance", rightFigure.getAppearance());
-        addIfNotNull(rightFigureElement, "skin", rightFigure.getSkin());
-        addIfNotNull(rightFigureElement, "hair", rightFigure.getHair());
-        addIfNotNull(rightFigureElement, "pose", vignette.getRightPose());
-        rightFigureElement.addContent(new Element("facing").setText("right"));
-        figuresElement.addContent(rightFigureElement);
+        figuresElement.addContent(createFigureElement(leftFigure, vignette.getLeftPose(), "right"));
+        figuresElement.addContent(createFigureElement(rightFigure, vignette.getRightPose(), "left"));
 
         return figuresElement;
     }
 
-    private static Element getScenes(List<VignetteSchema> vignetteSchemas) {
-        Element scenes = new Element("scenes");
+    private static Element createFigureElement(Figure figure, String pose, String facing) {
+        Element figureElement = new Element("figure");
+        addIfNotNull(figureElement, "name", figure.getName());
+        addIfNotNull(figureElement, "appearance", figure.getAppearance());
+        addIfNotNull(figureElement, "skin", figure.getSkin());
+        addIfNotNull(figureElement, "hair", figure.getHair());
+        addIfNotNull(figureElement, "pose", pose);
+        figureElement.addContent(new Element("facing").setText(facing));
+        return figureElement;
+    }
 
-        for (VignetteSchema vignetteSchema : vignetteSchemas) {
-            scenes.addContent(getScene(vignetteSchema.getRandVignette()));
+    private static Element createScenesElement(List<VignetteSchema> vignetteSchemas, List<Figure> figures) {
+        Element scenesElement = new Element("scenes");
+
+        vignetteSchemas.stream()
+                .map(VignetteSchema::getRandVignette)
+                .map(vignette -> createSceneElement(vignette, figures))
+                .forEach(scenesElement::addContent);
+
+        return scenesElement;
+    }
+
+    private static Element createSceneElement(Vignette vignette, List<Figure> figures) {
+        Element sceneElement = new Element("scene");
+        sceneElement.addContent(createPanelElement(vignette, figures));
+        return sceneElement;
+    }
+
+    private static Element createPanelElement(Vignette vignette, List<Figure> figures) {
+        Element panelElement = new Element("panel");
+
+        panelElement.addContent(createPanelSide("left", figures.get(0), vignette.getLeftPose(), vignette.getLeftText()));
+        panelElement.addContent(createPanelSide("right", figures.get(1), vignette.getRightPose(), null));
+
+        return panelElement;
+    }
+
+    private static Element createPanelSide(String side, Figure figure, String pose, String text) {
+        Element sideElement = new Element(side);
+
+        Element figureElement = new Element("figure");
+        addIfNotNull(figureElement, "id", figure.getName());
+        addIfNotNull(figureElement, "pose", pose);
+        sideElement.addContent(figureElement);
+
+        if (text != null) {
+            Element balloonElement = new Element("balloon");
+            addIfNotNull(balloonElement, "content", text);
+            sideElement.addContent(balloonElement);
         }
 
-        return scenes;
+        return sideElement;
     }
 
-    // Scene can contain a scene and/or a rubric
-    private static Element getScene(Vignette vignette) {
-        Element scene = new Element("scene");
-
-        //generatePanel();
-
-        return scene;
+    private static void addIfNotNull(Element parent, String childName, String value) {
+        if (value != null) {
+            parent.addContent(new Element(childName).setText(value));
+        }
     }
+}
 
-    private Element generatePanel () {
-        Element panel = new Element("panel");
-
-        /*
+/*
             Structure to generate:
 
             <panel>
@@ -119,15 +143,3 @@ public class XMLGenerator {
             </panel>
 
          */
-
-        return panel;
-    }
-
-    // Helper method to add element only if value is not null
-    private static void addIfNotNull(Element parent, String childName, String value) {
-        if (value != null) {
-            parent.addContent(new Element(childName).setText(value));
-        }
-    }
-
-}

@@ -2,7 +2,10 @@ package org.example;
 
 import org.example.Assets.VignetteManager;
 import org.example.Assets.VignetteSchema;
+import org.example.Comic.Figure;
 import org.example.Comic.XMLGenerator;
+
+import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
@@ -37,7 +40,19 @@ public class Main {
             System.out.println((i + 1) + ". " + firstVS.getRandVignette());
         }
 
-        XMLGenerator.generateXML(XMLGenerator.createDocument());
+        ArrayList<Figure> figures = new ArrayList<Figure>();
+        Figure leftFigure = new Figure();
+        leftFigure.setName("Daniel");
+        leftFigure.setSkin("Brown");
+
+        Figure rightFigure = new Figure();
+        rightFigure.setName("Harry");
+        rightFigure.setSkin("White");
+
+        figures.add(leftFigure);
+        figures.add(rightFigure);
+
+        XMLGenerator.generateXML(XMLGenerator.createDocument(figures));
 
     }
 }

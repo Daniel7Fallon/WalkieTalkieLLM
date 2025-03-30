@@ -68,4 +68,18 @@ public class Dictionary {
             }
         }
     }
+
+    public static String[] getSourceAndTargetTranslations(String text) throws IOException{
+        String sourceLang = ConfigurationFile.getValue("SOURCELANGUAGE");
+        String targetLang = ConfigurationFile.getValue("TARGETLANGUAGE");
+        String[] output = new String[2];
+        if(sourceLang.equals("English")) {
+            output[0] = text;
+            output[1] = getTranslation(text, sourceLang, targetLang);
+        } else {
+            output[0] = getTranslation(text, "English", sourceLang);
+            output[1] = getTranslation(output[0], sourceLang, targetLang);
+        }
+        return output;
+    }
 }

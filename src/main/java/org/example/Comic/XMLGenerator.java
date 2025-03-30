@@ -4,6 +4,7 @@ import org.example.Assets.Vignette;
 import org.example.Assets.VignetteManager;
 
 import org.example.Assets.VignetteSchema;
+import org.example.Dictionary;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
@@ -17,17 +18,7 @@ public class XMLGenerator {
     private static final int VIGNETTE_SCHEMA_END = 20;
     private static final String OUTPUT_FILENAME = "lesson.xml";
 
-    public static void generateXML(Document document) {
-        XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
-        try (FileWriter writer = new FileWriter(OUTPUT_FILENAME)) {
-            xmlOutputter.output(document, writer);
-            System.out.println("Successfully generated XML.");
-        } catch (IOException e) {
-            System.err.println("Failed to generate XML: " + e.getMessage());
-        }
-    }
-
-    public static Document createDocument(List<Figure> figures) {
+    public static void createLesson(List<Figure> figures) {
         Element root = new Element("comic");
         Document document = new Document(root);
         List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemasInRange(VIGNETTE_SCHEMA_START, VIGNETTE_SCHEMA_END);
@@ -35,7 +26,17 @@ public class XMLGenerator {
         root.addContent(createFiguresElement(figures, vignetteSchemas.getFirst().getRandVignette()));
         root.addContent(createScenesElement(vignetteSchemas, figures));
 
-        return document;
+        generateXML(document);
+    }
+
+    private static void generateXML(Document document) {
+        XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
+        try (FileWriter writer = new FileWriter(OUTPUT_FILENAME)) {
+            xmlOutputter.output(document, writer);
+            System.out.println("Successfully generated XML.");
+        } catch (IOException e) {
+            System.err.println("Failed to generate XML: " + e.getMessage());
+        }
     }
 
     private static Element createFiguresElement(List<Figure> figures, Vignette vignette) {
@@ -73,29 +74,53 @@ public class XMLGenerator {
 
     private static Element createSceneElement(Vignette vignette, List<Figure> figures) {
         Element sceneElement = new Element("scene");
-        sceneElement.addContent(createPanelElement(vignette, figures));
+        sceneElement.addContent(createPanelFromTemplate(vignette, figures, PanelTemplate.INTRO));
+        sceneElement.addContent(createPanelFromTemplate(vignette, figures, PanelTemplate.LEFT_SPEAKS));
+        sceneElement.addContent(createPanelFromTemplate(vignette, figures, PanelTemplate.BOTH_SPEAK));
         return sceneElement;
     }
 
-    private static Element createPanelElement(Vignette vignette, List<Figure> figures) {
+    // Can create templates later for different types of scenes
+    private static Element createPanelFromTemplate(Vignette vignette, List<Figure> figures, PanelTemplate template) {
         Element panelElement = new Element("panel");
 
-        panelElement.addContent(createPanelSide("left", figures.get(0), vignette.getLeftPose(), vignette.getLeftText()));
-        panelElement.addContent(createPanelSide("right", figures.get(1), vignette.getRightPose(), null));
+        try {
+            String[] sourceAndTarget = null;
+            if (vignette.getLeftText() != null) {
+                sourceAndTarget = Dictionary.getSourceAndTargetTranslations(vignette.getLeftText());
+            }
+
+            // Left side
+            String leftText = template.isLeftSpeaks() ? (sourceAndTarget != null ? sourceAndTarget[1] : null) : null;
+            panelElement.addContent(createPanelSide("left", figures.get(0), vignette.getLeftPose(), leftText, "right"));
+
+            // Right side
+            String rightText = template.isRightSpeaks() ? (sourceAndTarget != null ? sourceAndTarget[0] : null) : null;
+            panelElement.addContent(createPanelSide("right", figures.get(1), vignette.getRightPose(), rightText, "left"));
+
+            addIfNotNull(panelElement, "setting", vignette.getBackgrounds());
+            panelElement.addContent(new Element("border").setText("white"));
+            panelElement.addContent(new Element("duration").setText("500")); // Make this not static later
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         return panelElement;
     }
 
-    private static Element createPanelSide(String side, Figure figure, String pose, String text) {
+    private static Element createPanelSide(String side, Figure figure, String pose, String text, String facing) {
         Element sideElement = new Element(side);
 
         Element figureElement = new Element("figure");
         addIfNotNull(figureElement, "id", figure.getName());
         addIfNotNull(figureElement, "pose", pose);
+        addIfNotNull(figureElement, "facing", facing);
         sideElement.addContent(figureElement);
 
         if (text != null) {
             Element balloonElement = new Element("balloon");
+            balloonElement.setAttribute("status", "speech");
             addIfNotNull(balloonElement, "content", text);
             sideElement.addContent(balloonElement);
         }

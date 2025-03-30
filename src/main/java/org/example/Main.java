@@ -52,7 +52,6 @@ public class Main {
         figures.add(leftFigure);
         figures.add(rightFigure);
 
-        XMLGenerator.generateXML(XMLGenerator.createDocument(figures));
-
+        XMLGenerator.createLesson(figures);
     }
 }

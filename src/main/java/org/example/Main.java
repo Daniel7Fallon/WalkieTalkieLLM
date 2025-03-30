@@ -27,8 +27,8 @@ public class Main {
             System.out.println("\nTranslating first 10 vignettes");
             Translator.translateVignetteSchemasInRange(0,10);
 
-            System.out.println("\nTranslating first 100 vignettes");
-            Translator.translateVignetteSchemasInRange(0,100);
+            //System.out.println("\nTranslating first 100 vignettes");
+            //Translator.translateVignetteSchemasInRange(0,100);
 
         } catch (Exception e) {
             e.printStackTrace();

@@ -73,11 +73,14 @@ public class Main {
         }
 
         try {
-            System.out.println("\nTranslating first set of vignettes");
+            System.out.println("\nTranslating first 5 of vignette schemas");
             Translator.translateVignetteSchemasInRange(0,5);
 
-            System.out.println("\nTranslating second set of vignettes");
+            System.out.println("\nTranslating first 10 of vignette schemas");
             Translator.translateVignetteSchemasInRange(0,10);
+
+            System.out.println("\nTranslating first 20 of vignette schemas");
+            Translator.translateVignetteSchemasInRange(0,20);
 
         } catch (Exception e) {
             e.printStackTrace();

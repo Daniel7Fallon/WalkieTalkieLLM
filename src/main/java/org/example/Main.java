@@ -5,12 +5,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.example.Assets.VignetteManager;
 import org.example.Assets.VignetteSchema;
 import org.example.Comic.Figure;
 import org.example.Comic.XMLBlueprint;
 import org.example.Comic.XMLGenerator;
+
+import static org.example.Utils.StringUtil.removePluralIdentifier;
 
 
 public class Main {
@@ -48,8 +51,8 @@ public class Main {
             comic.getFigureDefinitions().stream()
                     .forEach(fig -> System.out.println(
                             " - " + fig.getName() +
-                                    " (" + fig.getId() + ")" +
-                                    " | Appearance: " + fig.getAppearance()
+                            " (" + fig.getId() + ")" +
+                            " | Appearance: " + fig.getAppearance()
                     ));
 
             System.out.println("\n=== Scene Structure ===");
@@ -61,11 +64,35 @@ public class Main {
                         System.out.println("  Left Side: " +
                                 (panel.getLeftSide().getFigure() != null ?
                                         panel.getLeftSide().getFigure().getId() : "No figure") +
-                                " | Dialogue: " + getBalloonText(panel.getLeftSide()));
+                                " | Dialogue: " + panel.getLeftSide().getBalloonContent());
                     }
                     // Would add other blocks for middle/right here if we needed to, this code is just proof that the xml is parsed in memory
                 });
             });
+
+            //Get all speech bubble content
+            System.out.println("\n=== All speech bubbles ===");
+            List<XMLBlueprint.PanelSide> panelSides = new ArrayList<>();
+            comic.getScenes().forEach(scene -> {
+                scene.getPanels().forEach(panel -> {
+                    XMLBlueprint.PanelSide leftSide = panel.getLeftSide();
+                    XMLBlueprint.PanelSide middleSide = panel.getMiddleSide();
+                    XMLBlueprint.PanelSide rightSide = panel.getRightSide();
+                    if(leftSide != null) panelSides.add(leftSide);
+                    if(middleSide != null) panelSides.add(middleSide);
+                    if(rightSide != null) panelSides.add(rightSide);
+                });
+            });
+            List<String> balloonContents = new ArrayList<>();
+            for(XMLBlueprint.PanelSide panelSide : panelSides) {
+                String ballonContent = panelSide.getBalloonContent();
+                if(ballonContent != null) balloonContents.add(ballonContent);
+            }
+            System.out.println(balloonContents);
+            Translator.batchTranslateList(balloonContents);
+            for(String input : balloonContents) {
+                System.out.println("Source: " + removePluralIdentifier(input) + "\t | Target: " + Dictionary.getSourceAndTargetTranslations(input)[1]);
+            }
 
         } catch (IOException | JDOMException e) {
             System.err.println("Failed to process specifications XML: " + e.getMessage());
@@ -107,8 +134,5 @@ public class Main {
         XMLGenerator.createLesson(figures);
     }
 
-    private static String getBalloonText(XMLBlueprint.PanelSide side) {
-        if(side.getBalloon() == null) return "None";
-        return "\"" + side.getBalloon().getContent() + "\"";
-    }
+
 }

@@ -193,6 +193,13 @@ public class XMLBlueprint {
         private PanelFigure figure;
         private Balloon balloon;
 
+        public String getBalloonContent() {
+            if (balloon == null) {
+                return null;
+            }
+            return this.getBalloon().getContent();
+        }
+
         // Getters and setters
         public PanelFigure getFigure() { return figure; }
         public void setFigure(PanelFigure figure) { this.figure = figure; }

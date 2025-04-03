@@ -26,6 +26,8 @@ TRANSLATIONS_FOLDER	Translations
 Dependencies:
 Gson
  - Google library for serialising and deserialising between JSON and Java objects.
+JDOM2
+ - Used for constructing the XML file and formatting it.
 
 Note: Using Maven Shade Plugin to package dependencies in an uber-jar
 
@@ -46,4 +48,10 @@ Sprint 2:
 -Translator: Manages translating lists of vignettes into source and target languages. Interacts with CompletionSession and Dictionary.
 -MessageParser: extended to ensure only one translation is returned.
 
+Sprint 3:
+-XMLGenerator: Generates an xml file formatted to work with the renderer.
+-VignetteManager: Reads pose pairings with backgrounds.tsv and deserialises rows into List<VignetteSchema> static object.
+-VignetteSchema: Corresponds to a row in the asset file. Has method for returning random permutation of fields, i.e. a vignette.
+-Vignette: Some permutation of a a vignette schema.
 
+-Changes to Translator: Now ensures redundant calls to the API are avoided. Also segments longer requests into batches.

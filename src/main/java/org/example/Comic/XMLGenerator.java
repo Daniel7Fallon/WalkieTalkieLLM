@@ -2,9 +2,9 @@ package org.example.Comic;
 
 import org.example.Assets.Vignette;
 import org.example.Assets.VignetteManager;
-
 import org.example.Assets.VignetteSchema;
 import org.example.Dictionary;
+
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
@@ -91,11 +91,11 @@ public class XMLGenerator {
             }
 
             // Left side
-            String leftText = template.isLeftSpeaks() ? (sourceAndTarget != null ? sourceAndTarget[1] : null) : null;
+            String leftText = template.isLeftSpeaks() ? (sourceAndTarget != null ? sourceAndTarget[0] : null) : null;
             panelElement.addContent(createPanelSide("left", figures.get(0), vignette.getLeftPose(), leftText, "right"));
 
             // Right side
-            String rightText = template.isRightSpeaks() ? (sourceAndTarget != null ? sourceAndTarget[0] : null) : null;
+            String rightText = template.isRightSpeaks() ? (sourceAndTarget != null ? sourceAndTarget[1] : null) : null;
             panelElement.addContent(createPanelSide("right", figures.get(1), vignette.getRightPose(), rightText, "left"));
 
             addIfNotNull(panelElement, "setting", vignette.getBackgrounds());

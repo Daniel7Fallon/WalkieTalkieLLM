@@ -49,6 +49,9 @@ public final class ConfigurationFile {
         String translationBatchSize = configMap.get("TRANSLATION_BATCH_SIZE");
         if(translationBatchSize == null || translationBatchSize.isEmpty()) throw new IllegalArgumentException("TRANSLATION_BATCH_SIZE parameter is missing in configuration file.");
 
+        String specificationXML = configMap.get("SPECIFICATION_XML");
+        if(specificationXML == null || specificationXML.isEmpty()) throw new IllegalArgumentException("SPECIFICATION_XML parameter is missing in configuration file.");
+
         configMap.put("SOURCELANGUAGE", StringUtil.capitalize(sourceLanguage));
         configMap.put("TARGETLANGUAGE", StringUtil.capitalize(targetLanguage));
         try{

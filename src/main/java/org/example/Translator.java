@@ -15,10 +15,16 @@ public class Translator {
         int batchSize = Integer.parseInt(ConfigurationFile.getValue("TRANSLATION_BATCH_SIZE"));
         List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemasInRange(start, end);
         List<String> toTranslate = VignetteManager.getLeftAndCombinedTexts(vignetteSchemas);
+        batchTranslateList(toTranslate);
+    }
+
+    //Batches prompts in configurable size
+    public static void batchTranslateList(List<String> input) throws IOException{
+        int batchSize = Integer.parseInt(ConfigurationFile.getValue("TRANSLATION_BATCH_SIZE"));
         List<String> batch = new ArrayList<>();
         //Translate in batches
-        for(int i = 0; i < toTranslate.size(); i++) {
-            batch.add(toTranslate.get(i));
+        for(int i = 0; i < input.size(); i++) {
+            batch.add(input.get(i));
             if(batch.size() == batchSize) {
                 translateListAndWrite(batch);
                 batch = new ArrayList<>();

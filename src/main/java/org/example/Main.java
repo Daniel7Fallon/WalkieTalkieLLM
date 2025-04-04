@@ -10,7 +10,7 @@ import java.util.List;
 import org.example.Assets.VignetteManager;
 import org.example.Assets.VignetteSchema;
 import org.example.Comic.Figure;
-import org.example.XML.XMLBlueprint;
+import org.example.XML.XMLParser;
 import org.example.XML.XMLGenerator;
 
 import static org.example.Utils.StringUtil.removePluralIdentifier;
@@ -37,7 +37,7 @@ public class Main {
             String xmlPath = ConfigurationFile.getValue("SPECIFICATION_XML");
             String xmlContent = new String(Files.readAllBytes(Paths.get(xmlPath)));
 
-            XMLBlueprint comic = new XMLBlueprint();
+            XMLParser comic = new XMLParser();
             comic.loadFromXML(xmlContent);
 
             System.out.println("Successfully loaded specifications!");
@@ -72,19 +72,19 @@ public class Main {
 
             //Get all speech bubble content
             System.out.println("\n=== All speech bubbles ===");
-            List<XMLBlueprint.PanelSide> panelSides = new ArrayList<>();
+            List<XMLParser.PanelSide> panelSides = new ArrayList<>();
             comic.getScenes().forEach(scene -> {
                 scene.getPanels().forEach(panel -> {
-                    XMLBlueprint.PanelSide leftSide = panel.getLeftSide();
-                    XMLBlueprint.PanelSide middleSide = panel.getMiddleSide();
-                    XMLBlueprint.PanelSide rightSide = panel.getRightSide();
+                    XMLParser.PanelSide leftSide = panel.getLeftSide();
+                    XMLParser.PanelSide middleSide = panel.getMiddleSide();
+                    XMLParser.PanelSide rightSide = panel.getRightSide();
                     if(leftSide != null) panelSides.add(leftSide);
                     if(middleSide != null) panelSides.add(middleSide);
                     if(rightSide != null) panelSides.add(rightSide);
                 });
             });
             List<String> balloonContents = new ArrayList<>();
-            for(XMLBlueprint.PanelSide panelSide : panelSides) {
+            for(XMLParser.PanelSide panelSide : panelSides) {
                 String ballonContent = panelSide.getBalloonContent();
                 if(ballonContent != null) balloonContents.add(ballonContent);
             }

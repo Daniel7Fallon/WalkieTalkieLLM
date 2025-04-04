@@ -10,11 +10,11 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class XMLBlueprint {
+public class XMLParser {
     private List<FigureDefinition> figureDefinitions;
     private List<Scene> scenes;
 
-    public XMLBlueprint() {
+    public XMLParser() {
         this.figureDefinitions = new ArrayList<>();
         this.scenes = new ArrayList<>();
     }

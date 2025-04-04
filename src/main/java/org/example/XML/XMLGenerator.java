@@ -32,7 +32,7 @@ public class XMLGenerator {
         generateXML(document);
     }
 
-    public static void generateLessonFromBlueprint(XMLBlueprint xmlBlueprint) {
+    public static void generateLessonFromBlueprint(XMLParser xmlBlueprint) {
         Element root = new Element("comic");
         Document document = new Document(root);
 
@@ -106,25 +106,25 @@ public class XMLGenerator {
     }
 
     // XMLBlueprint specific methods
-    private static Element createFiguresElement(List<XMLBlueprint.FigureDefinition> figureDefinitions) {
+    private static Element createFiguresElement(List<XMLParser.FigureDefinition> figureDefinitions) {
         Element figuresElement = new Element("figures");
         figureDefinitions.forEach(figureDef -> figuresElement.addContent(createFigureElement(figureDef)));
         return figuresElement;
     }
 
-    private static Element createScenesElement(List<XMLBlueprint.Scene> scenes) {
+    private static Element createScenesElement(List<XMLParser.Scene> scenes) {
         Element scenesElement = new Element("scenes");
         scenes.forEach(scene -> scenesElement.addContent(createSceneElement(scene)));
         return scenesElement;
     }
 
-    private static Element createSceneElement(XMLBlueprint.Scene scene) {
+    private static Element createSceneElement(XMLParser.Scene scene) {
         Element sceneElement = new Element("scene");
         scene.getPanels().forEach(panel -> sceneElement.addContent(createPanelElement(panel)));
         return sceneElement;
     }
 
-    private static Element createPanelElement(XMLBlueprint.Panel panel) {
+    private static Element createPanelElement(XMLParser.Panel panel) {
         Element panelElement = new Element("panel");
 
         // Add panel metadata
@@ -184,7 +184,7 @@ public class XMLGenerator {
         panelElement.addContent(new Element("duration").setText(DEFAULT_DURATION));
     }
 
-    private static Element createFigureElement(XMLBlueprint.FigureDefinition figureDef) {
+    private static Element createFigureElement(XMLParser.FigureDefinition figureDef) {
         Element figureElement = new Element("figure");
         addIfNotNull(figureElement, "id", figureDef.getId());
         addIfNotNull(figureElement, "name", figureDef.getName());
@@ -196,13 +196,13 @@ public class XMLGenerator {
         return figureElement;
     }
 
-    private static void addPanelSideIfExists(Element panelElement, XMLBlueprint.PanelSide panelSide, String sideName) {
+    private static void addPanelSideIfExists(Element panelElement, XMLParser.PanelSide panelSide, String sideName) {
         if (panelSide != null) {
             panelElement.addContent(createPanelSideElement(panelSide, sideName));
         }
     }
 
-    private static Element createPanelSideElement(XMLBlueprint.PanelSide panelSide, String sideName) {
+    private static Element createPanelSideElement(XMLParser.PanelSide panelSide, String sideName) {
         Element sideElement = new Element(sideName);
 
         if (panelSide.getFigure() != null) {
@@ -216,7 +216,7 @@ public class XMLGenerator {
         return sideElement;
     }
 
-    private static Element createPanelFigureElement(XMLBlueprint.PanelFigure panelFigure) {
+    private static Element createPanelFigureElement(XMLParser.PanelFigure panelFigure) {
         Element figureElement = new Element("figure");
         addIfNotNull(figureElement, "id", panelFigure.getId());
         addIfNotNull(figureElement, "name", panelFigure.getName());
@@ -231,7 +231,7 @@ public class XMLGenerator {
         return figureElement;
     }
 
-    private static Element createBalloonElement(XMLBlueprint.Balloon balloon) {
+    private static Element createBalloonElement(XMLParser.Balloon balloon) {
         Element balloonElement = new Element("balloon");
         if (balloon.getStatus() != null) {
             balloonElement.setAttribute("status", balloon.getStatus());

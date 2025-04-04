@@ -10,8 +10,8 @@ import java.util.List;
 import org.example.Assets.VignetteManager;
 import org.example.Assets.VignetteSchema;
 import org.example.Comic.Figure;
-import org.example.Comic.XMLBlueprint;
-import org.example.Comic.XMLGenerator;
+import org.example.XML.XMLBlueprint;
+import org.example.XML.XMLGenerator;
 
 import static org.example.Utils.StringUtil.removePluralIdentifier;
 

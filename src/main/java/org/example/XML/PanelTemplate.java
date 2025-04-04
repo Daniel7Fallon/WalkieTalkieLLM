@@ -1,4 +1,4 @@
-package org.example.Comic;
+package org.example.XML;
 
 public enum PanelTemplate {
     // Both figures standing silently

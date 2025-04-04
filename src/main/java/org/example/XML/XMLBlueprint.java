@@ -1,4 +1,4 @@
-package org.example.Comic;
+package org.example.XML;
 
 import org.jdom2.Document;
 import org.jdom2.Element;

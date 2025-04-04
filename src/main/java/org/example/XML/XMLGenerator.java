@@ -1,8 +1,9 @@
-package org.example.Comic;
+package org.example.XML;
 
 import org.example.Assets.Vignette;
 import org.example.Assets.VignetteManager;
 import org.example.Assets.VignetteSchema;
+import org.example.Comic.Figure;
 import org.example.Dictionary;
 
 import org.jdom2.Document;

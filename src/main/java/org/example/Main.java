@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.Comic.Comic;
+import org.example.Comic.PanelSide;
 import org.jdom2.JDOMException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,18 +39,17 @@ public class Main {
             String xmlPath = ConfigurationFile.getValue("SPECIFICATION_XML");
             String xmlContent = new String(Files.readAllBytes(Paths.get(xmlPath)));
 
-            XMLParser comic = new XMLParser();
-            comic.loadFromXML(xmlContent);
+            Comic comic = XMLParser.parseComic(xmlContent);
 
             System.out.println("Successfully loaded specifications!");
-            System.out.println("Total Figures Defined: " + comic.getFigureDefinitions().size());
+            System.out.println("Total Figures Defined: " + comic.getFigures().size());
             System.out.println("Total Scenes Found: " + comic.getScenes().size());
 
             //Proof that the program is working as intended
 
             // Print figures
             System.out.println("\n=== Character Roster ===");
-            comic.getFigureDefinitions().stream()
+            comic.getFigures().stream()
                     .forEach(fig -> System.out.println(
                             " - " + fig.getName() +
                             " (" + fig.getId() + ")" +
@@ -62,32 +63,15 @@ public class Main {
                     System.out.println("  Panel Setting: " + panel.getSetting());
                     if(panel.getLeftSide() != null) {
                         System.out.println("  Left Side: " +
-                                (panel.getLeftSide().getFigure() != null ?
-                                        panel.getLeftSide().getFigure().getId() : "No figure") +
+                                (panel.getLeftSide().getPanelFigure() != null ?
+                                        panel.getLeftSide().getPanelFigure().getName() : "No figure") +
                                 " | Dialogue: " + panel.getLeftSide().getBalloonContent());
                     }
                     // Would add other blocks for middle/right here if we needed to, this code is just proof that the xml is parsed in memory
                 });
             });
 
-            //Get all speech bubble content
-            System.out.println("\n=== All speech bubbles ===");
-            List<XMLParser.PanelSide> panelSides = new ArrayList<>();
-            comic.getScenes().forEach(scene -> {
-                scene.getPanels().forEach(panel -> {
-                    XMLParser.PanelSide leftSide = panel.getLeftSide();
-                    XMLParser.PanelSide middleSide = panel.getMiddleSide();
-                    XMLParser.PanelSide rightSide = panel.getRightSide();
-                    if(leftSide != null) panelSides.add(leftSide);
-                    if(middleSide != null) panelSides.add(middleSide);
-                    if(rightSide != null) panelSides.add(rightSide);
-                });
-            });
-            List<String> balloonContents = new ArrayList<>();
-            for(XMLParser.PanelSide panelSide : panelSides) {
-                String ballonContent = panelSide.getBalloonContent();
-                if(ballonContent != null) balloonContents.add(ballonContent);
-            }
+            List<String> balloonContents = comic.getAllBubbleContent();
             System.out.println(balloonContents);
             Translator.batchTranslateList(balloonContents);
             for(String input : balloonContents) {
@@ -131,7 +115,8 @@ public class Main {
         figures.add(leftFigure);
         figures.add(rightFigure);
 
-        XMLGenerator.createLesson(figures);
+        List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemasInRange(0, 10);
+        XMLGenerator.createLesson(figures, vignetteSchemas);
     }
 
 

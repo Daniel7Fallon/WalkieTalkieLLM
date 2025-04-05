@@ -1,6 +1,7 @@
 package org.example.Comic;
 
 public class Figure {
+    private String id;
     private String name;
     private String appearance = null;
     private String skin = null;
@@ -9,10 +10,17 @@ public class Figure {
     private String hairLength = null;
     private String hairStyle = null;
     private String lips = null;
+    private String facing = null;
     //pose and facing come from vignette
 
     public Figure() {}
 
+    public String getId() {
+        return id;
+    }
+    public void setId(String id) {
+        this.id = id;
+    }
     public String getName() {
         return name;
     }
@@ -60,5 +68,11 @@ public class Figure {
     }
     public void setLips(String lips) {
         this.lips = lips;
+    }
+    public String getFacing() {
+        return facing;
+    }
+    public void setFacing(String facing) {
+        this.facing = facing;
     }
 }

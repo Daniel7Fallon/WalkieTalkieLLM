@@ -19,16 +19,16 @@ public class Comic {
         return null;
     }
 
-    public List<String> getAllBubbleContent() {
-        List<String> allBubbleContent = new ArrayList<>();
+    public List<String> getAllBalloonContent() {
+        List<String> allBalloonContent = new ArrayList<>();
         for(Scene scene : scenes) {
             for(Panel panel : scene.getPanels()) {
-                if(panel.getLeftSide() != null && panel.getLeftSide().getBalloonContent() != null) allBubbleContent.add(panel.getLeftSide().getBalloonContent());
-                if(panel.getMiddleSide() != null && panel.getMiddleSide().getBalloonContent() != null) allBubbleContent.add(panel.getMiddleSide().getBalloonContent());
-                if(panel.getRightSide() != null && panel.getRightSide().getBalloonContent() != null) allBubbleContent.add(panel.getRightSide().getBalloonContent());
+                if(panel.getLeftSide() != null && panel.getLeftSide().getBalloonContent() != null) allBalloonContent.add(panel.getLeftSide().getBalloonContent());
+                if(panel.getMiddleSide() != null && panel.getMiddleSide().getBalloonContent() != null) allBalloonContent.add(panel.getMiddleSide().getBalloonContent());
+                if(panel.getRightSide() != null && panel.getRightSide().getBalloonContent() != null) allBalloonContent.add(panel.getRightSide().getBalloonContent());
             }
         }
-        return allBubbleContent;
+        return allBalloonContent;
     }
 
     public List<Figure> getFigures() {

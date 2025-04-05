@@ -71,7 +71,7 @@ public class Main {
                 });
             });
 
-            List<String> balloonContents = comic.getAllBubbleContent();
+            List<String> balloonContents = comic.getAllBalloonContent();
             System.out.println(balloonContents);
             Translator.batchTranslateList(balloonContents);
             for(String input : balloonContents) {

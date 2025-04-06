@@ -93,7 +93,7 @@ public class Main {
             Comic originalComic = XMLParser.parseComic(xmlContent);
 
             ComicPostProcessor.addTranslationPanels(originalComic);
-            XMLGenerator.generateXMLFromComic(originalComic, "translated_comic.xml");
+            XMLGenerator.generateXMLFromComic(originalComic, ConfigurationFile.getValue("LESSON_TARGET"));
 
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());

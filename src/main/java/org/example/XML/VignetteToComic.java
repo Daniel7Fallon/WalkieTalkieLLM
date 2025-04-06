@@ -43,6 +43,9 @@ public class VignetteToComic {
         PanelFigure leftFigure = new PanelFigure(figures.get(0));
         PanelFigure rightFigure = new PanelFigure(figures.get(1));
 
+        leftFigure.setPose(vignette.getLeftPose());
+        rightFigure.setPose(vignette.getRightPose());
+
         left.setPanelFigure(leftFigure);
         right.setPanelFigure(rightFigure);
 
@@ -64,7 +67,7 @@ public class VignetteToComic {
 
             switch (template) {
                 case INTRO -> {
-                    
+
                 }
                 case LEFT_SPEAKS -> {
                     left.setBallonStatus("speaking");

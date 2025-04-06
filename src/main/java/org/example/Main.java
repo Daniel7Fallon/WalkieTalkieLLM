@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.Comic.Comic;
 import org.example.Comic.PanelSide;
+import org.example.XML.VignetteToComic;
 import org.jdom2.JDOMException;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,17 +40,17 @@ public class Main {
             String xmlPath = ConfigurationFile.getValue("SPECIFICATION_XML");
             String xmlContent = new String(Files.readAllBytes(Paths.get(xmlPath)));
 
-            Comic comic = XMLParser.parseComic(xmlContent);
+            Comic conjugationTemplate = XMLParser.parseComic(xmlContent);
 
             System.out.println("Successfully loaded specifications!");
-            System.out.println("Total Figures Defined: " + comic.getFigures().size());
-            System.out.println("Total Scenes Found: " + comic.getScenes().size());
+            System.out.println("Total Figures Defined: " + conjugationTemplate.getFigures().size());
+            System.out.println("Total Scenes Found: " + conjugationTemplate.getScenes().size());
 
             //Proof that the program is working as intended
 
             // Print figures
             System.out.println("\n=== Character Roster ===");
-            comic.getFigures().stream()
+            conjugationTemplate.getFigures().stream()
                     .forEach(fig -> System.out.println(
                             " - " + fig.getName() +
                             " (" + fig.getId() + ")" +
@@ -57,7 +58,7 @@ public class Main {
                     ));
 
             System.out.println("\n=== Scene Structure ===");
-            comic.getScenes().forEach(scene -> {
+            conjugationTemplate.getScenes().forEach(scene -> {
                 System.out.println("\nScene with " + scene.getPanels().size() + " panels:");
                 scene.getPanels().forEach(panel -> {
                     System.out.println("  Panel Setting: " + panel.getSetting());
@@ -71,7 +72,7 @@ public class Main {
                 });
             });
 
-            List<String> balloonContents = comic.getAllBalloonContent();
+            List<String> balloonContents = conjugationTemplate.getAllBalloonContent();
             System.out.println(balloonContents);
             Translator.batchTranslateList(balloonContents);
             for(String input : balloonContents) {
@@ -82,6 +83,12 @@ public class Main {
             System.err.println("Failed to process specifications XML: " + e.getMessage());
             e.printStackTrace();
         }
+
+        /*
+            Put conjComic into new method, then xmlgen, and go through the file that was generated
+
+            FOR HARRY, ENJOY :)
+         */
 
         try {
             System.out.println("\nTranslating first 5 of vignette schemas");
@@ -116,7 +123,8 @@ public class Main {
         figures.add(rightFigure);
 
         List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemasInRange(0, 10);
-        XMLGenerator.createLesson(figures, vignetteSchemas);
+        Comic comic = VignetteToComic.createComicFromVignette(figures, vignetteSchemas);
+        XMLGenerator.generateXMLFromComic(comic);
     }
 
 

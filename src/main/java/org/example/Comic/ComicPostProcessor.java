@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.example.Dictionary;
+import static org.example.Utils.StringUtil.removePluralIdentifier;
 
 public class ComicPostProcessor {
 
@@ -44,7 +45,7 @@ public class ComicPostProcessor {
                         PanelSide right = new PanelSide();
                         right.setPanelFigure(original.getRightSide().getPanelFigure());
                         right.setBallonStatus("speaking");
-                        right.setBalloonContent(translatedText);
+                        right.setBalloonContent(removePluralIdentifier(translatedText));
                         translatedPanel.setRightSide(right);
                     }
 

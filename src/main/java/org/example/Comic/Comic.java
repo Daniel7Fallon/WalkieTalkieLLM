@@ -3,6 +3,8 @@ package org.example.Comic;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.example.Utils.StringUtil.removePluralIdentifier;
+
 public class Comic {
     private List<Figure> figures;
     private List<Scene> scenes;
@@ -29,6 +31,20 @@ public class Comic {
             }
         }
         return allBalloonContent;
+    }
+
+    public void removePluralIdentifiers() {
+        for(Scene scene : scenes) {
+            for(Panel panel : scene.getPanels()) {
+                PanelSide left = panel.getLeftSide();
+                PanelSide middle = panel.getMiddleSide();
+                PanelSide right = panel.getRightSide();
+                
+                if(left != null && left.getBalloonContent() != null) left.setBalloonContent(removePluralIdentifier(left.getBalloonContent()));
+                if(middle != null && middle.getBalloonContent() != null) middle.setBalloonContent(removePluralIdentifier(middle.getBalloonContent()));
+                if(right != null && right.getBalloonContent() != null) right.setBalloonContent(removePluralIdentifier(right.getBalloonContent()));
+            }
+        }
     }
 
     public List<Figure> getFigures() {

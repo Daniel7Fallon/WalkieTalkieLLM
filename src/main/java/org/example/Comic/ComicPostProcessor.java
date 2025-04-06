@@ -10,11 +10,13 @@ import static org.example.Utils.StringUtil.removePluralIdentifier;
 
 public class ComicPostProcessor {
     public static void addTranslationPanels(Comic comic) {
-        for (Scene scene : new ArrayList<>(comic.getScenes())) {
+        for (Scene scene : comic.getScenes()) {
             List<Panel> newPanels = new ArrayList<>();
 
             for (Panel original : scene.getPanels()) {
                 // Keep original panel
+               comic.removePluralIdentifiers();
+
                 newPanels.add(original);
 
                 // Create translated version if translatable

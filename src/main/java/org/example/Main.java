@@ -37,63 +37,16 @@ public class Main {
         Dictionary.initialize();
 
         try {
-            System.out.println("\n=== Loading Comic Specifications ===");
             String xmlPath = ConfigurationFile.getValue("SPECIFICATION_XML");
             String xmlContent = new String(Files.readAllBytes(Paths.get(xmlPath)));
 
             Comic conjugationTemplate = XMLParser.parseComic(xmlContent);
 
-            System.out.println("Successfully loaded specifications!");
-            System.out.println("Total Figures Defined: " + conjugationTemplate.getFigures().size());
-            System.out.println("Total Scenes Found: " + conjugationTemplate.getScenes().size());
-
-            //Proof that the program is working as intended
-
-            // Print figures
-            System.out.println("\n=== Character Roster ===");
-            conjugationTemplate.getFigures().stream()
-                    .forEach(fig -> System.out.println(
-                            " - " + fig.getName() +
-                            " (" + fig.getId() + ")" +
-                            " | Appearance: " + fig.getAppearance()
-                    ));
-
-            System.out.println("\n=== Scene Structure ===");
-            conjugationTemplate.getScenes().forEach(scene -> {
-                System.out.println("\nScene with " + scene.getPanels().size() + " panels:");
-                scene.getPanels().forEach(panel -> {
-                    System.out.println("  Panel Setting: " + panel.getSetting());
-                    if(panel.getLeftSide() != null) {
-                        System.out.println("  Left Side: " +
-                                (panel.getLeftSide().getPanelFigure() != null ?
-                                        panel.getLeftSide().getPanelFigure().getName() : "No figure") +
-                                " | Dialogue: " + panel.getLeftSide().getBalloonContent());
-                    }
-                    // Would add other blocks for middle/right here if we needed to, this code is just proof that the xml is parsed in memory
-                });
-            });
-
             List<String> balloonContents = conjugationTemplate.getAllBalloonContent();
-            System.out.println(balloonContents);
             Translator.batchTranslateList(balloonContents);
-            for(String input : balloonContents) {
-                System.out.println("Source: " + removePluralIdentifier(input) + "\t | Target: " + Dictionary.getSourceAndTargetTranslations(input)[1]);
-            }
 
-        } catch (IOException | JDOMException e) {
-            System.err.println("Failed to process specifications XML: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        // XML loading, translation processing and regeneration
-        try {
-            String xmlContent = Files.readString(Paths.get(
-                    ConfigurationFile.getValue("SPECIFICATION_XML")
-            ));
-            Comic originalComic = XMLParser.parseComic(xmlContent);
-
-            ComicPostProcessor.addTranslationPanels(originalComic);
-            XMLGenerator.generateXMLFromComic(originalComic, ConfigurationFile.getValue("LESSON_TARGET"));
+            ComicPostProcessor.addTranslationPanels(conjugationTemplate);
+            XMLGenerator.generateXMLFromComic(conjugationTemplate, ConfigurationFile.getValue("LESSON_TARGET"));
 
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());

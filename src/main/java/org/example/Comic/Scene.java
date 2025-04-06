@@ -15,4 +15,12 @@ public class Scene {
     public List<Panel> getPanels() {
         return panels;
     }
+
+    public Panel getPanelByIndex(int index) {
+       return panels.get(index);
+    }
+
+    public void addPanelAtIndex(int index, Panel panel) {
+        panels.add(index, panel);
+    }
 }

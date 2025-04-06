@@ -11,6 +11,13 @@ public class PanelFigure {
         this.figure = figure;
     }
 
+    public PanelFigure(Figure figure, String pose, String horizontal, String vertical) {
+        this.figure = figure;
+        this.pose = pose;
+        this.horizontal = horizontal;
+        this.vertical = vertical;
+    }
+
 
     public String getId() {
         return figure.getId();

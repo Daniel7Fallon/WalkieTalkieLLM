@@ -76,9 +76,11 @@ public class Dictionary {
         if(sourceLang.equals("English")) {
             output[0] = text;
             output[1] = getTranslation(text, sourceLang, targetLang);
+            if(output[1] == null) return null;
         } else {
             output[0] = getTranslation(text, "English", sourceLang);
             output[1] = getTranslation(output[0], sourceLang, targetLang);
+            if(output[0] == null || output[1] == null) return null;
         }
         return output;
     }

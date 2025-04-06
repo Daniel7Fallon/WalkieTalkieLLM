@@ -1,17 +1,14 @@
-package org.example.Assets;
+package org.example.XML;
 
+import org.example.Assets.Vignette;
+import org.example.Assets.VignetteSchema;
 import org.example.Comic.*;
-import org.example.XML.PanelTemplate;
 import org.example.Dictionary;
-import org.example.ConfigurationFile;
 
 import java.io.IOException;
 import java.util.List;
 
 public class VignetteToComic {
-
-    final static String source = ConfigurationFile.getValue("SOURCELANGUAGE");
-    final static String target = ConfigurationFile.getValue("TARGETLANGUAGE");
 
     public static Comic createComicFromVignette (List<Figure> figures, List<VignetteSchema> vignetteSchemas) {
         Comic comic = new Comic();
@@ -49,12 +46,17 @@ public class VignetteToComic {
         left.setPanelFigure(leftFigure);
         right.setPanelFigure(rightFigure);
 
-        String translatedText = null;
+        String[] sourceAndTarget = null;
         try {
-            translatedText = Dictionary.getTranslation(vignette.getCombinedText(), source, target);
+            sourceAndTarget = Dictionary.getSourceAndTargetTranslations(vignette.getLeftText());
+            if (sourceAndTarget == null) {
+                throw new IllegalArgumentException("Translation for " + vignette.getLeftText() + " doesn't exist.");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        String translatedText = sourceAndTarget[1];
 
         switch (template) {
             case INTRO -> {
@@ -66,28 +68,20 @@ public class VignetteToComic {
             }
             case RIGHT_SPEAKS -> {
                 right.setBallonStatus("speaking");
-                right.setBalloonContent(translatedText != null ? translatedText : vignette.getCombinedText());
+                right.setBalloonContent(translatedText);
             }
             case BOTH_SPEAK -> {
                 left.setBallonStatus("speaking");
                 left.setBalloonContent(vignette.getLeftText());
 
                 right.setBallonStatus("speaking");
-                right.setBalloonContent(translatedText != null ? translatedText : vignette.getCombinedText());
+                right.setBalloonContent(translatedText);
             }
         }
 
         panel.setLeftSide(left);
         panel.setRightSide(right);
         scene.addPanel(panel);
-    }
-
-    // Helper method for the future
-    private static PanelFigure toPanelFigure(Figure figure, String pose, String horizontal, String vertical) {
-        PanelFigure panelFigure = new PanelFigure(figure);
-        panelFigure.setHorizontal(horizontal);
-        panelFigure.setVertical(vertical);
-        return panelFigure;
     }
 
 }

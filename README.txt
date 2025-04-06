@@ -58,4 +58,5 @@ Sprint 3:
 
 Sprint 4:
 -XMLParser deserialises XML comic into in memory comic object.
--ComicPostProcessor takes the comic object and adds in the panels with the translated 
+-ComicPostProcessor takes the comic object and duplicates panels with the second character saying the translations.
+-Now have classes representing the tags for in memory storage of comics.

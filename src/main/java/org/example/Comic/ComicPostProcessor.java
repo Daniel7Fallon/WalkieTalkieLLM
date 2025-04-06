@@ -3,56 +3,81 @@ package org.example.Comic;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.example.Dictionary;
 import static org.example.Utils.StringUtil.removePluralIdentifier;
 
 public class ComicPostProcessor {
-
     public static void addTranslationPanels(Comic comic) {
-        for (Scene scene : comic.getScenes()) {
-            List<Panel> originalPanels = new ArrayList<>(scene.getPanels());
+        for (Scene scene : new ArrayList<>(comic.getScenes())) {
+            List<Panel> newPanels = new ArrayList<>();
 
-            for (int i = 0; i < originalPanels.size(); i++) {
-                Panel original = originalPanels.get(i);
+            for (Panel original : scene.getPanels()) {
+                // Keep original panel
+                newPanels.add(original);
 
-                if (original.getLeftSide() != null && "speaking".equals(original.getLeftSide().getBalloonStatus())) {
-                    String originalText = original.getLeftSide().getBalloonContent();
-                    String[] sourceAndTarget;
+                // Create translated version if translatable
+                if (hasTranslatableContent(original)) {
                     try {
-                        sourceAndTarget = Dictionary.getSourceAndTargetTranslations(originalText);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        continue;
+                        Panel translated = createTranslatedPanel(original);
+                        if (translated != null) {
+                            newPanels.add(translated);
+                        }
+                    } catch (Exception e) {
                     }
-
-                    if (sourceAndTarget == null) continue;
-
-                    String translatedText = sourceAndTarget[1];
-
-                    Panel translatedPanel = new Panel();
-                    translatedPanel.setSetting(original.getSetting());
-                    translatedPanel.setBorder(original.getBorder());
-                    translatedPanel.setBelow(original.getBelow());
-
-                    if (original.getLeftSide() != null) {
-                        PanelSide left = new PanelSide();
-                        left.setPanelFigure(original.getLeftSide().getPanelFigure());
-                        translatedPanel.setLeftSide(left);
-                    }
-
-                    if (original.getRightSide() != null) {
-                        PanelSide right = new PanelSide();
-                        right.setPanelFigure(original.getRightSide().getPanelFigure());
-                        right.setBallonStatus("speaking");
-                        right.setBalloonContent(removePluralIdentifier(translatedText));
-                        translatedPanel.setRightSide(right);
-                    }
-
-                    scene.addPanelAtIndex(i + 1, translatedPanel);
-                    i++; // This is so that the loop is i + 2 rather than i + 1
                 }
             }
+
+            scene.getPanels().clear();
+            scene.getPanels().addAll(newPanels);
         }
+    }
+
+    private static boolean hasTranslatableContent(Panel panel) {
+        return Stream.of(panel.getLeftSide(), panel.getMiddleSide(), panel.getRightSide())
+                .anyMatch(side -> side != null && side.getBalloonContent() != null);
+    }
+
+    private static Panel createTranslatedPanel(Panel original) {
+        Panel translated = new Panel();
+        translated.setSetting(original.getSetting());
+        translated.setBorder(original.getBorder());
+        translated.setBelow(original.getBelow());
+
+        // Map original side to translated sides
+        if (original.getLeftSide() != null) {
+            translated.setRightSide(translateSide(original.getLeftSide()));
+        }
+
+        if (original.getMiddleSide() != null) {
+            translated.setMiddleSide(translateSide(original.getMiddleSide()));
+        }
+
+        if (original.getRightSide() != null) {
+            translated.setLeftSide(translateSide(original.getRightSide()));
+        }
+
+        return translated;
+    }
+
+    private static PanelSide translateSide(PanelSide original) {
+        PanelSide translated = new PanelSide();
+        translated.setPanelFigure(original.getPanelFigure());
+
+        if (original.getBalloonContent() != null) {
+            try {
+                String[] translations = Dictionary.getSourceAndTargetTranslations(
+                        original.getBalloonContent()
+                );
+                translated.setBalloonContent(translations[1]);
+                translated.setBallonStatus("speaking");
+            } catch (IOException | NullPointerException e) {
+                translated.setBalloonContent("[TRANSLATION MISSING]");
+                translated.setBallonStatus("error");
+            }
+        }
+
+        return translated;
     }
 }

@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.Comic.Comic;
+import org.example.Comic.ComicPostProcessor;
 import org.example.Comic.PanelSide;
 import org.example.XML.VignetteToComic;
 import org.jdom2.JDOMException;
@@ -84,11 +85,20 @@ public class Main {
             e.printStackTrace();
         }
 
-        /*
-            Put conjComic into new method, then xmlgen, and go through the file that was generated
+        // XML loading, translation processing and regeneration
+        try {
+            String xmlContent = Files.readString(Paths.get(
+                    ConfigurationFile.getValue("SPECIFICATION_XML")
+            ));
+            Comic originalComic = XMLParser.parseComic(xmlContent);
 
-            FOR HARRY, ENJOY :)
-         */
+            ComicPostProcessor.addTranslationPanels(originalComic);
+            XMLGenerator.generateXMLFromComic(originalComic, "translated_comic.xml");
+
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
+        }
 
         try {
             System.out.println("\nTranslating first 5 of vignette schemas");
@@ -124,7 +134,7 @@ public class Main {
 
         List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemasInRange(0, 10);
         Comic comic = VignetteToComic.createComicFromVignette(figures, vignetteSchemas);
-        XMLGenerator.generateXMLFromComic(comic);
+        XMLGenerator.generateXMLFromComic(comic, "lesson.xml");
     }
 
 

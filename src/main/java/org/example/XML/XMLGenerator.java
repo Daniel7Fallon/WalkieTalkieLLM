@@ -11,11 +11,10 @@ import java.io.IOException;
 import java.util.List;
 
 public class XMLGenerator {
-    private static final String OUTPUT_FILENAME = "lesson.xml";
     private static final String DEFAULT_BORDER = "white";
     //private static final String DEFAULT_DURATION = "500";
 
-    public static void generateXMLFromComic(Comic comic) {
+    public static void generateXMLFromComic(Comic comic, String filename) {
         Element root = new Element("comic");
         Document document = new Document(root);
 
@@ -40,7 +39,7 @@ public class XMLGenerator {
         }
 
         // Write XML to file
-        writeXML(document);
+        writeXML(document, filename);
     }
 
     private static Element createFigureElement(Figure figure) {
@@ -117,11 +116,11 @@ public class XMLGenerator {
         return figureElement;
     }
 
-    private static void writeXML(Document document) {
+    private static void writeXML(Document document, String filename) {
         XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-        try (FileWriter writer = new FileWriter(OUTPUT_FILENAME)) {
+        try (FileWriter writer = new FileWriter(filename)) {
             outputter.output(document, writer);
-            System.out.println("Successfully generated XML: " + OUTPUT_FILENAME);
+            System.out.println("Successfully generated XML: " + filename);
         } catch (IOException e) {
             System.err.println("Error writing XML: " + e.getMessage());
         }

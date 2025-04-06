@@ -46,36 +46,41 @@ public class VignetteToComic {
         left.setPanelFigure(leftFigure);
         right.setPanelFigure(rightFigure);
 
+        panel.setSetting(vignette.getBackgrounds());
+
         String[] sourceAndTarget = null;
-        try {
-            sourceAndTarget = Dictionary.getSourceAndTargetTranslations(vignette.getLeftText());
-            if (sourceAndTarget == null) {
-                throw new IllegalArgumentException("Translation for " + vignette.getLeftText() + " doesn't exist.");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        String translatedText = sourceAndTarget[1];
+        if (vignette.getLeftText() != null) {
+            try {
+                sourceAndTarget = Dictionary.getSourceAndTargetTranslations(vignette.getLeftText());
+                if (sourceAndTarget == null) {
+                    throw new IllegalArgumentException("Translation for " + vignette.getLeftText() + " doesn't exist.");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-        switch (template) {
-            case INTRO -> {
-                panel.setSetting(vignette.getBackgrounds());
-            }
-            case LEFT_SPEAKS -> {
-                left.setBallonStatus("speaking");
-                left.setBalloonContent(vignette.getLeftText());
-            }
-            case RIGHT_SPEAKS -> {
-                right.setBallonStatus("speaking");
-                right.setBalloonContent(translatedText);
-            }
-            case BOTH_SPEAK -> {
-                left.setBallonStatus("speaking");
-                left.setBalloonContent(vignette.getLeftText());
+            String translatedText = sourceAndTarget[1];
 
-                right.setBallonStatus("speaking");
-                right.setBalloonContent(translatedText);
+            switch (template) {
+                case INTRO -> {
+                    
+                }
+                case LEFT_SPEAKS -> {
+                    left.setBallonStatus("speaking");
+                    left.setBalloonContent(vignette.getLeftText());
+                }
+                case RIGHT_SPEAKS -> {
+                    right.setBallonStatus("speaking");
+                    right.setBalloonContent(translatedText);
+                }
+                case BOTH_SPEAK -> {
+                    left.setBallonStatus("speaking");
+                    left.setBalloonContent(vignette.getLeftText());
+
+                    right.setBallonStatus("speaking");
+                    right.setBalloonContent(translatedText);
+                }
             }
         }
 

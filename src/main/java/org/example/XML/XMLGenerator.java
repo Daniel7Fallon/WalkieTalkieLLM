@@ -1,6 +1,7 @@
 package org.example.XML;
 
 import org.example.Comic.*;
+import org.example.Translator;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
@@ -8,11 +9,31 @@ import org.jdom2.output.XMLOutputter;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 public class XMLGenerator {
     private static final String DEFAULT_BORDER = "white";
     //private static final String DEFAULT_DURATION = "500";
+
+    public static void generateBilingualXML(String xmlPath, String target) {
+        try {
+            String xmlContent = new String(Files.readAllBytes(Paths.get(xmlPath)));
+
+            Comic conjugationTemplate = XMLParser.parseComic(xmlContent);
+
+            List<String> balloonContents = conjugationTemplate.getAllBalloonContent();
+            Translator.batchTranslateList(balloonContents);
+
+            ComicPostProcessor.addTranslationPanels(conjugationTemplate);
+            generateXMLFromComic(conjugationTemplate, target);
+
+        } catch (Exception e) {
+            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     public static void generateXMLFromComic(Comic comic, String filename) {
         Element root = new Element("comic");

@@ -36,22 +36,10 @@ public class Main {
         VignetteManager.initialize();
         Dictionary.initialize();
 
-        try {
-            String xmlPath = ConfigurationFile.getValue("SPECIFICATION_XML");
-            String xmlContent = new String(Files.readAllBytes(Paths.get(xmlPath)));
-
-            Comic conjugationTemplate = XMLParser.parseComic(xmlContent);
-
-            List<String> balloonContents = conjugationTemplate.getAllBalloonContent();
-            Translator.batchTranslateList(balloonContents);
-
-            ComicPostProcessor.addTranslationPanels(conjugationTemplate);
-            XMLGenerator.generateXMLFromComic(conjugationTemplate, ConfigurationFile.getValue("LESSON_TARGET"));
-
-        } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
-            e.printStackTrace();
-        }
+        // Sprint 4 task
+        String specification = ConfigurationFile.getValue("SPECIFICATION_XML");
+        String target = ConfigurationFile.getValue("BILINGUAL_TARGET");
+        XMLGenerator.generateBilingualXML(specification, target);
 
         try {
             System.out.println("\nTranslating first 5 of vignette schemas");
@@ -73,6 +61,7 @@ public class Main {
             System.out.println((i + 1) + ". " + firstVS.getRandVignette());
         }
 
+        // Sprint 3 tasks
         ArrayList<Figure> figures = new ArrayList<Figure>();
         Figure leftFigure = new Figure();
         leftFigure.setName("Daniel");
@@ -87,7 +76,7 @@ public class Main {
 
         List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemasInRange(0, 10);
         Comic comic = VignetteToComic.createComicFromVignette(figures, vignetteSchemas);
-        XMLGenerator.generateXMLFromComic(comic, "lesson.xml");
+        XMLGenerator.generateXMLFromComic(comic, ConfigurationFile.getValue("LESSON_TARGET"));
     }
 
 

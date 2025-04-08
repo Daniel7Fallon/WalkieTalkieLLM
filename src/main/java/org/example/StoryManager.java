@@ -27,13 +27,40 @@ public class StoryManager {
                 if(!scenes.contains(scene)) scenes.add(scene);
             }
 
-            //Test with just first scene
-            Scene testScene = storiesInputComic.getScenes().get(65);
-            System.out.println(generateAudiovisualDescriptionForScene(testScene));
+            for(Scene scene : scenes) {
+                System.out.println(generateAudiovisualDescriptionForScene(scene));
+                System.out.println(getSpeechForScene(scene));
+            }
 
         } catch (JDOMException | IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static String getSpeechForScene(Scene scene) {
+        StringBuilder sb = new StringBuilder();
+        for(int i = 1; i < scene.getPanels().size(); i++) {
+            Panel panel = scene.getPanels().get(i);
+            sb.append(i + ". " + getSpeechForPanel(panel) + "\n");
+        }
+        return sb.toString();
+    }
+
+    private static String getSpeechForPanel(Panel panel) {
+        StringBuilder sb = new StringBuilder();
+        if(panelSideHasCharacter(panel.getLeftSide())) {
+            String name = panel.getLeftSide().getPanelFigure().getName();
+            if(name != null) sb.append(" " + name + ": ___");
+        }
+        if(panelSideHasCharacter(panel.getRightSide())) {
+            String name = panel.getRightSide().getPanelFigure().getName();
+            if(name != null) sb.append(" " + name + ": ___");
+        }
+        if(panelSideHasCharacter(panel.getMiddleSide())) {
+            String name = panel.getMiddleSide().getPanelFigure().getName();
+            if(name != null) sb.append(" " + name + ": ___");
+        }
+        return sb.toString();
     }
 
     private static String generateAudiovisualDescriptionForScene(Scene scene) {

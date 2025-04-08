@@ -36,11 +36,7 @@ public class Main {
         VignetteManager.initialize();
         Dictionary.initialize();
 
-        // Sprint 4 task
-        String specification = ConfigurationFile.getValue("SPECIFICATION_XML");
-        String target = ConfigurationFile.getValue("BILINGUAL_TARGET");
-        XMLGenerator.generateBilingualXML(specification, target);
-
+        //Sprint 2 task
         try {
             System.out.println("\nTranslating first 5 of vignette schemas");
             Translator.translateVignetteSchemasInRange(0,5);
@@ -55,13 +51,12 @@ public class Main {
             e.printStackTrace();
         }
 
+        // Sprint 3 tasks
         VignetteSchema firstVS = VignetteManager.getVignetteSchemas().getFirst();
         System.out.println("First VignetteSchema: " + firstVS);
         for(int i = 0; i < 5; i++) {
             System.out.println((i + 1) + ". " + firstVS.getRandVignette());
         }
-
-        // Sprint 3 tasks
         ArrayList<Figure> figures = new ArrayList<Figure>();
         Figure leftFigure = new Figure();
         leftFigure.setName("Daniel");
@@ -77,6 +72,13 @@ public class Main {
         List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemasInRange(0, 10);
         Comic comic = VignetteToComic.createComicFromVignette(figures, vignetteSchemas);
         XMLGenerator.generateXMLFromComic(comic, ConfigurationFile.getValue("LESSON_TARGET"));
+
+        // Sprint 4 task
+        String conjugationSpec = ConfigurationFile.getValue("CONJUGATION_XML");
+        String conjugationTarget = ConfigurationFile.getValue("CONJUGATION_TARGET");
+        XMLGenerator.generateBilingualXML(conjugationSpec, conjugationTarget);
+
+
     }
 
 

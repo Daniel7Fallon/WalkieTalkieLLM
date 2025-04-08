@@ -86,4 +86,9 @@ public class PanelFigure {
     public void setHorizontal(String horizontal) { this.horizontal = horizontal; }
     public String getVertical() { return vertical; }
     public void setVertical(String vertical) { this.vertical = vertical; }
+
+    @Override
+    public String toString() {
+        return "Name: " + getName() + " | Pose: " + getPose();
+    }
 }

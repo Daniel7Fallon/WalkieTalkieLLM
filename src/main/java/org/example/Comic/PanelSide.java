@@ -22,4 +22,13 @@ public class PanelSide {
     public void setBalloonContent(String balloonContent) {
         this.balloonContent = balloonContent;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        if(panelFigure != null) sb.append(" -PanelFigure: " + panelFigure);
+        if(ballonStatus != null) sb.append(" -BallonStatus: " + ballonStatus);
+        if(balloonContent != null) sb.append(" -BalloonContent: " + balloonContent);
+        return sb.toString();
+    }
 }

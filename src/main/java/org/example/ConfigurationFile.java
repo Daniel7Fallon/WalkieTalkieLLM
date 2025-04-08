@@ -50,6 +50,9 @@ public final class ConfigurationFile {
         if(translationsFolder == null || translationsFolder.isEmpty()) throw new IllegalArgumentException("TRANSLATIONS_FOLDER parameter is missing in configuration file.");
         String translationBatchSize = configMap.get("TRANSLATION_BATCH_SIZE");
         if(translationBatchSize == null || translationBatchSize.isEmpty()) throw new IllegalArgumentException("TRANSLATION_BATCH_SIZE parameter is missing in configuration file.");
+        //Sprint 3 comic from vignette
+        String lessonTarget = configMap.get("LESSON_TARGET");
+        if(lessonTarget == null || lessonTarget.isEmpty()) throw new IllegalArgumentException("LESSON_TARGET parameter is missing in configuration file.");
         //Sprint 4 conjugation specification
         String conjugationSpec = configMap.get("CONJUGATION_XML");
         if(conjugationSpec == null || conjugationSpec.isEmpty()) throw new IllegalArgumentException("CONJUGATION_XML parameter is missing in configuration file.");

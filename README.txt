@@ -19,13 +19,16 @@ TRANSLATIONS_FOLDER	Translations
 
 TRANSLATION_BATCH_SIZE	40
 
+#The destination for Comic generated from vignette
+LESSON_TARGET	lesson.xml
+
 #The xml specification containing left character speech only, to return right character repeating the translations.
 CONJUGATION_XML	conjugation.xml
 CONJUGATION_TARGET	conjugationLesson.xml
 
 #The xml specification containing stories populated with audiovisual descriptions, to be turned into fleshed out stories.
-STORIES_XML stories.xml
-STORIES_TARGET stories.xml
+STORIES_XML	stories.xml
+STORIES_TARGET	storiesLesson.xml
 ```
 
 Dependencies:

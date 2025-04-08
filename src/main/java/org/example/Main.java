@@ -1,8 +1,6 @@
 package org.example;
 
-import org.example.Comic.Comic;
-import org.example.Comic.ComicPostProcessor;
-import org.example.Comic.PanelSide;
+import org.example.Comic.*;
 import org.example.XML.VignetteToComic;
 import org.jdom2.JDOMException;
 import java.io.IOException;
@@ -10,10 +8,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.example.Assets.VignetteManager;
 import org.example.Assets.VignetteSchema;
-import org.example.Comic.Figure;
 import org.example.XML.XMLParser;
 import org.example.XML.XMLGenerator;
 
@@ -77,6 +75,16 @@ public class Main {
         String conjugationSpec = ConfigurationFile.getValue("CONJUGATION_XML");
         String conjugationTarget = ConfigurationFile.getValue("CONJUGATION_TARGET");
         XMLGenerator.generateBilingualXML(conjugationSpec, conjugationTarget);
+
+        /* ---Sprint 5 task---
+         * x Parse stories spec file into Comic
+         * o Take 10 random scenes to generate audiovisual descriptions
+         * o Parse AI response for dialogue and captions
+         * o Rebuild scenes and add to new Comic
+         * o Write new comic to XML file
+         */
+        StoryManager.generateRandomStories();
+
 
 
     }

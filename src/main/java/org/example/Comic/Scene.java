@@ -23,4 +23,13 @@ public class Scene {
     public void addPanelAtIndex(int index, Panel panel) {
         panels.add(index, panel);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (Panel panel : panels) {
+            sb.append(panel);
+        }
+        return sb.toString();
+    }
 }

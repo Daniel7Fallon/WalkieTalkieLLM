@@ -28,11 +28,14 @@ public final class ConfigurationFile {
                 }
             }
             System.out.println("Configuration file loaded successfully.");
-
         } catch (IOException e) {
             System.err.println("Error reading config file: " + e.getMessage());
         }
 
+        validateConfigurationFile();
+    }
+
+    private static void validateConfigurationFile() {
         String sourceLanguage = configMap.get("SOURCELANGUAGE");
         if(sourceLanguage == null || sourceLanguage.isEmpty()) throw new IllegalArgumentException("SOURCELANGUAGE parameter is missing in configuration file.");
         String targetLanguage = configMap.get("TARGETLANGUAGE");
@@ -45,13 +48,22 @@ public final class ConfigurationFile {
         if(model == null || model.isEmpty()) throw new IllegalArgumentException("MODEL parameter is missing in configuration file.");
         String translationsFolder = configMap.get("TRANSLATIONS_FOLDER");
         if(translationsFolder == null || translationsFolder.isEmpty()) throw new IllegalArgumentException("TRANSLATIONS_FOLDER parameter is missing in configuration file.");
-
         String translationBatchSize = configMap.get("TRANSLATION_BATCH_SIZE");
         if(translationBatchSize == null || translationBatchSize.isEmpty()) throw new IllegalArgumentException("TRANSLATION_BATCH_SIZE parameter is missing in configuration file.");
-
-        String specificationXML = configMap.get("SPECIFICATION_XML");
-        if(specificationXML == null || specificationXML.isEmpty()) throw new IllegalArgumentException("SPECIFICATION_XML parameter is missing in configuration file.");
-
+        //Sprint 3 comic from vignette
+        String lessonTarget = configMap.get("LESSON_TARGET");
+        if(lessonTarget == null || lessonTarget.isEmpty()) throw new IllegalArgumentException("LESSON_TARGET parameter is missing in configuration file.");
+        //Sprint 4 conjugation specification
+        String conjugationSpec = configMap.get("CONJUGATION_XML");
+        if(conjugationSpec == null || conjugationSpec.isEmpty()) throw new IllegalArgumentException("CONJUGATION_XML parameter is missing in configuration file.");
+        String conjugationTarget = configMap.get("CONJUGATION_TARGET");
+        if(conjugationTarget == null || conjugationTarget.isEmpty()) throw new IllegalArgumentException("CONJUGATION_TARGET parameter is missing in configuration file.");
+        //Sprint 5 stories specification
+        String storiesSpec = configMap.get("STORIES_XML");
+        if(storiesSpec == null || storiesSpec.isEmpty()) throw new IllegalArgumentException("STORIES_XML parameter is missing in configuration file.");
+        String storiesTarget = configMap.get("STORIES_TARGET");
+        if(storiesTarget == null || storiesTarget.isEmpty()) throw new IllegalArgumentException("STORIES_TARGET parameter is missing in configuration file.");
+        //Format Languages
         configMap.put("SOURCELANGUAGE", StringUtil.capitalize(sourceLanguage));
         configMap.put("TARGETLANGUAGE", StringUtil.capitalize(targetLanguage));
         try{
@@ -59,7 +71,6 @@ public final class ConfigurationFile {
         } catch(NumberFormatException e) {
             throw new IllegalArgumentException("TRANSLATION_BATCH_SIZE parameter must be an integer.");
         }
-        System.out.println(configMap);
     }
 
     public static String getValue(String key) {

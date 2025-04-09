@@ -3,24 +3,32 @@ java -jar <path-to-jar> <path-to-configuration-file>
 
 Example configuration file:
 ```
-#Hashtag denotes a comment.
-#Key-Value pairs are tab-separated.
-
-SOURCELANGUAGE	FRENCH
+SOURCELANGUAGE	ENGLISH
 TARGETLANGUAGE	GERMAN
 
-#Below are mandatory for running the application this sprint
 COMPLETIONS_URL	https://api.openai.com/v1/chat/completions
 EMBEDDINGS_URL	https://api.openai.com/v1/embeddings
 MODELS_URL	https://api.openai.com/v1/models
 
 ORG_KEY	org-gZ7peQP5XmIRVhs78U8WH
-API_KEY	abc-useyourownkey-123
+API_KEY	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
 
 MODEL	gpt-4o-mini
 
 TRANSLATIONS_FOLDER	Translations
 
+TRANSLATION_BATCH_SIZE	40
+
+#The destination for Comic generated from vignette
+LESSON_TARGET	lesson.xml
+
+#The xml specification containing left character speech only, to return right character repeating the translations.
+CONJUGATION_XML	conjugation.xml
+CONJUGATION_TARGET	conjugationLesson.xml
+
+#The xml specification containing stories populated with audiovisual descriptions, to be turned into fleshed out stories.
+STORIES_XML	stories.xml
+STORIES_TARGET	storiesLesson.xml
 ```
 
 Dependencies:
@@ -55,3 +63,8 @@ Sprint 3:
 -Vignette: Some permutation of a a vignette schema.
 
 -Changes to Translator: Now ensures redundant calls to the API are avoided. Also segments longer requests into batches.
+
+Sprint 4:
+-XMLParser deserialises XML comic into in memory comic object.
+-ComicPostProcessor takes the comic object and duplicates panels with the second character saying the translations.
+-Now have classes representing the tags for in memory storage of comics.

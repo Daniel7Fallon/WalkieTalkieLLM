@@ -1,8 +1,6 @@
 package org.example;
 
-import org.example.Comic.Comic;
-import org.example.Comic.ComicPostProcessor;
-import org.example.Comic.PanelSide;
+import org.example.Comic.*;
 import org.example.XML.VignetteToComic;
 import org.jdom2.JDOMException;
 import java.io.IOException;
@@ -10,10 +8,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.example.Assets.VignetteManager;
 import org.example.Assets.VignetteSchema;
-import org.example.Comic.Figure;
 import org.example.XML.XMLParser;
 import org.example.XML.XMLGenerator;
 
@@ -36,70 +34,7 @@ public class Main {
         VignetteManager.initialize();
         Dictionary.initialize();
 
-        try {
-            System.out.println("\n=== Loading Comic Specifications ===");
-            String xmlPath = ConfigurationFile.getValue("SPECIFICATION_XML");
-            String xmlContent = new String(Files.readAllBytes(Paths.get(xmlPath)));
-
-            Comic conjugationTemplate = XMLParser.parseComic(xmlContent);
-
-            System.out.println("Successfully loaded specifications!");
-            System.out.println("Total Figures Defined: " + conjugationTemplate.getFigures().size());
-            System.out.println("Total Scenes Found: " + conjugationTemplate.getScenes().size());
-
-            //Proof that the program is working as intended
-
-            // Print figures
-            System.out.println("\n=== Character Roster ===");
-            conjugationTemplate.getFigures().stream()
-                    .forEach(fig -> System.out.println(
-                            " - " + fig.getName() +
-                            " (" + fig.getId() + ")" +
-                            " | Appearance: " + fig.getAppearance()
-                    ));
-
-            System.out.println("\n=== Scene Structure ===");
-            conjugationTemplate.getScenes().forEach(scene -> {
-                System.out.println("\nScene with " + scene.getPanels().size() + " panels:");
-                scene.getPanels().forEach(panel -> {
-                    System.out.println("  Panel Setting: " + panel.getSetting());
-                    if(panel.getLeftSide() != null) {
-                        System.out.println("  Left Side: " +
-                                (panel.getLeftSide().getPanelFigure() != null ?
-                                        panel.getLeftSide().getPanelFigure().getName() : "No figure") +
-                                " | Dialogue: " + panel.getLeftSide().getBalloonContent());
-                    }
-                    // Would add other blocks for middle/right here if we needed to, this code is just proof that the xml is parsed in memory
-                });
-            });
-
-            List<String> balloonContents = conjugationTemplate.getAllBalloonContent();
-            System.out.println(balloonContents);
-            Translator.batchTranslateList(balloonContents);
-            for(String input : balloonContents) {
-                System.out.println("Source: " + removePluralIdentifier(input) + "\t | Target: " + Dictionary.getSourceAndTargetTranslations(input)[1]);
-            }
-
-        } catch (IOException | JDOMException e) {
-            System.err.println("Failed to process specifications XML: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        // XML loading, translation processing and regeneration
-        try {
-            String xmlContent = Files.readString(Paths.get(
-                    ConfigurationFile.getValue("SPECIFICATION_XML")
-            ));
-            Comic originalComic = XMLParser.parseComic(xmlContent);
-
-            ComicPostProcessor.addTranslationPanels(originalComic);
-            XMLGenerator.generateXMLFromComic(originalComic, ConfigurationFile.getValue("LESSON_TARGET"));
-
-        } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
-            e.printStackTrace();
-        }
-
+        //Sprint 2 task
         try {
             System.out.println("\nTranslating first 5 of vignette schemas");
             Translator.translateVignetteSchemasInRange(0,5);
@@ -114,12 +49,12 @@ public class Main {
             e.printStackTrace();
         }
 
+        // Sprint 3 tasks
         VignetteSchema firstVS = VignetteManager.getVignetteSchemas().getFirst();
         System.out.println("First VignetteSchema: " + firstVS);
         for(int i = 0; i < 5; i++) {
             System.out.println((i + 1) + ". " + firstVS.getRandVignette());
         }
-
         ArrayList<Figure> figures = new ArrayList<Figure>();
         Figure leftFigure = new Figure();
         leftFigure.setName("Daniel");
@@ -134,7 +69,24 @@ public class Main {
 
         List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemasInRange(0, 10);
         Comic comic = VignetteToComic.createComicFromVignette(figures, vignetteSchemas);
-        XMLGenerator.generateXMLFromComic(comic, "lesson.xml");
+        XMLGenerator.generateXMLFromComic(comic, ConfigurationFile.getValue("LESSON_TARGET"));
+
+        // Sprint 4 task
+        String conjugationSpec = ConfigurationFile.getValue("CONJUGATION_XML");
+        String conjugationTarget = ConfigurationFile.getValue("CONJUGATION_TARGET");
+        XMLGenerator.generateBilingualXML(conjugationSpec, conjugationTarget);
+
+        /* ---Sprint 5 task---
+         * x Parse stories spec file into Comic
+         * o Take 10 random scenes to generate audiovisual descriptions
+         * o Parse AI response for dialogue and captions
+         * o Rebuild scenes and add to new Comic
+         * o Write new comic to XML file
+         */
+        StoryManager.generateRandomStories();
+
+
+
     }
 
 

@@ -51,6 +51,7 @@ public class XMLParser {
             for (Element panelElement : sceneElement.getChildren("panel")) {
                 Panel panel = new Panel();
                 // Parse panel elements
+                panel.setAbove(panelElement.getChildText("above"));
                 panel.setBelow(panelElement.getChildText("below"));
                 panel.setBorder(panelElement.getChildText("border"));
                 panel.setSetting(panelElement.getChildText("setting"));
@@ -75,6 +76,7 @@ public class XMLParser {
         if (figureElement != null) {
             String id = figureElement.getChildText("id");
             Figure figure = comic.getFigureById(id);
+            if (figure == null) figure = new Figure();
             PanelFigure panelFigure = new PanelFigure(figure);
 
             panelFigure.setName(figureElement.getChildText("name"));

@@ -39,7 +39,7 @@ public class Comic {
                 PanelSide left = panel.getLeftSide();
                 PanelSide middle = panel.getMiddleSide();
                 PanelSide right = panel.getRightSide();
-                
+
                 if(left != null && left.getBalloonContent() != null) left.setBalloonContent(removePluralIdentifier(left.getBalloonContent()));
                 if(middle != null && middle.getBalloonContent() != null) middle.setBalloonContent(removePluralIdentifier(middle.getBalloonContent()));
                 if(right != null && right.getBalloonContent() != null) right.setBalloonContent(removePluralIdentifier(right.getBalloonContent()));

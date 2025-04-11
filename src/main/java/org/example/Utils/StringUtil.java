@@ -9,4 +9,8 @@ public class StringUtil {
     public static String removePluralIdentifier(String str) {
         return str.replace(" (Plural)", "").replace(" (plural)", "");
     }
+
+    public static String removeSpeaker(String str) {
+        return str.replaceFirst("^\\s*[^:]+:\\s*", "").trim();
+    }
 }

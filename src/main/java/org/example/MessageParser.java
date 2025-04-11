@@ -3,6 +3,7 @@ package org.example;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,7 +32,35 @@ public class MessageParser {
         return result;
     }
 
+    public static List<List<String>> parseNumberedDialogue(String input) {
+        List<List<String>> panels = new ArrayList<>();
 
+        Pattern panelPattern = Pattern.compile("^(\\d+)\\.\\s*(.*)$");
+        Pattern dialoguePattern = Pattern.compile("(\\w+):\\s*\"([^\"]*)\"");
+
+        Scanner scanner = new Scanner(input);
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine().trim();
+            if (line.isEmpty()) continue;
+
+            Matcher panelMatcher = panelPattern.matcher(line);
+            if (panelMatcher.matches()) {
+                String content = panelMatcher.group(2);
+                Matcher dialogueMatcher = dialoguePattern.matcher(content);
+
+                List<String> panelLines = new ArrayList<>();
+                while (dialogueMatcher.find()) {
+                    String speaker = dialogueMatcher.group(1);
+                    String text = dialogueMatcher.group(2);
+                    panelLines.add(speaker + ": " + text);
+                }
+
+                panels.add(panelLines);
+            }
+        }
+
+        return panels;
+    }
 
     // Will add more methods relevant to processing responses as needed
 }

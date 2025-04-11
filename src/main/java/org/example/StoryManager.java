@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.Comic.*;
 import org.example.Completion.CompletionSession;
+import org.example.Utils.StringUtil;
 import org.example.XML.XMLParser;
 import org.jdom2.JDOMException;
 
@@ -35,7 +36,18 @@ public class StoryManager {
                 String input = generateAudiovisualDescriptionForScene(scene);
                 String format = getSpeechForScene(scene);
 
-                List<String> dialogue = generateDialogueFromDescriptions(input, format);
+                // List of dialogues
+                List<List<String>> dialogues = generateDialogueFromDescriptions(input, format);
+
+                // Example usage
+                for (int i = 0; i < dialogues.size(); i++) {
+                    System.out.println(i + ".");
+                    for (int j = 0; j < dialogues.get(i).size(); j++) {
+                        System.out.println(StringUtil.removeSpeaker(dialogues.get(i).get(j)));
+                    }
+                }
+
+                // When translating, use StringUtil.removeSpeaker to get rid of the speaker from the dialogue.
             }
 
         } catch (JDOMException | IOException e) {
@@ -104,7 +116,7 @@ public class StoryManager {
         return panelSide != null && panelSide.getPanelFigure() != null && panelSide.getPanelFigure().getName() != null;
     }
 
-    private static List<String> generateDialogueFromDescriptions(String input, String format) {
+    private static List<List<String>> generateDialogueFromDescriptions(String input, String format) {
         String messageContent = "I am going to give you a numbered list, where each number corresponds to a panel in a scene of a comic."
                 + input
                 + "Please generate dialogue based off of that numbered list such that the gaps in the numbered list below "
@@ -114,10 +126,7 @@ public class StoryManager {
         CompletionSession session = new CompletionSession();
         String response = session.sendMessage("user", messageContent);
 
-        System.out.println(response);
-        System.out.println();
-
-        return MessageParser.parseNumberedList(response);
+        return MessageParser.parseNumberedDialogue(response);
     }
 
 }

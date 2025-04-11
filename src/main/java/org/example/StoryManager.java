@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.Comic.*;
+import org.example.Completion.CompletionSession;
 import org.example.XML.XMLParser;
 import org.jdom2.JDOMException;
 
@@ -30,6 +31,11 @@ public class StoryManager {
             for(Scene scene : scenes) {
                 System.out.println(generateAudiovisualDescriptionForScene(scene));
                 System.out.println(getSpeechForScene(scene));
+
+                String input = generateAudiovisualDescriptionForScene(scene);
+                String format = getSpeechForScene(scene);
+
+                List<String> dialogue = generateDialogueFromDescriptions(input, format);
             }
 
         } catch (JDOMException | IOException e) {
@@ -96,6 +102,22 @@ public class StoryManager {
 
     private static boolean panelSideHasCharacter(PanelSide panelSide) {
         return panelSide != null && panelSide.getPanelFigure() != null && panelSide.getPanelFigure().getName() != null;
+    }
+
+    private static List<String> generateDialogueFromDescriptions(String input, String format) {
+        String messageContent = "I am going to give you a numbered list, where each number corresponds to a panel in a scene of a comic."
+                + input
+                + "Please generate dialogue based off of that numbered list such that the gaps in the numbered list below "
+                + "are filled. Please do not generate or say anything other than the numbered list."
+                + format;
+
+        CompletionSession session = new CompletionSession();
+        String response = session.sendMessage("user", messageContent);
+
+        System.out.println(response);
+        System.out.println();
+
+        return MessageParser.parseNumberedList(response);
     }
 
 }

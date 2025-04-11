@@ -78,7 +78,7 @@ public class Main {
 
         /* ---Sprint 5 task---
          * x Parse stories spec file into Comic
-         * o Take 10 random scenes to generate audiovisual descriptions
+         * x Take 10 random scenes to generate audiovisual descriptions
          * o Parse AI response for dialogue and captions
          * o Rebuild scenes and add to new Comic
          * o Write new comic to XML file

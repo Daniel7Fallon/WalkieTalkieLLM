@@ -121,4 +121,22 @@ public class Translator {
         targetTexts.addAll(MessageParser.parseNumberedList(response));
         return targetTexts;
     }
+
+    public static String translateSingleFallback(String text, String sourceLang, String targetLang) {
+        try {
+            // Check dictionary first
+            if(Dictionary.translationExists(text, sourceLang, targetLang)) {
+                return Dictionary.getTranslation(text, sourceLang, targetLang);
+            }
+
+            // Direct LLM translation
+            String prompt = "Translate this to " + targetLang + ": \"" + text + "\"";
+            CompletionSession session = new CompletionSession();
+            String response = session.sendMessage("user", prompt);
+
+            return MessageParser.parseSingleTranslation(response);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

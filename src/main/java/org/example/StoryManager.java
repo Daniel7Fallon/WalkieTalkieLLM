@@ -3,6 +3,7 @@ package org.example;
 import org.example.Comic.*;
 import org.example.Completion.CompletionSession;
 import org.example.Utils.StringUtil;
+import org.example.XML.XMLGenerator;
 import org.example.XML.XMLParser;
 import org.jdom2.JDOMException;
 
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -18,41 +20,185 @@ public class StoryManager {
     public static void generateRandomStories() {
         String storiesSpec = ConfigurationFile.getValue("STORIES_XML");
         String storiesTarget = ConfigurationFile.getValue("STORIES_TARGET");
+        String sourceLang = ConfigurationFile.getValue("SOURCELANGUAGE");
+        String targetLang = ConfigurationFile.getValue("TARGETLANGUAGE");
 
         try {
             String xmlContent = new String(Files.readAllBytes(Paths.get(storiesSpec)));
             Comic storiesInputComic = XMLParser.parseComic(xmlContent);
             Random rand = new Random();
             List<Scene> scenes = new ArrayList<>();
+
+            // Get 10 unique random scenes
             while(scenes.size() < 10) {
                 Scene scene = storiesInputComic.getScenes().get(rand.nextInt(storiesInputComic.getScenes().size()));
                 if(!scenes.contains(scene)) scenes.add(scene);
             }
 
-            for(Scene scene : scenes) {
-                System.out.println(generateAudiovisualDescriptionForScene(scene));
-                System.out.println(getSpeechForScene(scene));
+            List<String> allDialogues = new ArrayList<>();
+            for(Scene originalScene : scenes) {
+                String visualDescription = generateAudiovisualDescriptionForScene(originalScene);
+                String speechTemplate = getSpeechForScene(originalScene);
+                List<List<String>> dialogues = generateDialogueFromDescriptions(visualDescription, speechTemplate);
 
-                String input = generateAudiovisualDescriptionForScene(scene);
-                String format = getSpeechForScene(scene);
-
-                // List of dialogues
-                List<List<String>> dialogues = generateDialogueFromDescriptions(input, format);
-
-                // Example usage
-                for (int i = 0; i < dialogues.size(); i++) {
-                    System.out.println(i + ".");
-                    for (int j = 0; j < dialogues.get(i).size(); j++) {
-                        System.out.println(StringUtil.removeSpeaker(dialogues.get(i).get(j)));
+                for(List<String> panelDialogues : dialogues) {
+                    for(String dialogueLine : panelDialogues) {
+                        allDialogues.add(StringUtil.removeSpeaker(dialogueLine));
                     }
                 }
-
-                // When translating, use StringUtil.removeSpeaker to get rid of the speaker from the dialogue.
             }
+
+            try {
+                Translator.batchTranslateList(allDialogues);
+            } catch (IOException e) {
+                System.err.println("Pre-translation failed: " + e.getMessage());
+            }
+
+            Comic finalComic = new Comic();
+            finalComic.setFigures(storiesInputComic.getFigures());
+
+            for(Scene originalScene : scenes) {
+                // Generate visual description and dialogues
+                String visualDescription = generateAudiovisualDescriptionForScene(originalScene);
+                String speechTemplate = getSpeechForScene(originalScene);
+                List<List<String>> dialogues = generateDialogueFromDescriptions(visualDescription, speechTemplate);
+
+                // Create bilingual version
+                Scene bilingualScene = createBilingualScene(originalScene, dialogues, sourceLang, targetLang);
+                finalComic.addScene(bilingualScene);
+            }
+
+            // Generate XML
+            XMLGenerator.generateXMLFromComic(finalComic, storiesTarget);
 
         } catch (JDOMException | IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static Scene createBilingualScene(Scene originalScene, List<List<String>> dialogues,
+                                              String sourceLang, String targetLang) {
+        Scene newScene = new Scene();
+
+        // Preserve the title panel
+        if(!originalScene.getPanels().isEmpty()) {
+            newScene.addPanel(originalScene.getPanels().get(0));
+        }
+
+        for(int i = 1; i < originalScene.getPanels().size(); i++) {
+            Panel originalPanel = originalScene.getPanels().get(i);
+
+            // Create English version
+            Panel enPanel = createTranslatedPanel(originalPanel,
+                    safeGetDialogues(dialogues, i-1),
+                    sourceLang, "English");
+
+            // Create target language version
+            Panel tgtPanel = createTranslatedPanel(originalPanel,
+                    safeGetDialogues(dialogues, i-1),
+                    sourceLang, targetLang);
+
+            newScene.addPanel(enPanel);
+            newScene.addPanel(tgtPanel);
+        }
+
+        return newScene;
+    }
+
+    private static List<String> safeGetDialogues(List<List<String>> dialogues, int index) {
+        return (index >= 0 && index < dialogues.size())
+                ? dialogues.get(index)
+                : Collections.emptyList();
+    }
+
+    private static Panel createTranslatedPanel(Panel original, List<String> panelDialogues,
+                                               String sourceLang, String targetLang) {
+        Panel newPanel = new Panel();
+
+        // Copy structural elements
+        newPanel.setSetting(original.getSetting());
+        newPanel.setAbove(original.getAbove());
+        newPanel.setBelow(original.getBelow());
+        newPanel.setBorder(original.getBorder());
+
+        // Process left side
+        if(original.getLeftSide() != null) {
+            PanelSide newSide = processPanelSide(original.getLeftSide(),
+                    panelDialogues, sourceLang, targetLang);
+            newPanel.setLeftSide(newSide);
+        }
+
+        // Process right side
+        if(original.getRightSide() != null) {
+            PanelSide newSide = processPanelSide(original.getRightSide(),
+                    panelDialogues, sourceLang, targetLang);
+            newPanel.setRightSide(newSide);
+        }
+
+        return newPanel;
+    }
+
+    private static PanelSide processPanelSide(PanelSide original, List<String> panelDialogues,
+                                              String sourceLang, String targetLang) {
+        PanelSide newSide = new PanelSide();
+        newSide.setPanelFigure(original.getPanelFigure());
+
+        String characterName = original.getPanelFigure().getName();
+        String dialogue = findDialogueForSpeaker(panelDialogues, characterName);
+
+        if(dialogue != null) {
+            try {
+                String[] translations = Dictionary.getSourceAndTargetTranslations(dialogue);
+                String translatedText = dialogue; // Default to original
+
+                if(translations != null && translations[1] != null) {
+                    translatedText = translations[1];
+                } else {
+                    // Fallback to direct translation
+                    String fallback = Translator.translateSingleFallback(
+                            dialogue, sourceLang, targetLang
+                    );
+                    if(fallback != null) {
+                        translatedText = fallback;
+                    }
+                }
+
+                newSide.setBallonStatus("speaking");
+                newSide.setBalloonContent(translatedText);
+            } catch (IOException e) {
+                newSide.setBallonStatus("warning");
+                newSide.setBalloonContent(dialogue);
+            }
+        }
+
+        return newSide;
+    }
+
+    // Update the prompt in generateDialogueFromDescriptions
+    private static List<List<String>> generateDialogueFromDescriptions(String input, String format) {
+        String messageContent = "Generate natural character dialogue in this exact format:\n"
+                + "1. [Character1]: \"[Dialogue1]\" / [Character2]: \"[Dialogue2]\"\n"
+                + "2. [Character1]: \"[Dialogue3]\"\n"
+                + "...\n"
+                + "Based on this scene description:\n"
+                + input + "\n"
+                + "Template:\n" + format;
+
+        CompletionSession session = new CompletionSession();
+        String response = session.sendMessage("user", messageContent);
+
+        return MessageParser.parseNumberedDialogue(response);
+    }
+
+    private static String findDialogueForSpeaker(List<String> panelDialogues, String speakerName) {
+        if(speakerName == null) return null;
+
+        for(String dialogue : panelDialogues) {
+            if(dialogue.startsWith(speakerName + ":")) {
+                return StringUtil.removeSpeaker(dialogue);
+            }
+        }
+        return null;
     }
 
     private static String getSpeechForScene(Scene scene) {
@@ -114,19 +260,6 @@ public class StoryManager {
 
     private static boolean panelSideHasCharacter(PanelSide panelSide) {
         return panelSide != null && panelSide.getPanelFigure() != null && panelSide.getPanelFigure().getName() != null;
-    }
-
-    private static List<List<String>> generateDialogueFromDescriptions(String input, String format) {
-        String messageContent = "I am going to give you a numbered list, where each number corresponds to a panel in a scene of a comic."
-                + input
-                + "Please generate dialogue based off of that numbered list such that the gaps in the numbered list below "
-                + "are filled. Please do not generate or say anything other than the numbered list."
-                + format;
-
-        CompletionSession session = new CompletionSession();
-        String response = session.sendMessage("user", messageContent);
-
-        return MessageParser.parseNumberedDialogue(response);
     }
 
 }

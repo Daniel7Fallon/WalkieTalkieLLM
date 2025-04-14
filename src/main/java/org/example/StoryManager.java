@@ -153,11 +153,11 @@ public class StoryManager {
         if(dialogue != null) {
             try {
                 String[] translations = Dictionary.getSourceAndTargetTranslations(dialogue);
-                String translatedText = "";
+                String translatedText = dialogue;
 
                 if(translations != null && translations[language] != null) {
                     translatedText = translations[language];
-                } else {
+                } else  if (language == 1) {
                     String sourceLang = ConfigurationFile.getValue("SOURCELANGUAGE");
                     String targetLang = ConfigurationFile.getValue("TARGETLANGUAGE");
                     // Fallback to direct translation

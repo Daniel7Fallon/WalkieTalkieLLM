@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.Comic.*;
+import org.example.Completion.TTSSession;
 import org.example.XML.VignetteToComic;
 import org.jdom2.JDOMException;
 import java.io.IOException;
@@ -85,6 +86,14 @@ public class Main {
          */
         StoryManager.generateRandomStories();
 
+        // Testing TTS
+        try {
+            TTSSession.textToSpeech("test", "hello world");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
 
     }

@@ -10,12 +10,18 @@ COMPLETIONS_URL	https://api.openai.com/v1/chat/completions
 EMBEDDINGS_URL	https://api.openai.com/v1/embeddings
 MODELS_URL	https://api.openai.com/v1/models
 
+TTS_ENDPOINT_URL	https://api.openai.com/v1/audio/speech
+
 ORG_KEY	org-gZ7peQP5XmIRVhs78U8WH
 API_KEY	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
 
 MODEL	gpt-4o-mini
 
+TTS_MODEL	tts-1
+TTS_VOICE	alloy
+
 TRANSLATIONS_FOLDER	Translations
+AUDIO_FOLDER	Audio
 
 TRANSLATION_BATCH_SIZE	40
 
@@ -29,11 +35,6 @@ CONJUGATION_TARGET	conjugationLesson.xml
 #The xml specification containing stories populated with audiovisual descriptions, to be turned into fleshed out stories.
 STORIES_XML	stories.xml
 STORIES_TARGET	storiesLesson.xml
-
-#Storing .mp3 files.
-AUDIO_FOLDER	Audio
-#Mapping of phrases to the indices of the tts response in the AUDIO folder.
-AUDIO_INDEX audioIndex.txt
 ```
 
 Dependencies:

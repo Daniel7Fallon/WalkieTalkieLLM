@@ -71,11 +71,6 @@ public final class ConfigurationFile {
         if(storiesSpec == null || storiesSpec.isEmpty()) throw new IllegalArgumentException("STORIES_XML parameter is missing in configuration file.");
         String storiesTarget = configMap.get("STORIES_TARGET");
         if(storiesTarget == null || storiesTarget.isEmpty()) throw new IllegalArgumentException("STORIES_TARGET parameter is missing in configuration file.");
-        //Sprint 6 tts
-        String audioFolder = configMap.get("AUDIO_FOLDER");
-        if(audioFolder == null || audioFolder.isEmpty()) throw new IllegalArgumentException("AUDIO_FOLDER parameter is missing in configuration file.");
-        String audioIndexPath = configMap.get("AUDIO_INDEX");
-        if(audioIndexPath == null || audioIndexPath.isEmpty()) throw new IllegalArgumentException("AUDIO_INDEX parameter is missing in configuration file.");
         //Format Languages
         configMap.put("SOURCELANGUAGE", StringUtil.capitalize(sourceLanguage));
         configMap.put("TARGETLANGUAGE", StringUtil.capitalize(targetLanguage));

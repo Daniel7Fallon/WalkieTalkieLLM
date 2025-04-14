@@ -35,11 +35,13 @@ public class StoryManager {
                 if(!scenes.contains(scene)) scenes.add(scene);
             }
 
+            //Generate dialogue for scenes
             List<String> allDialogues = new ArrayList<>();
+            List<List<String>> dialogues = new ArrayList<>();
             for(Scene originalScene : scenes) {
                 String visualDescription = generateAudiovisualDescriptionForScene(originalScene);
                 String speechTemplate = getSpeechForScene(originalScene);
-                List<List<String>> dialogues = generateDialogueFromDescriptions(visualDescription, speechTemplate);
+                dialogues = generateDialogueFromDescriptions(visualDescription, speechTemplate);
 
                 for(List<String> panelDialogues : dialogues) {
                     for(String dialogueLine : panelDialogues) {
@@ -48,6 +50,7 @@ public class StoryManager {
                 }
             }
 
+            //Translate dialogues
             try {
                 Translator.batchTranslateList(allDialogues);
             } catch (IOException e) {
@@ -58,13 +61,8 @@ public class StoryManager {
             finalComic.setFigures(storiesInputComic.getFigures());
 
             for(Scene originalScene : scenes) {
-                // Generate visual description and dialogues
-                String visualDescription = generateAudiovisualDescriptionForScene(originalScene);
-                String speechTemplate = getSpeechForScene(originalScene);
-                List<List<String>> dialogues = generateDialogueFromDescriptions(visualDescription, speechTemplate);
-
                 // Create bilingual version
-                Scene bilingualScene = createBilingualScene(originalScene, dialogues, sourceLang, targetLang);
+                Scene bilingualScene = createBilingualScene(originalScene, dialogues);
                 finalComic.addScene(bilingualScene);
             }
 
@@ -76,8 +74,7 @@ public class StoryManager {
         }
     }
 
-    private static Scene createBilingualScene(Scene originalScene, List<List<String>> dialogues,
-                                              String sourceLang, String targetLang) {
+    private static Scene createBilingualScene(Scene originalScene, List<List<String>> dialogues) {
         Scene newScene = new Scene();
 
         // Preserve the title panel
@@ -91,12 +88,12 @@ public class StoryManager {
             // Create English version
             Panel enPanel = createTranslatedPanel(originalPanel,
                     safeGetDialogues(dialogues, i-1),
-                    sourceLang, "English");
+                    0);
 
             // Create target language version
             Panel tgtPanel = createTranslatedPanel(originalPanel,
                     safeGetDialogues(dialogues, i-1),
-                    sourceLang, targetLang);
+                    1);
 
             newScene.addPanel(enPanel);
             newScene.addPanel(tgtPanel);
@@ -112,7 +109,7 @@ public class StoryManager {
     }
 
     private static Panel createTranslatedPanel(Panel original, List<String> panelDialogues,
-                                               String sourceLang, String targetLang) {
+                                               int language) {
         Panel newPanel = new Panel();
 
         // Copy structural elements
@@ -124,14 +121,21 @@ public class StoryManager {
         // Process left side
         if(original.getLeftSide() != null) {
             PanelSide newSide = processPanelSide(original.getLeftSide(),
-                    panelDialogues, sourceLang, targetLang);
+                    panelDialogues, language);
             newPanel.setLeftSide(newSide);
+        }
+
+        //Process middle side
+        if(original.getMiddleSide() != null) {
+            PanelSide newSide = processPanelSide(original.getMiddleSide(),
+                    panelDialogues, language);
+            newPanel.setMiddleSide(newSide);
         }
 
         // Process right side
         if(original.getRightSide() != null) {
             PanelSide newSide = processPanelSide(original.getRightSide(),
-                    panelDialogues, sourceLang, targetLang);
+                    panelDialogues, language);
             newPanel.setRightSide(newSide);
         }
 
@@ -139,7 +143,7 @@ public class StoryManager {
     }
 
     private static PanelSide processPanelSide(PanelSide original, List<String> panelDialogues,
-                                              String sourceLang, String targetLang) {
+                                              int language) {
         PanelSide newSide = new PanelSide();
         newSide.setPanelFigure(original.getPanelFigure());
 
@@ -149,11 +153,13 @@ public class StoryManager {
         if(dialogue != null) {
             try {
                 String[] translations = Dictionary.getSourceAndTargetTranslations(dialogue);
-                String translatedText = dialogue; // Default to original
+                String translatedText = "";
 
-                if(translations != null && translations[1] != null) {
-                    translatedText = translations[1];
+                if(translations != null && translations[language] != null) {
+                    translatedText = translations[language];
                 } else {
+                    String sourceLang = ConfigurationFile.getValue("SOURCELANGUAGE");
+                    String targetLang = ConfigurationFile.getValue("TARGETLANGUAGE");
                     // Fallback to direct translation
                     String fallback = Translator.translateSingleFallback(
                             dialogue, sourceLang, targetLang

@@ -29,6 +29,11 @@ CONJUGATION_TARGET	conjugationLesson.xml
 #The xml specification containing stories populated with audiovisual descriptions, to be turned into fleshed out stories.
 STORIES_XML	stories.xml
 STORIES_TARGET	storiesLesson.xml
+
+#Storing .mp3 files.
+AUDIO_FOLDER	Audio
+#Mapping of phrases to the indices of the tts response in the AUDIO folder.
+AUDIO_INDEX audioIndex.txt
 ```
 
 Dependencies:
@@ -68,3 +73,10 @@ Sprint 4:
 -XMLParser deserialises XML comic into in memory comic object.
 -ComicPostProcessor takes the comic object and duplicates panels with the second character saying the translations.
 -Now have classes representing the tags for in memory storage of comics.
+
+Sprint 5:
+-Created StoryManager class to handle this sprint's requirements.
+  -Takes 10 random scenes from the XML specification file specified in the configuration file.
+  -Generates Audiovisual descriptions for each mini-story, and calls the LLM to generate dialogue for the stories.
+  -Translates the dialogue and creates a new XML, with the characters speaking the new dialogue followed by a duplicate slide with the translations in place of the previous dialogue.
+  -Writes this output to a file specified in the configuration file.

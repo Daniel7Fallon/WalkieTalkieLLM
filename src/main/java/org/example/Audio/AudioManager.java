@@ -1,35 +1,22 @@
-package org.example.Completion;
+package org.example.Audio;
 
 import org.example.ConfigurationFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
+import java.io.*;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.time.Duration;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+public class AudioManager {
 
-public class TTSSession {
-    private static final String ORG_KEY = ConfigurationFile.getValue("ORG_KEY");
-    private static final String API_KEY = ConfigurationFile.getValue("API_KEY");
-    private static final String TTS_ENDPOINT = ConfigurationFile.getValue("TTS_ENDPOINT_URL");
-    private static final String MODEL = ConfigurationFile.getValue("TTS_MODEL");
-    private static final String VOICE = ConfigurationFile.getValue("TTS_VOICE");
-    private static final String RESPONSE_FORMAT = "mp3";
     private static final String AUDIO_FOLDER = ConfigurationFile.getValue("AUDIO_FOLDER");
     private static final String AUDIO_INDEX_FILE_PATH = ConfigurationFile.getValue("AUDIO_INDEX");
+    private static final String RESPONSE_FORMAT = "mp3";
 
-    public static void textToSpeech(String fileName, String text) throws IOException, InterruptedException {
+
+    public static void createNewAudio(String phrase) throws IOException, InterruptedException {
+        //Ensure Audio folder exists
         Path audioFolderPath = Paths.get(AUDIO_FOLDER);
-        Path outputFile = audioFolderPath.resolve(fileName + "." + RESPONSE_FORMAT);
-
         try {
             if (!Files.exists(audioFolderPath)) {
                 Files.createDirectories(audioFolderPath);
@@ -40,43 +27,31 @@ public class TTSSession {
         } catch (IOException e) {
             throw new IOException("Failed to create or access audio folder: " + audioFolderPath.toAbsolutePath(), e);
         }
+        //Ensure Audio Index file exists
+        File audioIndexFile = new File(AUDIO_INDEX_FILE_PATH);
+        try {
+            if(audioIndexFile.createNewFile()) {
+                System.out.println("Audio Index file created: " + audioIndexFile);
+            } else {
+                System.out.println("Audio Index file already exists: " + audioIndexFile);
+            }
+        } catch (IOException e) {
+            throw new IOException("Error creating Audio Index file: " + e.getMessage());
+        }
 
-        // Http client
-        HttpClient client = HttpClient.newBuilder()
-                .version(HttpClient.Version.HTTP_2)
-                .connectTimeout(Duration.ofSeconds(20))
-                .build();
+        if(phraseMappingExists(phrase)) return;
 
-        // Creating JSON to send
-        JsonObject jsonPayload = new JsonObject();
-        jsonPayload.addProperty("model", MODEL);
-        jsonPayload.addProperty("input", text);
-        jsonPayload.addProperty("voice", VOICE);
-        jsonPayload.addProperty("response_format", RESPONSE_FORMAT);
+        int newIndex = getLastIndex() + 1;
+        Path outputFile = audioFolderPath.resolve(newIndex + "." + RESPONSE_FORMAT);
 
-        String jsonPayloadString = jsonPayload.toString();
-
-        // Sending HTTP request
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(TTS_ENDPOINT))
-                .timeout(Duration.ofSeconds(40))
-                .header("Content-Type", "application/json")
-                .header("OpenAI-Organisation", ORG_KEY)
-                .header("Authorization", "Bearer " + API_KEY)
-                .POST(HttpRequest.BodyPublishers.ofString(jsonPayloadString))
-                .build();
-
-        System.out.println("Sending request to " + TTS_ENDPOINT + " with payload: " + jsonPayloadString);
-
-        // Handling the response
-        HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+        HttpResponse<InputStream> response = TTSSession.textToSpeech(phrase);
 
         if (response.statusCode() == 200) {
             System.out.println("API call successful (Status Code: 200). Receiving audio stream...");
             try (InputStream audioStream = response.body()) {
                 Files.copy(audioStream, outputFile, StandardCopyOption.REPLACE_EXISTING);
                 System.out.println("Audio saved successfully to: " + outputFile.toAbsolutePath());
-                addToAudioIndex(text, outputFile);
+                AudioManager.addToAudioIndex(phrase, "" + newIndex);
             } catch (IOException e) {
                 throw new IOException("Failed to save audio file to " + outputFile.toAbsolutePath(), e);
             }
@@ -92,21 +67,20 @@ public class TTSSession {
             System.err.println("Error Body: " + errorBody);
             throw new RuntimeException("OpenAI TTS API request failed with status code: " + response.statusCode() + " - Body: " + errorBody);
         }
+
     }
 
-    /*
-       Add to audio index file in the following format:
-       text    path_to_audio_file
-
-       Where the text is separated from the path to the audio file by a tab.
+    /* Add to audio index file in the following format:
+     * phrase    nameOfFile
+     * Where the text is separated from the path to the audio file by a tab.
      */
-    private static void addToAudioIndex(String text, Path audioFilePath) {
+    private static void addToAudioIndex(String text, String index) {
         Path indexFilePath = Paths.get(AUDIO_INDEX_FILE_PATH);
 
         // Formatting the line to be appended: text<tab>absolute_path<newline>
         // Replacing tabs and newlines in the original text to avoid breaking the index format
         String sanitizedText = text.replace("\t", " ").replace("\n", " ").replace("\r", " ");
-        String lineToAppend = sanitizedText + "\t" + audioFilePath.toAbsolutePath().toString() + System.lineSeparator();
+        String lineToAppend = sanitizedText + "\t" + index + System.lineSeparator();
 
         try {
             Files.writeString(indexFilePath,
@@ -122,4 +96,39 @@ public class TTSSession {
             System.err.println("Error: Failed to write to audio index file '" + indexFilePath.toAbsolutePath() + "': " + e.getMessage());
         }
     }
+
+    private static int getLastIndex() throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(AUDIO_INDEX_FILE_PATH));
+        String last = null;
+        String line;
+        while ((line = br.readLine()) != null) {
+            last = line;
+        }
+        if(last != null) {
+            String[] tokens = last.split("\t");
+            return Integer.parseInt(tokens[1]);
+        }
+        return -1;
+    }
+
+    public static int getIndexByPhrase(String phrase) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(AUDIO_INDEX_FILE_PATH));
+        String line;
+        while ((line = br.readLine()) != null) {
+            String[] tokens = line.split("\t");
+            if(tokens[0].equals(phrase)) return Integer.parseInt(tokens[1]);
+        }
+        return -1;
+    }
+
+    private static boolean phraseMappingExists(String phrase) throws IOException {
+        BufferedReader br = new BufferedReader(new FileReader(AUDIO_INDEX_FILE_PATH));
+        String line;
+        while ((line = br.readLine()) != null) {
+            String[] tokens = line.split("\t");
+            if(tokens[0].equals(phrase)) return true;
+        }
+        return false;
+    }
+
 }

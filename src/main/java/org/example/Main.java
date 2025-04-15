@@ -1,22 +1,17 @@
 package org.example;
 
+import org.example.Audio.AudioManager;
 import org.example.Comic.*;
-import org.example.Completion.TTSSession;
+import org.example.Audio.TTSSession;
 import org.example.XML.VignetteToComic;
-import org.jdom2.JDOMException;
+
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.example.Assets.VignetteManager;
 import org.example.Assets.VignetteSchema;
-import org.example.XML.XMLParser;
 import org.example.XML.XMLGenerator;
-
-import static org.example.Utils.StringUtil.removePluralIdentifier;
 
 
 public class Main {
@@ -84,16 +79,26 @@ public class Main {
          * o Rebuild scenes and add to new Comic
          * o Write new comic to XML file
          */
-        StoryManager.generateRandomStories();
+        //StoryManager.generateRandomStories();
 
         // Testing TTS
+        String phrase = "Hello World!";
         try {
-            TTSSession.textToSpeech("test", "hello world");
+            AudioManager.createNewAudio(phrase);
+            AudioManager.createNewAudio("Gesundheit");
+            AudioManager.createNewAudio("Arbeit Macht Frei");
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+        try {
+            int index = AudioManager.getIndexByPhrase(phrase);
+            System.out.println("Index of " + phrase + " is: " + index);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
 
 
     }

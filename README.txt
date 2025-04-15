@@ -21,21 +21,34 @@ TTS_MODEL	tts-1
 TTS_VOICE	alloy
 
 TRANSLATIONS_FOLDER	Translations
-AUDIO_FOLDER	Audio
-AUDIO_INDEX audioIndex.txt
+
 
 TRANSLATION_BATCH_SIZE	40
 
+#Following are the key-values specific to each sprint
+#Comment them out to skip them
+
+#Sprint 3
 #The destination for Comic generated from vignette
-LESSON_TARGET	lesson.xml
+#LESSON_TARGET	lesson.xml
 
-#The xml specification containing left character speech only, to return right character repeating the translations.
-CONJUGATION_XML	conjugation.xml
-CONJUGATION_TARGET	conjugationLesson.xml
+#Sprint 4
+#The xml specification containing left character speech only.
+#CONJUGATION_XML	conjugation.xml
+#New comic with right character repeating the translations.
+#CONJUGATION_TARGET	conjugationLesson.xml
 
-#The xml specification containing stories populated with audiovisual descriptions, to be turned into fleshed out stories.
-STORIES_XML	stories.xml
-STORIES_TARGET	storiesLesson.xml
+#Sprint 5
+#The xml specification containing stories populated with audiovisual descriptions.
+#STORIES_XML	stories.xml
+#New comic with AI dialogue and AI translations.
+#STORIES_TARGET	storiesLesson.xml
+
+#Sprint 6
+#Target for .mp3 files.
+AUDIO_FOLDER	Audio
+#Target for phrase\tindex mappings.
+AUDIO_INDEX	audioIndex.txt
 ```
 
 Dependencies:

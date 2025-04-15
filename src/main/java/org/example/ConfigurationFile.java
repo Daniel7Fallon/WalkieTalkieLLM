@@ -50,29 +50,30 @@ public final class ConfigurationFile {
         if(model == null || model.isEmpty()) throw new IllegalArgumentException("MODEL parameter is missing in configuration file.");
         String ttsModel = configMap.get("TTS_MODEL");
         if(ttsModel == null || ttsModel.isEmpty()) throw new IllegalArgumentException("TTS_MODEL parameter is missing in configuration file.");
-        String translationsFolder = configMap.get("TRANSLATIONS_FOLDER");
-        String audioFolder = configMap.get("AUDIO_FOLDER");
-        if(audioFolder == null || audioFolder.isEmpty()) throw new IllegalArgumentException("AUDIO_FOLDER parameter is missing in configuration file.");
         String ttsVoice = configMap.get("TTS_VOICE");
         if(ttsVoice == null || ttsVoice.isEmpty()) throw new IllegalArgumentException("TTS_VOICE parameter is missing in configuration file.");
+        String translationsFolder = configMap.get("TRANSLATIONS_FOLDER");
         if(translationsFolder == null || translationsFolder.isEmpty()) throw new IllegalArgumentException("TRANSLATIONS_FOLDER parameter is missing in configuration file.");
         String translationBatchSize = configMap.get("TRANSLATION_BATCH_SIZE");
         if(translationBatchSize == null || translationBatchSize.isEmpty()) throw new IllegalArgumentException("TRANSLATION_BATCH_SIZE parameter is missing in configuration file.");
         //Sprint 3 comic from vignette
         String lessonTarget = configMap.get("LESSON_TARGET");
-        if(lessonTarget == null || lessonTarget.isEmpty()) throw new IllegalArgumentException("LESSON_TARGET parameter is missing in configuration file.");
+        if(lessonTarget == null || lessonTarget.isEmpty()) System.out.println("[WARNING] LESSON_TARGET parameter is missing in configuration file.");
         //Sprint 4 conjugation specification
         String conjugationSpec = configMap.get("CONJUGATION_XML");
-        if(conjugationSpec == null || conjugationSpec.isEmpty()) throw new IllegalArgumentException("CONJUGATION_XML parameter is missing in configuration file.");
+        if(conjugationSpec == null || conjugationSpec.isEmpty()) System.out.println("[WARNING] CONJUGATION_XML parameter is missing in configuration file.");
         String conjugationTarget = configMap.get("CONJUGATION_TARGET");
-        if(conjugationTarget == null || conjugationTarget.isEmpty()) throw new IllegalArgumentException("CONJUGATION_TARGET parameter is missing in configuration file.");
+        if(conjugationTarget == null || conjugationTarget.isEmpty()) System.out.println("[WARNING] CONJUGATION_TARGET parameter is missing in configuration file.");
         //Sprint 5 stories specification
         String storiesSpec = configMap.get("STORIES_XML");
-        if(storiesSpec == null || storiesSpec.isEmpty()) throw new IllegalArgumentException("STORIES_XML parameter is missing in configuration file.");
+        if(storiesSpec == null || storiesSpec.isEmpty()) System.out.println("[WARNING] STORIES_XML parameter is missing in configuration file.");
         String storiesTarget = configMap.get("STORIES_TARGET");
-        if(storiesTarget == null || storiesTarget.isEmpty()) throw new IllegalArgumentException("STORIES_TARGET parameter is missing in configuration file.");
+        if(storiesTarget == null || storiesTarget.isEmpty()) System.out.println("[WARNING] STORIES_TARGET parameter is missing in configuration file.");
+        //Sprint 6
+        String audioFolder = configMap.get("AUDIO_FOLDER");
+        if(audioFolder == null || audioFolder.isEmpty()) System.out.println("[WARNING] AUDIO_FOLDER parameter is missing in configuration file.");
         String audioIndexPath = configMap.get("AUDIO_INDEX");
-        if(audioIndexPath == null || audioIndexPath.isEmpty()) throw new IllegalArgumentException("AUDIO_INDEX parameter is missing in configuration file.");
+        if(audioIndexPath == null || audioIndexPath.isEmpty()) System.out.println("[WARNING] AUDIO_INDEX parameter is missing in configuration file.");
         //Format Languages
         configMap.put("SOURCELANGUAGE", StringUtil.capitalize(sourceLanguage));
         configMap.put("TARGETLANGUAGE", StringUtil.capitalize(targetLanguage));
@@ -87,6 +88,6 @@ public final class ConfigurationFile {
         return configMap.get(key);
     }
     public static boolean containsKey(String key) {
-        return configMap.containsKey(key);
+        return configMap.containsKey(key) && configMap.get(key) != null && !configMap.get(key).isEmpty();
     }
 }

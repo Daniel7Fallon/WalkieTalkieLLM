@@ -46,58 +46,62 @@ public class Main {
         }
 
         // Sprint 3 tasks
-        VignetteSchema firstVS = VignetteManager.getVignetteSchemas().getFirst();
-        System.out.println("First VignetteSchema: " + firstVS);
-        for(int i = 0; i < 5; i++) {
-            System.out.println((i + 1) + ". " + firstVS.getRandVignette());
+        if(ConfigurationFile.containsKey("LESSON_TARGET")) {
+            ArrayList<Figure> figures = new ArrayList<Figure>();
+            Figure leftFigure = new Figure();
+            leftFigure.setName("Daniel");
+            leftFigure.setSkin("Brown");
+
+            Figure rightFigure = new Figure();
+            rightFigure.setName("Harry");
+            rightFigure.setSkin("White");
+
+            figures.add(leftFigure);
+            figures.add(rightFigure);
+
+            List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemasInRange(0, 10);
+            Comic comic = VignetteToComic.createComicFromVignette(figures, vignetteSchemas);
+            XMLGenerator.generateXMLFromComic(comic, ConfigurationFile.getValue("LESSON_TARGET"));
+        } else {
+            System.out.println("Skipping generation of lesson from vignette schemas (Sprint 3)");
         }
-        ArrayList<Figure> figures = new ArrayList<Figure>();
-        Figure leftFigure = new Figure();
-        leftFigure.setName("Daniel");
-        leftFigure.setSkin("Brown");
-
-        Figure rightFigure = new Figure();
-        rightFigure.setName("Harry");
-        rightFigure.setSkin("White");
-
-        figures.add(leftFigure);
-        figures.add(rightFigure);
-
-        List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemasInRange(0, 10);
-        Comic comic = VignetteToComic.createComicFromVignette(figures, vignetteSchemas);
-        XMLGenerator.generateXMLFromComic(comic, ConfigurationFile.getValue("LESSON_TARGET"));
 
         // Sprint 4 task
-        String conjugationSpec = ConfigurationFile.getValue("CONJUGATION_XML");
-        String conjugationTarget = ConfigurationFile.getValue("CONJUGATION_TARGET");
-        XMLGenerator.generateBilingualXML(conjugationSpec, conjugationTarget);
-
-        /* ---Sprint 5 task---
-         * x Parse stories spec file into Comic
-         * x Take 10 random scenes to generate audiovisual descriptions
-         * o Parse AI response for dialogue and captions
-         * o Rebuild scenes and add to new Comic
-         * o Write new comic to XML file
-         */
-        //StoryManager.generateRandomStories();
-
-        // Testing TTS
-        String phrase = "Hello World!";
-        try {
-            AudioManager.createNewAudio(phrase);
-            AudioManager.createNewAudio("Gesundheit");
-            AudioManager.createNewAudio("Arbeit Macht Frei");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        if(ConfigurationFile.containsKey("CONJUGATION_XML") && ConfigurationFile.containsKey("CONJUGATION_TARGET")) {
+            String conjugationSpec = ConfigurationFile.getValue("CONJUGATION_XML");
+            String conjugationTarget = ConfigurationFile.getValue("CONJUGATION_TARGET");
+            XMLGenerator.generateBilingualXML(conjugationSpec, conjugationTarget);
+        } else {
+            System.out.println("Skipping generation of conjugation lesson (Sprint 4)");
         }
-        try {
-            int index = AudioManager.getIndexByPhrase(phrase);
-            System.out.println("Index of " + phrase + " is: " + index);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+
+        //Sprint 5 task
+        if(ConfigurationFile.containsKey("STORIES_XML") && ConfigurationFile.containsKey("STORIES_TARGET") ) {
+            StoryManager.generateRandomStories();
+        } else {
+            System.out.println("Skipping generation of random stories (Sprint 5)");
         }
+
+        // Sprint 6 task
+        if(ConfigurationFile.containsKey("AUDIO_FOLDER") && ConfigurationFile.containsKey("AUDIO_INDEX")) {
+            String phrase = "Hello World!";
+            try {
+                AudioManager.createNewAudio(phrase);
+                AudioManager.createNewAudio("Gesundheit");
+                AudioManager.createNewAudio("Arbeit Macht Frei");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                int index = AudioManager.getIndexByPhrase(phrase);
+                System.out.println("Index of " + phrase + " is: " + index);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
 
 
 

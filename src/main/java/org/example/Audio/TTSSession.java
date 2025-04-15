@@ -48,8 +48,6 @@ public class TTSSession {
                 .POST(HttpRequest.BodyPublishers.ofString(jsonPayloadString))
                 .build();
 
-        System.out.println("Sending request to " + TTS_ENDPOINT + " with payload: " + jsonPayloadString);
-
         // Handling the response
         return client.send(request, HttpResponse.BodyHandlers.ofInputStream());
     }

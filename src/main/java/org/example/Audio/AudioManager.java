@@ -47,7 +47,6 @@ public class AudioManager {
         HttpResponse<InputStream> response = TTSSession.textToSpeech(phrase);
 
         if (response.statusCode() == 200) {
-            System.out.println("API call successful (Status Code: 200). Receiving audio stream...");
             try (InputStream audioStream = response.body()) {
                 Files.copy(audioStream, outputFile, StandardCopyOption.REPLACE_EXISTING);
                 System.out.println("Audio saved successfully to: " + outputFile.toAbsolutePath());

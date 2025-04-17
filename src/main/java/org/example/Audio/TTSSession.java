@@ -1,6 +1,6 @@
 package org.example.Audio;
 
-import org.example.ConfigurationFile;
+import org.example.Utils.ConfigurationFile;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,8 +8,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
 import java.time.Duration;
 
 import com.google.gson.JsonObject;

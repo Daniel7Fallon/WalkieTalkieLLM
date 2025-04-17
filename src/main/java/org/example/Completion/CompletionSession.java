@@ -3,7 +3,7 @@ package org.example.Completion;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import org.example.ConfigurationFile;
+import org.example.Utils.ConfigurationFile;
 
 import java.net.URI;
 import java.net.http.HttpClient;

@@ -1,8 +1,11 @@
-package org.example;
+package org.example.Translation;
 
 import org.example.Assets.VignetteManager;
 import org.example.Assets.VignetteSchema;
 import org.example.Completion.CompletionSession;
+import org.example.Utils.MessageParser;
+import org.example.Utils.NumberedList;
+import org.example.Utils.ConfigurationFile;
 
 import java.io.*;
 import java.util.ArrayList;

@@ -1,6 +1,4 @@
-package org.example;
-
-import org.example.Utils.StringUtil;
+package org.example.Utils;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

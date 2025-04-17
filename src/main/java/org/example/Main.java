@@ -2,7 +2,10 @@ package org.example;
 
 import org.example.Audio.AudioManager;
 import org.example.Comic.*;
-import org.example.Audio.TTSSession;
+import org.example.Story.StoryManager;
+import org.example.Translation.Dictionary;
+import org.example.Translation.Translator;
+import org.example.Utils.ConfigurationFile;
 import org.example.XML.VignetteToComic;
 
 import java.io.IOException;
@@ -12,6 +15,7 @@ import java.util.List;
 import org.example.Assets.VignetteManager;
 import org.example.Assets.VignetteSchema;
 import org.example.XML.XMLGenerator;
+import org.jdom2.JDOMException;
 
 
 public class Main {
@@ -77,8 +81,12 @@ public class Main {
 
         //Sprint 5 task
         if(ConfigurationFile.containsKey("STORIES_XML") && ConfigurationFile.containsKey("STORIES_TARGET") ) {
-            Comic finalComic = StoryManager.generateRandomStories(10);
-            XMLGenerator.generateXMLFromComic(finalComic, ConfigurationFile.getValue("STORIES_TARGET"));
+            try {
+                Comic finalComic = StoryManager.generateRandomStoriesComic(10);
+                XMLGenerator.generateXMLFromComic(finalComic, ConfigurationFile.getValue("STORIES_TARGET"));
+            } catch (IOException | JDOMException e) {
+                System.out.println(e);
+            }
         } else {
             System.out.println("Skipping generation of random stories (Sprint 5)");
         }
@@ -86,19 +94,24 @@ public class Main {
         // Sprint 6 task
         if(ConfigurationFile.containsKey("STORIES_XML") && ConfigurationFile.containsKey("AUDIO_FOLDER")
                 && ConfigurationFile.containsKey("AUDIO_INDEX") && ConfigurationFile.containsKey("AUDIO_TARGET")) {
-            Comic singleComic = StoryManager.generateRandomStories(1);
-            //Testing split and adding audio
-            XMLGenerator.generateXMLFromComic(singleComic, "test.xml");
-            singleComic.splitAllMultiDialoguePanels();
-            XMLGenerator.generateXMLFromComic(singleComic, ConfigurationFile.getValue("AUDIO_TARGET"));
-            try {
-                AudioManager.addAudio(singleComic);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            XMLGenerator.generateXMLFromComic(singleComic, "test_audio_output.xml");
+
+           try {
+               Comic singleComic = StoryManager.generateRandomStoriesComic(1);
+               //Testing split and adding audio
+               XMLGenerator.generateXMLFromComic(singleComic, "test.xml");
+               singleComic.splitAllMultiDialoguePanels();
+               XMLGenerator.generateXMLFromComic(singleComic, "test_output.xml");
+               try {
+                   AudioManager.addAudio(singleComic);
+               } catch (IOException e) {
+                   throw new RuntimeException(e);
+               } catch (InterruptedException e) {
+                   throw new RuntimeException(e);
+               }
+               XMLGenerator.generateXMLFromComic(singleComic, "test_audio_output.xml");
+           } catch (Exception e) {
+               System.out.println(e);
+           }
 
         } else {
             System.out.println("Skipping generation of audio story (Sprint 6)");

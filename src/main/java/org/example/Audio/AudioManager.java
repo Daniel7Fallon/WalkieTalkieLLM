@@ -3,7 +3,7 @@ package org.example.Audio;
 import org.example.Comic.Comic;
 import org.example.Comic.Panel;
 import org.example.Comic.Scene;
-import org.example.ConfigurationFile;
+import org.example.Utils.ConfigurationFile;
 
 import java.io.*;
 import java.net.http.HttpResponse;
@@ -36,8 +36,6 @@ public class AudioManager {
                     String audioFile = getIndexByPhrase(dialogue) + ".mp3";
                     panel.setAudio(audioFile);
                 }
-
-
             }
         }
     }

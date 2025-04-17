@@ -3,7 +3,7 @@ package org.example.XML;
 import org.example.Assets.Vignette;
 import org.example.Assets.VignetteSchema;
 import org.example.Comic.*;
-import org.example.Dictionary;
+import org.example.Translation.Dictionary;
 
 import java.io.IOException;
 import java.util.List;

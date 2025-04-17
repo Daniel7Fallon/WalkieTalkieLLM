@@ -1,7 +1,7 @@
 package org.example.XML;
 
 import org.example.Comic.*;
-import org.example.Translator;
+import org.example.Translation.Translator;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;

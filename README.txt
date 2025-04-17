@@ -38,9 +38,11 @@ TRANSLATION_BATCH_SIZE	40
 #New comic with right character repeating the translations.
 #CONJUGATION_TARGET	conjugationLesson.xml
 
-#Sprint 5
+#Sprint 5 & 6
 #The xml specification containing stories populated with audiovisual descriptions.
-#STORIES_XML	stories.xml
+STORIES_XML	stories.xml
+
+#Sprint 5
 #New comic with AI dialogue and AI translations.
 #STORIES_TARGET	storiesLesson.xml
 
@@ -49,6 +51,8 @@ TRANSLATION_BATCH_SIZE	40
 AUDIO_FOLDER	Audio
 #Target for phrase\tindex mappings.
 AUDIO_INDEX	audioIndex.txt
+#Target for output story
+AUDIO_TARGET	audioLesson.xml
 ```
 
 Dependencies:

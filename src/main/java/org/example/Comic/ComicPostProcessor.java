@@ -73,10 +73,10 @@ public class ComicPostProcessor {
                         original.getBalloonContent()
                 );
                 translated.setBalloonContent(translations[1]);
-                translated.setBallonStatus("speaking");
+                translated.setBalloonStatus("speaking");
             } catch (IOException | NullPointerException e) {
                 translated.setBalloonContent("[TRANSLATION MISSING]");
-                translated.setBallonStatus("error");
+                translated.setBalloonStatus("error");
             }
         }
 

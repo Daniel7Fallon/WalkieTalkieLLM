@@ -74,6 +74,9 @@ public final class ConfigurationFile {
         if(audioFolder == null || audioFolder.isEmpty()) System.out.println("[WARNING] AUDIO_FOLDER parameter is missing in configuration file.");
         String audioIndexPath = configMap.get("AUDIO_INDEX");
         if(audioIndexPath == null || audioIndexPath.isEmpty()) System.out.println("[WARNING] AUDIO_INDEX parameter is missing in configuration file.");
+        String audioTarget = configMap.get("AUDIO_TARGET");
+        if(audioTarget == null || audioTarget.isEmpty()) System.out.println("[WARNING] AUDIO_TARGET parameter is missing in configuration file.");
+
         //Format Languages
         configMap.put("SOURCELANGUAGE", StringUtil.capitalize(sourceLanguage));
         configMap.put("TARGETLANGUAGE", StringUtil.capitalize(targetLanguage));

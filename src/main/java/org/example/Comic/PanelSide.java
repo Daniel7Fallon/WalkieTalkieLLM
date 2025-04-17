@@ -13,7 +13,7 @@ public class PanelSide {
     public String getBalloonStatus() {
         return ballonStatus;
     }
-    public void setBallonStatus(String ballonStatus) {
+    public void setBalloonStatus(String ballonStatus) {
         this.ballonStatus = ballonStatus;
     }
     public String getBalloonContent() {
@@ -21,6 +21,14 @@ public class PanelSide {
     }
     public void setBalloonContent(String balloonContent) {
         this.balloonContent = balloonContent;
+    }
+
+    public PanelSide copy() {
+        PanelSide panelSide = new PanelSide();
+        panelSide.panelFigure = this.panelFigure;
+        panelSide.ballonStatus = this.ballonStatus;
+        panelSide.balloonContent = this.balloonContent;
+        return panelSide;
     }
 
     @Override

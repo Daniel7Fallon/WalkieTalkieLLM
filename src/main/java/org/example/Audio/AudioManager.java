@@ -1,5 +1,6 @@
 package org.example.Audio;
 
+import org.example.Comic.Comic;
 import org.example.ConfigurationFile;
 
 import java.io.*;
@@ -13,6 +14,10 @@ public class AudioManager {
     private static final String AUDIO_INDEX_FILE_PATH = ConfigurationFile.getValue("AUDIO_INDEX");
     private static final String RESPONSE_FORMAT = "mp3";
 
+
+    public static void addAudio(Comic comic) {
+
+    }
 
     public static void createNewAudio(String phrase) throws IOException, InterruptedException {
         //Ensure Audio folder exists

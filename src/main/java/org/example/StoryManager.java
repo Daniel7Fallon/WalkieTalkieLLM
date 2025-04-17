@@ -17,7 +17,7 @@ import java.util.Random;
 
 public class StoryManager {
 
-    public static void generateRandomStories() {
+    public static Comic generateRandomStories(int numberOfStories) {
         String storiesSpec = ConfigurationFile.getValue("STORIES_XML");
         String storiesTarget = ConfigurationFile.getValue("STORIES_TARGET");
         String sourceLang = ConfigurationFile.getValue("SOURCELANGUAGE");
@@ -30,25 +30,29 @@ public class StoryManager {
             List<Scene> scenes = new ArrayList<>();
 
             // Get 10 unique random scenes
-            while(scenes.size() < 10) {
+            while(scenes.size() < numberOfStories) {
                 Scene scene = storiesInputComic.getScenes().get(rand.nextInt(storiesInputComic.getScenes().size()));
                 if(!scenes.contains(scene)) scenes.add(scene);
             }
 
             //Generate dialogue for scenes
             List<String> allDialogues = new ArrayList<>();
-            List<List<String>> dialogues = new ArrayList<>();
+            List<SceneDialogue> sceneDialogues = new ArrayList<>();
             for(Scene originalScene : scenes) {
                 String visualDescription = generateAudiovisualDescriptionForScene(originalScene);
                 String speechTemplate = getSpeechForScene(originalScene);
-                dialogues = generateDialogueFromDescriptions(visualDescription, speechTemplate);
+                sceneDialogues.add(generateDialogueFromDescriptions(visualDescription, speechTemplate));
 
-                for(List<String> panelDialogues : dialogues) {
-                    for(String dialogueLine : panelDialogues) {
-                        allDialogues.add(StringUtil.removeSpeaker(dialogueLine));
+                for(SceneDialogue sceneDialogue: sceneDialogues) {
+                    for (SceneDialogue.PanelDialogue panelDialogues : sceneDialogue.getPanelDialogues()) {
+                        for (String dialogueLine : panelDialogues.getDialogues()) {
+                            allDialogues.add(StringUtil.removeSpeaker(dialogueLine));
+                        }
                     }
                 }
             }
+            System.out.println(sceneDialogues);
+            System.out.println(allDialogues);
 
             //Translate dialogues
             try {
@@ -60,21 +64,20 @@ public class StoryManager {
             Comic finalComic = new Comic();
             finalComic.setFigures(storiesInputComic.getFigures());
 
-            for(Scene originalScene : scenes) {
-                // Create bilingual version
-                Scene bilingualScene = createBilingualScene(originalScene, dialogues);
+            for(int i = 0; i < scenes.size(); i++) {
+                Scene bilingualScene = createBilingualScene(scenes.get(i), sceneDialogues.get(i));
                 finalComic.addScene(bilingualScene);
             }
 
-            // Generate XML
-            XMLGenerator.generateXMLFromComic(finalComic, storiesTarget);
+            return finalComic;
 
         } catch (JDOMException | IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
-    private static Scene createBilingualScene(Scene originalScene, List<List<String>> dialogues) {
+    private static Scene createBilingualScene(Scene originalScene, SceneDialogue sceneDialogue) {
         Scene newScene = new Scene();
 
         // Preserve the title panel
@@ -84,15 +87,16 @@ public class StoryManager {
 
         for(int i = 1; i < originalScene.getPanels().size(); i++) {
             Panel originalPanel = originalScene.getPanels().get(i);
+            SceneDialogue.PanelDialogue panelDialogue = sceneDialogue.getPanelDialogues().get(i-1);
 
             // Create English version
             Panel enPanel = createTranslatedPanel(originalPanel,
-                    safeGetDialogues(dialogues, i-1),
+                    panelDialogue,
                     0);
 
             // Create target language version
             Panel tgtPanel = createTranslatedPanel(originalPanel,
-                    safeGetDialogues(dialogues, i-1),
+                    panelDialogue,
                     1);
 
             newScene.addPanel(enPanel);
@@ -102,13 +106,7 @@ public class StoryManager {
         return newScene;
     }
 
-    private static List<String> safeGetDialogues(List<List<String>> dialogues, int index) {
-        return (index >= 0 && index < dialogues.size())
-                ? dialogues.get(index)
-                : Collections.emptyList();
-    }
-
-    private static Panel createTranslatedPanel(Panel original, List<String> panelDialogues,
+    private static Panel createTranslatedPanel(Panel original, SceneDialogue.PanelDialogue panelDialogues,
                                                int language) {
         Panel newPanel = new Panel();
 
@@ -121,21 +119,21 @@ public class StoryManager {
         // Process left side
         if(original.getLeftSide() != null) {
             PanelSide newSide = processPanelSide(original.getLeftSide(),
-                    panelDialogues, language);
+                    panelDialogues.getDialogues(), language);
             newPanel.setLeftSide(newSide);
         }
 
         //Process middle side
         if(original.getMiddleSide() != null) {
             PanelSide newSide = processPanelSide(original.getMiddleSide(),
-                    panelDialogues, language);
+                    panelDialogues.getDialogues(), language);
             newPanel.setMiddleSide(newSide);
         }
 
         // Process right side
         if(original.getRightSide() != null) {
             PanelSide newSide = processPanelSide(original.getRightSide(),
-                    panelDialogues, language);
+                    panelDialogues.getDialogues(), language);
             newPanel.setRightSide(newSide);
         }
 
@@ -169,10 +167,10 @@ public class StoryManager {
                     }
                 }
 
-                newSide.setBallonStatus("speaking");
+                newSide.setBalloonStatus("speaking");
                 newSide.setBalloonContent(translatedText);
             } catch (IOException e) {
-                newSide.setBallonStatus("warning");
+                newSide.setBalloonStatus("warning");
                 newSide.setBalloonContent(dialogue);
             }
         }
@@ -181,7 +179,7 @@ public class StoryManager {
     }
 
     // Update the prompt in generateDialogueFromDescriptions
-    private static List<List<String>> generateDialogueFromDescriptions(String input, String format) {
+    private static SceneDialogue generateDialogueFromDescriptions(String input, String format) {
         String messageContent = "Generate natural character dialogue in this exact format:\n"
                 + "1. [Character1]: \"[Dialogue1]\" / [Character2]: \"[Dialogue2]\"\n"
                 + "2. [Character1]: \"[Dialogue3]\"\n"
@@ -193,7 +191,14 @@ public class StoryManager {
         CompletionSession session = new CompletionSession();
         String response = session.sendMessage("user", messageContent);
 
-        return MessageParser.parseNumberedDialogue(response);
+        SceneDialogue sceneDialogue = new SceneDialogue();
+
+        List<List<String>> parsedScene = MessageParser.parseNumberedDialogue(response);
+
+        for(List<String> pd : parsedScene) {
+            sceneDialogue.addPanelDialogues(new SceneDialogue.PanelDialogue(pd));
+        }
+        return sceneDialogue;
     }
 
     private static String findDialogueForSpeaker(List<String> panelDialogues, String speakerName) {

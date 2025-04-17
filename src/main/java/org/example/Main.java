@@ -77,13 +77,29 @@ public class Main {
 
         //Sprint 5 task
         if(ConfigurationFile.containsKey("STORIES_XML") && ConfigurationFile.containsKey("STORIES_TARGET") ) {
-            StoryManager.generateRandomStories();
+            Comic finalComic = StoryManager.generateRandomStories(10);
+            XMLGenerator.generateXMLFromComic(finalComic, ConfigurationFile.getValue("STORIES_TARGET"));
         } else {
             System.out.println("Skipping generation of random stories (Sprint 5)");
         }
 
         // Sprint 6 task
-        if(ConfigurationFile.containsKey("AUDIO_FOLDER") && ConfigurationFile.containsKey("AUDIO_INDEX")) {
+        if(ConfigurationFile.containsKey("STORIES_XML") && ConfigurationFile.containsKey("AUDIO_FOLDER")
+                && ConfigurationFile.containsKey("AUDIO_INDEX") && ConfigurationFile.containsKey("AUDIO_TARGET")) {
+
+            Comic singleComic = StoryManager.generateRandomStories(1);
+            System.out.println("Single Comic has this many scenes: " + singleComic.getScenes().size());
+            System.out.println("Single Comic first scene has this many panels: " + singleComic.getScenes().get(0).getPanels().size());
+            if(singleComic == null) System.out.println("Single comic is null");
+            XMLGenerator.generateXMLFromComic(singleComic, "test.xml");
+            for(Scene scene: singleComic.getScenes()) {
+                scene.splitMultiDialoguePanels();
+            }
+            XMLGenerator.generateXMLFromComic(singleComic, "test_output.xml");
+            //AudioManager.addAudio(singleComic);
+
+
+
             String phrase = "Hello World!";
             try {
                 AudioManager.createNewAudio(phrase);
@@ -100,6 +116,8 @@ public class Main {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        } else {
+            System.out.println("Skipping generation of audio story (Sprint 6)");
         }
 
 

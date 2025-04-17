@@ -95,7 +95,7 @@ public class XMLParser {
         // Parse balloon if exists
         Element balloonElement = sideElement.getChild("balloon");
         if (balloonElement != null) {
-            panelSide.setBallonStatus(balloonElement.getAttributeValue("status"));
+            panelSide.setBalloonStatus(balloonElement.getAttributeValue("status"));
             panelSide.setBalloonContent(balloonElement.getChildText("content"));
         }
 

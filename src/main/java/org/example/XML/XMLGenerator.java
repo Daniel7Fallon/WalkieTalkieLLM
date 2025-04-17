@@ -92,6 +92,7 @@ public class XMLGenerator {
         addIfNotNull(panelElement, "setting", panel.getSetting());
         addIfNotNull(panelElement, "below", panel.getBelow());
         addIfNotNull(panelElement, "border", panel.getBorder() != null ? panel.getBorder() : DEFAULT_BORDER);
+        addIfNotNull(panelElement, "audio", panel.getAudio());
         //panelElement.addContent(new Element("duration").setText(DEFAULT_DURATION));
 
         addPanelSideIfExists(panelElement, panel.getLeftSide(), "left");

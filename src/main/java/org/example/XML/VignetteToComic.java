@@ -70,18 +70,18 @@ public class VignetteToComic {
 
                 }
                 case LEFT_SPEAKS -> {
-                    left.setBallonStatus("speaking");
+                    left.setBalloonStatus("speaking");
                     left.setBalloonContent(vignette.getLeftText());
                 }
                 case RIGHT_SPEAKS -> {
-                    right.setBallonStatus("speaking");
+                    right.setBalloonStatus("speaking");
                     right.setBalloonContent(translatedText);
                 }
                 case BOTH_SPEAK -> {
-                    left.setBallonStatus("speaking");
+                    left.setBalloonStatus("speaking");
                     left.setBalloonContent(vignette.getLeftText());
 
-                    right.setBallonStatus("speaking");
+                    right.setBalloonStatus("speaking");
                     right.setBalloonContent(translatedText);
                 }
             }

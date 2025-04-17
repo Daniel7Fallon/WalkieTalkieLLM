@@ -10,6 +10,7 @@ public class Panel {
     private PanelSide leftSide;
     private PanelSide middleSide;
     private PanelSide rightSide;
+    private String audio;
 
     // Getters and setters
 
@@ -31,6 +32,12 @@ public class Panel {
     public void setMiddleSide(PanelSide middleSide) { this.middleSide = middleSide; }
     public PanelSide getRightSide() { return rightSide; }
     public void setRightSide(PanelSide rightSide) { this.rightSide = rightSide; }
+    public String getAudio() {
+        return audio;
+    }
+    public void setAudio(String audio) {
+        this.audio = audio;
+    }
 
     public boolean hasLeft() {
         return leftSide != null;
@@ -40,6 +47,19 @@ public class Panel {
     }
     public boolean hasRight() {
         return rightSide != null;
+    }
+
+    public Panel deepCopy() {
+        Panel panel = new Panel();
+        panel.setAbove(this.above);
+        panel.setBelow(this.below);
+        panel.setBorder(this.border);
+        panel.setSetting(this.setting);
+        if(this.hasLeft()) panel.setLeftSide(this.leftSide.copy());
+        if(this.hasMiddle()) panel.setMiddleSide(this.middleSide.copy());
+        if(this.hasRight()) panel.setRightSide(this.rightSide.copy());
+        panel.setAudio(this.audio);
+        return panel;
     }
 
     @Override

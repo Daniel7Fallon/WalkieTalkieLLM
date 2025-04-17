@@ -1,6 +1,8 @@
 package org.example.Audio;
 
 import org.example.Comic.Comic;
+import org.example.Comic.Panel;
+import org.example.Comic.Scene;
 import org.example.ConfigurationFile;
 
 import java.io.*;
@@ -15,8 +17,29 @@ public class AudioManager {
     private static final String RESPONSE_FORMAT = "mp3";
 
 
-    public static void addAudio(Comic comic) {
+    public static void addAudio(Comic comic) throws IOException, InterruptedException {
+        for(Scene scene : comic.getScenes()) {
+            for(Panel panel : scene.getPanels()) {
+                if(panel.hasLeft() && panel.getLeftSide().getBalloonStatus() != null) {
+                    String dialogue = panel.getLeftSide().getBalloonContent();
+                    createNewAudio(dialogue);
+                    String audioFile = getIndexByPhrase(dialogue) + ".mp3";
+                    panel.setAudio(audioFile);
+                } else if(panel.hasMiddle() && panel.getMiddleSide().getBalloonStatus() != null) {
+                    String dialogue = panel.getMiddleSide().getBalloonContent();
+                    createNewAudio(dialogue);
+                    String audioFile = getIndexByPhrase(dialogue) + ".mp3";
+                    panel.setAudio(audioFile);
+                } else if(panel.hasRight() && panel.getRightSide().getBalloonStatus() != null) {
+                    String dialogue = panel.getRightSide().getBalloonContent();
+                    createNewAudio(dialogue);
+                    String audioFile = getIndexByPhrase(dialogue) + ".mp3";
+                    panel.setAudio(audioFile);
+                }
 
+
+            }
+        }
     }
 
     public static void createNewAudio(String phrase) throws IOException, InterruptedException {
@@ -37,8 +60,6 @@ public class AudioManager {
         try {
             if(audioIndexFile.createNewFile()) {
                 System.out.println("Audio Index file created: " + audioIndexFile);
-            } else {
-                System.out.println("Audio Index file already exists: " + audioIndexFile);
             }
         } catch (IOException e) {
             throw new IOException("Error creating Audio Index file: " + e.getMessage());
@@ -93,8 +114,6 @@ public class AudioManager {
                     StandardOpenOption.APPEND,
                     StandardOpenOption.CREATE,
                     StandardOpenOption.WRITE);
-
-            System.out.println("Appended entry to audio index file: " + indexFilePath.toAbsolutePath());
 
         } catch (IOException e) {
             System.err.println("Error: Failed to write to audio index file '" + indexFilePath.toAbsolutePath() + "': " + e.getMessage());

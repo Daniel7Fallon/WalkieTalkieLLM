@@ -86,32 +86,20 @@ public class Main {
         // Sprint 6 task
         if(ConfigurationFile.containsKey("STORIES_XML") && ConfigurationFile.containsKey("AUDIO_FOLDER")
                 && ConfigurationFile.containsKey("AUDIO_INDEX") && ConfigurationFile.containsKey("AUDIO_TARGET")) {
-
             Comic singleComic = StoryManager.generateRandomStories(1);
-            //Testing split
+            //Testing split and adding audio
             XMLGenerator.generateXMLFromComic(singleComic, "test.xml");
             singleComic.splitAllMultiDialoguePanels();
             XMLGenerator.generateXMLFromComic(singleComic, "test_output.xml");
-            //AudioManager.addAudio(singleComic);
-
-
-
-            String phrase = "Hello World!";
             try {
-                AudioManager.createNewAudio(phrase);
-                AudioManager.createNewAudio("Gesundheit");
-                AudioManager.createNewAudio("Arbeit Macht Frei");
+                AudioManager.addAudio(singleComic);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            try {
-                int index = AudioManager.getIndexByPhrase(phrase);
-                System.out.println("Index of " + phrase + " is: " + index);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            XMLGenerator.generateXMLFromComic(singleComic, "test_audio_output.xml");
+
         } else {
             System.out.println("Skipping generation of audio story (Sprint 6)");
         }

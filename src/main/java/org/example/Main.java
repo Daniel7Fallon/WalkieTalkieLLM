@@ -90,7 +90,7 @@ public class Main {
             //Testing split and adding audio
             XMLGenerator.generateXMLFromComic(singleComic, "test.xml");
             singleComic.splitAllMultiDialoguePanels();
-            XMLGenerator.generateXMLFromComic(singleComic, "test_output.xml");
+            XMLGenerator.generateXMLFromComic(singleComic, ConfigurationFile.getValue("AUDIO_TARGET"));
             try {
                 AudioManager.addAudio(singleComic);
             } catch (IOException e) {

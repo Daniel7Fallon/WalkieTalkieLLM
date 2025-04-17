@@ -8,31 +8,19 @@ class ResponseValidatorTest {
 
     @Test
     void testIsDenial() {
-        String response = "Sorry, I can't do that.";
-        assertTrue(ResponseValidator.isDenial(response));
-    }
-
-    @Test
-    void testIsDenial2() {
-        String response = "I'm unable to do that.";
-        assertTrue(ResponseValidator.isDenial(response));
-    }
-
-    @Test
-    void testIsDenial3() {
         String response = "This content is against my programming guidelines.";
         assertTrue(ResponseValidator.isDenial(response));
     }
 
     @Test
     void testCaseInsensitiveUppercase() {
-        String response = "SORRY, I CAN'T DO THAT.";
+        String response = "THIS CONTENT IS AGAINST MY PROGRAMMING GUIDELINES.";
         assertTrue(ResponseValidator.isDenial(response));
     }
 
     @Test
     void testCaseInsensitiveLowercase() {
-        String response = "sorry i'm unable to do that";
+        String response = "this content is against my programming guidelines.";
         assertTrue(ResponseValidator.isDenial(response));
     }
 

@@ -88,13 +88,9 @@ public class Main {
                 && ConfigurationFile.containsKey("AUDIO_INDEX") && ConfigurationFile.containsKey("AUDIO_TARGET")) {
 
             Comic singleComic = StoryManager.generateRandomStories(1);
-            System.out.println("Single Comic has this many scenes: " + singleComic.getScenes().size());
-            System.out.println("Single Comic first scene has this many panels: " + singleComic.getScenes().get(0).getPanels().size());
-            if(singleComic == null) System.out.println("Single comic is null");
+            //Testing split
             XMLGenerator.generateXMLFromComic(singleComic, "test.xml");
-            for(Scene scene: singleComic.getScenes()) {
-                scene.splitMultiDialoguePanels();
-            }
+            singleComic.splitAllMultiDialoguePanels();
             XMLGenerator.generateXMLFromComic(singleComic, "test_output.xml");
             //AudioManager.addAudio(singleComic);
 

@@ -47,6 +47,12 @@ public class Comic {
         }
     }
 
+    public void splitAllMultiDialoguePanels() {
+        for(Scene scene: this.getScenes()) {
+            scene.splitMultiDialoguePanels();
+        }
+    }
+
     public List<Figure> getFigures() {
         return figures;
     }

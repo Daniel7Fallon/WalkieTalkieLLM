@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.example.Utils.ConfigurationFile;
+import org.example.Utils.StringUtil;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -64,8 +65,6 @@ public class CompletionSession {
 
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            //System.out.println("Response Code: " + response.statusCode());
-            //System.out.println("Response Body: " + response.body());
             CompletionResponse completionResponse = gson.fromJson(response.body(), CompletionResponse.class);
             String responseContent = completionResponse.getFirstMessageContent();
 

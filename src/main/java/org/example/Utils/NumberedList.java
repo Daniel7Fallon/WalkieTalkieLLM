@@ -6,6 +6,12 @@ import java.util.List;
 public class NumberedList {
     private final List<String> list = new ArrayList<>();
 
+    public NumberedList cleanEntries() {
+        NumberedList cleanNumberedList = new NumberedList();
+        cleanNumberedList.addAll(StringUtil.cleanList(list));
+        return cleanNumberedList;
+    }
+
     //1. corresponds to index 0 etc.
     public String getByPosition(int position) {
         return list.get(position-1);

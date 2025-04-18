@@ -2,6 +2,7 @@ package org.example.Translation;
 
 import org.example.Utils.NumberedList;
 import org.example.Utils.ConfigurationFile;
+import org.example.Utils.StringUtil;
 
 import java.io.*;
 
@@ -37,36 +38,39 @@ public class Dictionary {
     }
 
     public static boolean translationExists(String sourceText, String sourceLanguage, String targetLanguage) throws IOException {
+        String cleanSourceText = StringUtil.clean(sourceText);
         String fileName = sourceLanguage + "To" + targetLanguage + ".txt";
         try (BufferedReader br = new BufferedReader(new FileReader(translationsDirectoryPath + "/" + fileName))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] tokens = line.split("\t");
-                if (sourceText.equals(tokens[0].trim())) return true;
+                if (cleanSourceText.equals(tokens[0].trim())) return true;
             }
         }
         return false;
     }
 
     public static String getTranslation(String sourceText, String sourceLanguage, String targetLanguage) throws IOException {
+        String cleanSourceText = StringUtil.clean(sourceText);
         String fileName = sourceLanguage + "To" + targetLanguage + ".txt";
         try (BufferedReader br = new BufferedReader(new FileReader(translationsDirectoryPath + "/" + fileName))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] tokens = line.split("\t");
-                if (sourceText.equals(tokens[0].trim())) return tokens[1].trim();
+                if (cleanSourceText.equals(tokens[0].trim())) return tokens[1].trim();
             }
         }
         return null;
     }
 
     public static void appendTranslations(String sourceLanguage, NumberedList sourceList, String targetLanguage, NumberedList targetList) throws IOException {
-        if(sourceList.size() != targetList.size()) throw new IllegalArgumentException("Source text list and target text list of different sizes.");
+        NumberedList cleanSourceList = sourceList.cleanEntries();
+        NumberedList cleanTargetList = targetList.cleanEntries();
+        if(cleanSourceList.size() != cleanTargetList.size()) throw new IllegalArgumentException("Source text list and target text list of different sizes.");
         String fileName = sourceLanguage + "To" + targetLanguage + ".txt";
         try(FileWriter writer = new FileWriter(translationsDirectoryPath + "/" + fileName, true)) {
-            for (int i = 1; i <= sourceList.size(); i++) {
-                String line = sourceList.getByPosition(i) + "\t" + targetList.getByPosition(i);
-                System.out.println("New Translation: " + line);
+            for (int i = 1; i <= cleanSourceList.size(); i++) {
+                String line = cleanSourceList.getByPosition(i) + "\t" + cleanTargetList.getByPosition(i);
                 writer.write(line + "\n");
             }
         }

@@ -25,12 +25,6 @@ public class Comic {
      */
     public void replaceDialogue(List<SceneDialogue> sceneDialogues) {
         if(sceneDialogues.size() != scenes.size()) {
-            System.out.println("Scene Dialogues: ");
-            for(SceneDialogue dialogue : sceneDialogues) {
-                System.out.println(dialogue);
-            }
-            System.out.println("Scene Dialogues size: " + sceneDialogues.size());
-            System.out.println("Scene size: " + scenes.size());
             throw new IllegalArgumentException("SceneDialogues size does not match scene size in comic");
         }
         for(int i = 0; i < this.getScenes().size(); i++) {

@@ -3,6 +3,7 @@ package org.example.Comic;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.example.Comic.Dialogue.PanelDialogue;
 import org.example.Comic.Dialogue.SceneDialogue;
 
 public class Scene {
@@ -45,7 +46,17 @@ public class Scene {
     }
 
     public void skipTitleReplaceDialogue(SceneDialogue sceneDialogue) {
-        if(sceneDialogue.getPanelDialogues().size() +1 != panels.size()) throw new IllegalArgumentException("SceneDialogue size +1 does not equal panels size.");
+        if(sceneDialogue.getPanelDialogues().size() +1 != panels.size()) {
+
+            System.out.println("Panel Dialogues: ");
+            for(PanelDialogue panelDialogue : sceneDialogue.getPanelDialogues()) {
+                System.out.println(panelDialogue);
+            }
+            System.out.println("Panel Dialogues size: " + sceneDialogue.getPanelDialogues().size());
+            System.out.println("Panels size: " + panels.size());
+
+            throw new IllegalArgumentException("SceneDialogue size +1 does not equal panels size.");
+        }
         for(int i = 1; i < panels.size(); i++) {
             Panel currentPanel = panels.get(i);
             currentPanel.replaceDialogue(sceneDialogue.getPanelDialogues().get(i-1));

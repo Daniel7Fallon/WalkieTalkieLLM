@@ -6,6 +6,7 @@ import org.example.Completion.CompletionSession;
 import org.example.Utils.MessageParser;
 import org.example.Utils.NumberedList;
 import org.example.Utils.ConfigurationFile;
+import org.example.Utils.StringUtil;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -53,9 +54,7 @@ public class Translator {
                         sourceTexts.add(leftText);
                 }
             }
-            if (sourceTexts.isEmpty()) {
-                System.out.println("All translations from " + sourceLanguage + " to " + targetLanguage + " already exist.");
-            } else {
+            if (!sourceTexts.isEmpty()) {
                 NumberedList targetTexts = translateNumberedList(sourceTexts, sourceLanguage, targetLanguage);
                 Dictionary.appendTranslations(sourceLanguage, sourceTexts, targetLanguage, targetTexts);
             }
@@ -68,9 +67,7 @@ public class Translator {
                     englishTexts.add(leftText);
                 }
             }
-            if (englishTexts.isEmpty()) {
-                System.out.println("All translations from English to " + sourceLanguage + " already exist.");
-            } else {
+            if (!englishTexts.isEmpty()) {
                 NumberedList sourceTexts = translateNumberedList(englishTexts, "English", sourceLanguage);
                 Dictionary.appendTranslations("English", englishTexts, sourceLanguage, sourceTexts);
             }
@@ -89,9 +86,7 @@ public class Translator {
                     sourceTexts.add(sourceText);
                 }
             }
-            if (sourceTexts.isEmpty()) {
-                System.out.println("All translations from " + sourceLanguage + " to " + targetLanguage + " already exist.");
-            } else {
+            if (!sourceTexts.isEmpty()) {
                 NumberedList targetTexts = translateNumberedList(sourceTexts, sourceLanguage, targetLanguage);
                 Dictionary.appendTranslations(sourceLanguage, sourceTexts, targetLanguage, targetTexts);
             }
@@ -124,21 +119,4 @@ public class Translator {
         return targetTexts;
     }
 
-    public static String translateSingleFallback(String text, String sourceLang, String targetLang) {
-        try {
-            // Check dictionary first
-            if(Dictionary.translationExists(text, sourceLang, targetLang)) {
-                return Dictionary.getTranslation(text, sourceLang, targetLang);
-            }
-
-            // Direct LLM translation
-            String prompt = "Translate this to " + targetLang + ": \"" + text + "\"";
-            CompletionSession session = new CompletionSession();
-            String response = session.sendMessage("user", prompt);
-
-            return MessageParser.parseSingleTranslation(response);
-        } catch (Exception e) {
-            return null;
-        }
-    }
 }

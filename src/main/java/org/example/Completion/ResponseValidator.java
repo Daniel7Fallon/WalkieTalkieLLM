@@ -1,5 +1,7 @@
 package org.example.Completion;
 
+import org.example.Utils.StringUtil;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -20,10 +22,13 @@ public class ResponseValidator {
         if (response == null || response.isEmpty()) {
             return false;
         }
+        /*
         String clean = response
                 .replaceAll("[‘’´`]", "'")
                 .replaceAll("[“”]", "\"")
                 .replaceAll("\\p{C}", ""); // Invisible control characters
+         */
+        String clean = StringUtil.clean(response);
 
         for (Pattern pattern : DENIAL_PATTERNS) {
             if (pattern.matcher(clean).find()) {

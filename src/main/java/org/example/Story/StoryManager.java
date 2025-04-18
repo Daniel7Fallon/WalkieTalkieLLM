@@ -22,16 +22,16 @@ public class StoryManager {
      * Generates dialogue for those scenes
      * Returns a comic with those scenes with AI dialogue
      */
-    public static Comic generateRandomStoriesComic(int numberOfStories) throws IOException, JDOMException {
-        Comic comic = XMLParser.parseComicFromFilePath(STORIES_SPEC);
-        List<Scene> scenes = getRandomScenesFromComic(comic, numberOfStories);
+    public static Comic generateRandomStoriesComic(Comic originalComic, int numberOfStories) throws IOException, JDOMException {
+        List<Scene> scenes = getRandomScenesFromComic(originalComic, numberOfStories);
 
         Comic finalComic = new Comic();
-        finalComic.setFigures(comic.getFigures());
+        finalComic.setFigures(originalComic.getFigures());
         finalComic.addAllScenes(scenes);
 
         List<SceneDialogue> sceneDialogues = finalComic.generateDialogueFromAudioDescriptionComic();
 
+        finalComic.removeAllAboveAndBelow();
         finalComic.replaceDialogue(sceneDialogues);
 
         return finalComic;

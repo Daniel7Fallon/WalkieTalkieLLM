@@ -73,7 +73,6 @@ public class AudioManager {
         if (response.statusCode() == 200) {
             try (InputStream audioStream = response.body()) {
                 Files.copy(audioStream, outputFile, StandardCopyOption.REPLACE_EXISTING);
-                System.out.println("Audio saved successfully to: " + outputFile.toAbsolutePath());
                 AudioManager.addToAudioIndex(phrase, "" + newIndex);
             } catch (IOException e) {
                 throw new IOException("Failed to save audio file to " + outputFile.toAbsolutePath(), e);

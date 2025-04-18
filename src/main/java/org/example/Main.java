@@ -74,13 +74,14 @@ public class Main {
         // Sprint 4 task
         if(ConfigurationFile.containsKey("CONJUGATION_XML") && ConfigurationFile.containsKey("CONJUGATION_TARGET")) {
             String conjugationSpec = ConfigurationFile.getValue("CONJUGATION_XML");
+
             String conjugationTarget = ConfigurationFile.getValue("CONJUGATION_TARGET");
             try {
                 /* Parses XML Spec to comic
                  * Translates all dialogue and adds in translated panels
                  * Writes new XML to target
                  */
-                Comic conjugationTemplateComic = XMLParser.parseComicFromFilePath(conjugationSpec);
+                Comic conjugationTemplateComic = XMLParser.parseComicFromResourcesPath(conjugationSpec);
                 Comic newComic = ComicPostProcessor.generateBilingualComic(conjugationTemplateComic);
                 XMLGenerator.generateXMLFromComic(newComic, conjugationTarget);
             } catch (IOException | JDOMException e) {
@@ -94,7 +95,9 @@ public class Main {
         //Sprint 5 task
         if(ConfigurationFile.containsKey("STORIES_XML") && ConfigurationFile.containsKey("STORIES_TARGET") ) {
             try {
-                Comic aiDialogueComic = StoryManager.generateRandomStoriesComic(10);
+                String storiesSpec = ConfigurationFile.getValue("STORIES_XML");
+                Comic wholeAudioVisualStoriesComic = XMLParser.parseComicFromResourcesPath(storiesSpec);
+                Comic aiDialogueComic = StoryManager.generateRandomStoriesComic(wholeAudioVisualStoriesComic, 10);
                 Comic bilingualStoriesComic = ComicPostProcessor.generateBilingualComic(aiDialogueComic);
                 XMLGenerator.generateXMLFromComic(bilingualStoriesComic, ConfigurationFile.getValue("STORIES_TARGET"));
             } catch (IOException | JDOMException e) {
@@ -107,16 +110,18 @@ public class Main {
         // Sprint 6 task
         if(ConfigurationFile.containsKey("STORIES_XML") && ConfigurationFile.containsKey("AUDIO_FOLDER")
                 && ConfigurationFile.containsKey("AUDIO_INDEX") && ConfigurationFile.containsKey("AUDIO_TARGET")) {
-
            try {
-               Comic singleComic = StoryManager.generateRandomStoriesComic(1);
+               //Create single scene comic
+               String storiesSpec = ConfigurationFile.getValue("STORIES_XML");
+               Comic wholeAudioVisualStoriesComic = XMLParser.parseComicFromResourcesPath(storiesSpec);
+               Comic singleComic = StoryManager.generateRandomStoriesComic(wholeAudioVisualStoriesComic, 1);
                singleComic = ComicPostProcessor.generateBilingualComic(singleComic);
-               //Testing split and adding audio
-               XMLGenerator.generateXMLFromComic(singleComic, "test.xml");
+                //Split panels and add audio
                singleComic.splitAllMultiDialoguePanels();
-               XMLGenerator.generateXMLFromComic(singleComic, "test_output.xml");
                AudioManager.addAudio(singleComic);
-               XMLGenerator.generateXMLFromComic(singleComic, "test_audio_output.xml");
+               //Store output
+               String audioTarget = ConfigurationFile.getValue("AUDIO_TARGET");
+               XMLGenerator.generateXMLFromComic(singleComic, audioTarget);
            } catch (Exception e) {
                System.out.println(e.getMessage());
            }

@@ -102,6 +102,12 @@ public class Comic {
         }
     }
 
+    public void removeAllAboveAndBelow() {
+        for(Scene scene: this.getScenes()) {
+            scene.removeAllAboveAndBelow();
+        }
+    }
+
     public List<Figure> getFigures() {
         return figures;
     }

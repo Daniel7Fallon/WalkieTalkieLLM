@@ -5,9 +5,8 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -16,6 +15,17 @@ import java.util.List;
 import org.example.Comic.*;
 
 public class XMLParser {
+
+    public static Comic parseComicFromResourcesPath(String xmlpath) throws JDOMException, IOException {
+        ClassLoader classLoader = XMLParser.class.getClassLoader();
+        try(InputStream inputStream = classLoader.getResourceAsStream(xmlpath)) {
+            if(inputStream == null) {
+                throw new FileNotFoundException("Resource not found: " + xmlpath);
+            }
+            String xmlContent = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            return parseComic(xmlContent);
+        }
+    }
 
     public static Comic parseComicFromFilePath(String xmlPath) throws IOException, JDOMException {
         String xmlContent = new String(Files.readAllBytes(Paths.get(xmlPath)));

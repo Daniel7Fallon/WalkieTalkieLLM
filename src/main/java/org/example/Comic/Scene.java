@@ -81,6 +81,13 @@ public class Scene {
         }
     }
 
+    public void removeAllAboveAndBelow() {
+        for(Panel panel : panels) {
+            panel.setAbove(null);
+            panel.setBelow(null);
+        }
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

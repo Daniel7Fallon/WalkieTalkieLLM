@@ -40,8 +40,8 @@ public final class ConfigurationFile {
         if(targetLanguage == null || targetLanguage.isEmpty()) throw new IllegalArgumentException("TARGETLANGUAGE parameter is missing in configuration file.");
         String completionsUrl = configMap.get("COMPLETIONS_URL");
         if(completionsUrl == null || completionsUrl.isEmpty()) throw new IllegalArgumentException("COMPLETIONS_URL parameter is missing in configuration file.");
-        String ttsEndpointUrl = configMap.get("TTS_ENDPOINT_URL");
-        if(ttsEndpointUrl == null || ttsEndpointUrl.isEmpty()) throw new IllegalArgumentException("TTS_ENDPOINT_URL parameter is missing in configuration file.");
+        String ttsEndpointUrl = configMap.get("TTS_URL");
+        if(ttsEndpointUrl == null || ttsEndpointUrl.isEmpty()) throw new IllegalArgumentException("TTS_URL parameter is missing in configuration file.");
         String apiKey = configMap.get("API_KEY");
         if(apiKey == null || apiKey.isEmpty()) throw new IllegalArgumentException("API_KEY parameter is missing in configuration file.");
         String model = configMap.get("MODEL");

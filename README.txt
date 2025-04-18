@@ -9,8 +9,7 @@ TARGETLANGUAGE	GERMAN
 COMPLETIONS_URL	https://api.openai.com/v1/chat/completions
 EMBEDDINGS_URL	https://api.openai.com/v1/embeddings
 MODELS_URL	https://api.openai.com/v1/models
-
-TTS_ENDPOINT_URL	https://api.openai.com/v1/audio/speech
+TTS_URL	https://api.openai.com/v1/audio/speech
 
 ORG_KEY	org-gZ7peQP5XmIRVhs78U8WH
 API_KEY	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
@@ -21,9 +20,14 @@ TTS_MODEL	tts-1
 TTS_VOICE	alloy
 
 TRANSLATIONS_FOLDER	Translations
-
-
 TRANSLATION_BATCH_SIZE	40
+
+#Resource folder paths
+#The xml specification containing left character speech only (required for sprint 4).
+CONJUGATION_XML	conjugation.xml
+#The xml specification containing stories populated with audiovisual descriptions (required for sprints 5 & 6).
+STORIES_XML	stories.xml
+
 
 #Following are the key-values specific to each sprint
 #Comment them out to skip them
@@ -33,14 +37,8 @@ TRANSLATION_BATCH_SIZE	40
 #LESSON_TARGET	lesson.xml
 
 #Sprint 4
-#The xml specification containing left character speech only.
-#CONJUGATION_XML	conjugation.xml
 #New comic with right character repeating the translations.
 #CONJUGATION_TARGET	conjugationLesson.xml
-
-#Sprint 5 & 6
-#The xml specification containing stories populated with audiovisual descriptions.
-STORIES_XML	stories.xml
 
 #Sprint 5
 #New comic with AI dialogue and AI translations.

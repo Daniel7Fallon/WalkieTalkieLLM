@@ -15,7 +15,7 @@ import com.google.gson.JsonObject;
 public class TTSSession {
     private static final String ORG_KEY = ConfigurationFile.getValue("ORG_KEY");
     private static final String API_KEY = ConfigurationFile.getValue("API_KEY");
-    private static final String TTS_ENDPOINT = ConfigurationFile.getValue("TTS_ENDPOINT_URL");
+    private static final String TTS_ENDPOINT = ConfigurationFile.getValue("TTS_URL");
     private static final String MODEL = ConfigurationFile.getValue("TTS_MODEL");
     private static final String VOICE = ConfigurationFile.getValue("TTS_VOICE");
     private static final String RESPONSE_FORMAT = "mp3";

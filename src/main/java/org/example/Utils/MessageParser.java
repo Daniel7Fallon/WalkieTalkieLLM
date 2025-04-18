@@ -1,5 +1,9 @@
 package org.example.Utils;
 
+import org.example.Comic.Dialogue.CharacterDialogue;
+import org.example.Comic.Dialogue.PanelDialogue;
+import org.example.Comic.Dialogue.SceneDialogue;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,11 +36,11 @@ public class MessageParser {
         return result;
     }
 
-    public static List<List<String>> parseNumberedDialogue(String input) {
-        List<List<String>> panels = new ArrayList<>();
-
+    public static SceneDialogue parseNumberedDialogue(String input) {
         Pattern panelPattern = Pattern.compile("^(\\d+)\\.\\s*(.*)$");
         Pattern dialoguePattern = Pattern.compile("(\\w+):\\s*\"([^\"]*)\"");
+
+        SceneDialogue sceneDialogue = new SceneDialogue();
 
         Scanner scanner = new Scanner(input);
         while (scanner.hasNextLine()) {
@@ -48,18 +52,18 @@ public class MessageParser {
                 String content = panelMatcher.group(2);
                 Matcher dialogueMatcher = dialoguePattern.matcher(content);
 
-                List<String> panelLines = new ArrayList<>();
+                PanelDialogue panelDialogue = new PanelDialogue();
                 while (dialogueMatcher.find()) {
                     String speaker = dialogueMatcher.group(1);
                     String text = dialogueMatcher.group(2);
-                    panelLines.add(speaker + ": " + text);
+                    CharacterDialogue characterDialogue = new CharacterDialogue(speaker, text);
+                    panelDialogue.addCharacterDialogue(characterDialogue);
                 }
-
-                panels.add(panelLines);
+                sceneDialogue.addPanelDialogue(panelDialogue);
             }
         }
 
-        return panels;
+        return sceneDialogue;
     }
 
     public static String parseSingleTranslation(String response) {

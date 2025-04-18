@@ -1,5 +1,6 @@
 package org.example.Comic;
 
+import org.example.Comic.Dialogue.SceneDialogue;
 import org.example.Translation.Translator;
 
 import java.io.IOException;
@@ -15,6 +16,36 @@ public class Comic {
     public Comic() {
         figures = new ArrayList<>();
         scenes = new ArrayList<>();
+    }
+
+    /* Takes a list of SceneDialogues
+     * Copies comic and inserts new dialogue
+     * Skips title card
+     */
+    public void replaceDialogue(List<SceneDialogue> sceneDialogues) {
+        if(sceneDialogues.size() != scenes.size()) {
+            System.out.println("Scene Dialogues: ");
+            for(SceneDialogue dialogue : sceneDialogues) {
+                System.out.println(dialogue);
+            }
+            System.out.println("Scene Dialogues size: " + sceneDialogues.size());
+            System.out.println("Scene size: " + scenes.size());
+            throw new IllegalArgumentException("SceneDialogues size does not match scene size in comic");
+        }
+        for(int i = 0; i < this.getScenes().size(); i++) {
+            SceneDialogue sceneDialogue = sceneDialogues.get(i);
+            Scene currentScene = this.getScenes().get(i);
+            currentScene.skipTitleReplaceDialogue(sceneDialogue);
+        }
+    }
+
+    public Comic deepCopy() {
+        Comic newComic = new Comic();
+        newComic.figures = figures;
+        for(Scene scene : scenes) {
+            newComic.addScene(scene.deepCopy());
+        }
+        return newComic;
     }
 
     public Figure getFigureById(String id) {

@@ -94,8 +94,9 @@ public class Main {
         //Sprint 5 task
         if(ConfigurationFile.containsKey("STORIES_XML") && ConfigurationFile.containsKey("STORIES_TARGET") ) {
             try {
-                Comic finalComic = StoryManager.generateRandomStoriesComic(10);
-                XMLGenerator.generateXMLFromComic(finalComic, ConfigurationFile.getValue("STORIES_TARGET"));
+                Comic aiDialogueComic = StoryManager.generateRandomStoriesComic(10);
+                Comic bilingualStoriesComic = XMLGenerator.generateBilingualComic(aiDialogueComic);
+                XMLGenerator.generateXMLFromComic(bilingualStoriesComic, ConfigurationFile.getValue("STORIES_TARGET"));
             } catch (IOException | JDOMException e) {
                 System.out.println(e.getMessage());
             }
@@ -109,6 +110,7 @@ public class Main {
 
            try {
                Comic singleComic = StoryManager.generateRandomStoriesComic(1);
+               singleComic = XMLGenerator.generateBilingualComic(singleComic);
                //Testing split and adding audio
                XMLGenerator.generateXMLFromComic(singleComic, "test.xml");
                singleComic.splitAllMultiDialoguePanels();

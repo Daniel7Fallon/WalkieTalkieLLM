@@ -5,56 +5,25 @@ import org.example.Comic.PanelSide;
 import org.example.Comic.Scene;
 import org.example.Completion.CompletionSession;
 import org.example.Utils.MessageParser;
-import org.example.Utils.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DialogueManager {
 
-    public static class DialogueGenerationResult {
-        private final List<SceneDialogue> sceneDialogues;
-        private final List<String> allDialogueLines;
-
-        DialogueGenerationResult(List<SceneDialogue> sceneDialogues, List<String> allDialogueLines) {
-            this.sceneDialogues = sceneDialogues;
-            this.allDialogueLines = allDialogueLines;
-        }
-
-        public List<SceneDialogue> getSceneDialogues() {
-            return sceneDialogues;
-        }
-
-        public List<String> getAllDialogueLines() {
-            return allDialogueLines;
-        }
-    }
-
-    public static DialogueGenerationResult generateDialogueForScenes(List<Scene> originalScenes) {
-        List<String> allDialogues = new ArrayList<>();
+    public static List<SceneDialogue> generateDialogueForScenes(List<Scene> originalScenes) {
         List<SceneDialogue> sceneDialogues = new ArrayList<>();
 
         for(Scene originalScene : originalScenes) {
             String visualDescription = generateAudiovisualDescriptionForScene(originalScene);
             String speechTemplate = getSpeechForScene(originalScene);
-            sceneDialogues.add(generateDialogueFromDescriptions(visualDescription, speechTemplate));
-
-            for(SceneDialogue sceneDialogue: sceneDialogues) {
-                for (PanelDialogues panelDialogues : sceneDialogue.getPanelDialogues()) {
-                    for (String dialogueLine : panelDialogues.getDialogues()) {
-                        allDialogues.add(StringUtil.removeSpeaker(dialogueLine));
-                    }
-                }
-            }
+            sceneDialogues.add(generateSceneDialogueFromDescriptions(visualDescription, speechTemplate));
         }
 
-        System.out.println(sceneDialogues);
-        System.out.println(allDialogues);
-
-        return new DialogueGenerationResult(sceneDialogues, allDialogues);
+        return sceneDialogues;
     }
 
-    private static SceneDialogue generateDialogueFromDescriptions(String input, String format) {
+    private static SceneDialogue generateSceneDialogueFromDescriptions(String input, String format) {
         String messageContent = "Generate natural character dialogue in this exact format:\n"
                 + "1. [Character1]: \"[Dialogue1]\" / [Character2]: \"[Dialogue2]\"\n"
                 + "2. [Character1]: \"[Dialogue3]\"\n"
@@ -66,25 +35,7 @@ public class DialogueManager {
         CompletionSession session = new CompletionSession();
         String response = session.sendMessage("user", messageContent);
 
-        SceneDialogue sceneDialogue = new SceneDialogue();
-
-        List<List<String>> parsedScene = MessageParser.parseNumberedDialogue(response);
-
-        for(List<String> pd : parsedScene) {
-            sceneDialogue.addPanelDialogues(new PanelDialogues(pd));
-        }
-        return sceneDialogue;
-    }
-
-    public static String findDialogueForSpeaker(List<String> panelDialogues, String speakerName) {
-        if(speakerName == null) return null;
-
-        for(String dialogue : panelDialogues) {
-            if(dialogue.startsWith(speakerName + ":")) {
-                return StringUtil.removeSpeaker(dialogue);
-            }
-        }
-        return null;
+        return MessageParser.parseNumberedDialogue(response);
     }
 
     private static String getSpeechForScene(Scene scene) {
@@ -98,18 +49,19 @@ public class DialogueManager {
 
     private static String getSpeechForPanel(Panel panel) {
         StringBuilder sb = new StringBuilder();
-        if(panelSideHasCharacter(panel.getLeftSide())) {
+        if(panel.hasLeft() && panel.getLeftSide().hasCharacter()) {
             String name = panel.getLeftSide().getPanelFigure().getName();
             if(name != null) sb.append(" " + name + ": ___");
         }
-        if(panelSideHasCharacter(panel.getRightSide())) {
-            String name = panel.getRightSide().getPanelFigure().getName();
-            if(name != null) sb.append(" " + name + ": ___");
-        }
-        if(panelSideHasCharacter(panel.getMiddleSide())) {
+        if(panel.hasMiddle() && panel.getMiddleSide().hasCharacter()) {
             String name = panel.getMiddleSide().getPanelFigure().getName();
             if(name != null) sb.append(" " + name + ": ___");
         }
+        if(panel.hasRight() && panel.getRightSide().hasCharacter()) {
+            String name = panel.getRightSide().getPanelFigure().getName();
+            if(name != null) sb.append(" " + name + ": ___");
+        }
+
         return sb.toString();
     }
 
@@ -124,10 +76,10 @@ public class DialogueManager {
 
     private static String getAudiovisualDescriptionForPanel(Panel panel) {
         StringBuilder sb = new StringBuilder();
-        sb.append("(" + getSetting(panel) + ")");
-        if(panelSideHasCharacter(panel.getLeftSide())) sb.append(" On the left " + getAudiovisualDescriptionForPanelSide(panel.getLeftSide()));
-        if(panelSideHasCharacter(panel.getMiddleSide())) sb.append(" In the middle " + getAudiovisualDescriptionForPanelSide(panel.getMiddleSide()));
-        if(panelSideHasCharacter(panel.getRightSide())) sb.append(" On the right " + getAudiovisualDescriptionForPanelSide(panel.getRightSide()));
+        sb.append("(" + getAudioVisualSetting(panel) + ")");
+        if(panel.hasLeft() && panel.getLeftSide().hasCharacter()) sb.append(" On the left " + getAudiovisualDescriptionForPanelSide(panel.getLeftSide()));
+        if(panel.hasMiddle() && panel.getMiddleSide().hasCharacter()) sb.append(" In the middle " + getAudiovisualDescriptionForPanelSide(panel.getMiddleSide()));
+        if(panel.hasRight() && panel.getRightSide().hasCharacter()) sb.append(" On the right " + getAudiovisualDescriptionForPanelSide(panel.getRightSide()));
         if(panel.getBelow() != null) sb.append(" " + panel.getBelow() + ".");
         return sb.toString();
     }
@@ -139,11 +91,7 @@ public class DialogueManager {
         return "";
     }
 
-    private static boolean panelSideHasCharacter(PanelSide panelSide) {
-        return panelSide != null && panelSide.getPanelFigure() != null && panelSide.getPanelFigure().getName() != null;
-    }
-
-    private static String getSetting(Panel panel) {
+    private static String getAudioVisualSetting(Panel panel) {
         if(panel.getAbove() != null) return panel.getAbove();
         return panel.getSetting();
     }

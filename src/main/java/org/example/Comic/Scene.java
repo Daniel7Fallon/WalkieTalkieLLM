@@ -3,6 +3,7 @@ package org.example.Comic;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.example.Comic.Dialogue.SceneDialogue;
 import org.example.Comic.Panel;
 
 public class Scene {
@@ -24,6 +25,22 @@ public class Scene {
 
     public void addPanelAtIndex(int index, Panel panel) {
         panels.add(index, panel);
+    }
+
+    public void skipTitleReplaceDialogue(SceneDialogue sceneDialogue) {
+        if(sceneDialogue.getPanelDialogues().size() +1 != panels.size()) throw new IllegalArgumentException("SceneDialogue size +1 does not equal panels size.");
+        for(int i = 1; i < panels.size(); i++) {
+            Panel currentPanel = panels.get(i);
+            currentPanel.replaceDialogue(sceneDialogue.getPanelDialogues().get(i-1));
+        }
+    }
+
+    public Scene deepCopy() {
+        Scene newScene = new Scene();
+        for (Panel panel : this.panels) {
+            newScene.addPanel(panel.deepCopy());
+        }
+        return newScene;
     }
 
     public void splitMultiDialoguePanels() {

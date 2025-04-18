@@ -1,5 +1,7 @@
 package org.example.Comic;
 
+import org.example.Comic.Dialogue.CharacterDialogue;
+import org.example.Comic.Dialogue.PanelDialogue;
 import org.example.XML.XMLParser;
 
 public class Panel {
@@ -66,7 +68,6 @@ public class Panel {
         if(this.hasLeft() && this.getLeftSide().hasBalloonContent()) return true;
         if(this.hasMiddle() && this.getMiddleSide().hasBalloonContent()) return true;
         if(this.hasRight() && this.getRightSide().hasBalloonContent()) return true;
-
         return false;
     }
 
@@ -81,5 +82,13 @@ public class Panel {
         if(middleSide != null) sb.append("MiddleSide: " + middleSide + "\n");
         if(rightSide != null) sb.append("RightSide: " + rightSide + "\n");
         return sb.toString();
+    }
+
+    public void replaceDialogue(PanelDialogue panelDialogue) {
+        for(CharacterDialogue characterDialogue : panelDialogue.getCharacterDialogues()) {
+            if(this.hasLeft()) this.getLeftSide().attemptReplaceDialogue(characterDialogue);
+            if(this.hasMiddle()) this.getMiddleSide().attemptReplaceDialogue(characterDialogue);
+            if(this.hasRight()) this.getRightSide().attemptReplaceDialogue(characterDialogue);
+        }
     }
 }

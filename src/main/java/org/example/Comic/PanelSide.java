@@ -1,5 +1,6 @@
 package org.example.Comic;
 
+import org.example.Comic.Dialogue.CharacterDialogue;
 import org.example.XML.XMLParser;
 
 public class PanelSide {
@@ -25,6 +26,17 @@ public class PanelSide {
 
     public boolean hasBalloonContent() {
         return balloonContent != null;
+    }
+
+    public boolean hasCharacter() {
+        return this.getPanelFigure() != null && this.getPanelFigure().getName() != null;
+    }
+
+    public void attemptReplaceDialogue(CharacterDialogue characterDialogue) {
+        if(this.hasCharacter() && this.panelFigure.getName().equals(characterDialogue.getName())) {
+            this.setBalloonStatus("speech");
+            this.setBalloonContent(characterDialogue.getContent());
+        }
     }
 
     public PanelSide copy() {

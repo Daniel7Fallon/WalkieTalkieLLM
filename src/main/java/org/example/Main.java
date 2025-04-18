@@ -81,7 +81,7 @@ public class Main {
                  * Writes new XML to target
                  */
                 Comic conjugationTemplateComic = XMLParser.parseComicFromFilePath(conjugationSpec);
-                Comic newComic = XMLGenerator.generateBilingualComic(conjugationTemplateComic);
+                Comic newComic = ComicPostProcessor.generateBilingualComic(conjugationTemplateComic);
                 XMLGenerator.generateXMLFromComic(newComic, conjugationTarget);
             } catch (IOException | JDOMException e) {
                 System.out.println(e.getMessage());
@@ -95,7 +95,7 @@ public class Main {
         if(ConfigurationFile.containsKey("STORIES_XML") && ConfigurationFile.containsKey("STORIES_TARGET") ) {
             try {
                 Comic aiDialogueComic = StoryManager.generateRandomStoriesComic(10);
-                Comic bilingualStoriesComic = XMLGenerator.generateBilingualComic(aiDialogueComic);
+                Comic bilingualStoriesComic = ComicPostProcessor.generateBilingualComic(aiDialogueComic);
                 XMLGenerator.generateXMLFromComic(bilingualStoriesComic, ConfigurationFile.getValue("STORIES_TARGET"));
             } catch (IOException | JDOMException e) {
                 System.out.println(e.getMessage());
@@ -110,7 +110,7 @@ public class Main {
 
            try {
                Comic singleComic = StoryManager.generateRandomStoriesComic(1);
-               singleComic = XMLGenerator.generateBilingualComic(singleComic);
+               singleComic = ComicPostProcessor.generateBilingualComic(singleComic);
                //Testing split and adding audio
                XMLGenerator.generateXMLFromComic(singleComic, "test.xml");
                singleComic.splitAllMultiDialoguePanels();

@@ -5,13 +5,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.example.Translation.Dictionary;
+import org.example.Translation.Translator;
 
 public class ComicPostProcessor {
+
+    /* Translates comic dialogue
+     * returns new comic with inserted translated panels
+     */
+    public static Comic generateBilingualComic(Comic comic) throws IOException{
+        Translator.batchTranslateList(comic.getAllBalloonContent());
+        return ComicPostProcessor.addTranslationPanels(comic);
+    }
 
     /* Takes a comic that has it's dialogues already translated
      * Returns new comic with translated panels interleaved
      */
-    public static Comic addTranslationPanels(Comic originalComic) {
+    private static Comic addTranslationPanels(Comic originalComic) {
         Comic newComic = new Comic();
         List<Scene> newScenes = new ArrayList<>();
         for (Scene scene : originalComic.getScenes()) {

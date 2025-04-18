@@ -102,10 +102,6 @@ public class Comic {
         }
     }
 
-    public void translateAllDialogue() throws IOException {
-        Translator.batchTranslateList(this.getAllBalloonContent());
-    }
-
     public List<Figure> getFigures() {
         return figures;
     }

@@ -1,7 +1,6 @@
 package org.example.XML;
 
 import org.example.Comic.*;
-import org.example.Translation.Translator;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.output.Format;
@@ -9,22 +8,12 @@ import org.jdom2.output.XMLOutputter;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 public class XMLGenerator {
     private static final String DEFAULT_BORDER = "white";
 
-    /* Translates comic dialogue
-     * returns new comic with inserted translated panels
-     */
-    public static Comic generateBilingualComic(Comic comic) throws IOException{
-        comic.translateAllDialogue();
-        return ComicPostProcessor.addTranslationPanels(comic);
-    }
-
-    public static void generateXMLFromComic(Comic comic, String filename) {
+    public static void generateXMLFromComic(Comic comic, String target) {
         Element root = new Element("comic");
         Document document = new Document(root);
 
@@ -49,7 +38,7 @@ public class XMLGenerator {
         }
 
         // Write XML to file
-        writeXML(document, filename);
+        writeXML(document, target);
     }
 
     private static Element createFigureElement(Figure figure) {

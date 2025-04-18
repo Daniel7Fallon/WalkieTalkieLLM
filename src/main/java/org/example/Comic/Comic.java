@@ -1,9 +1,7 @@
 package org.example.Comic;
 
 import org.example.Comic.Dialogue.SceneDialogue;
-import org.example.Translation.Translator;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

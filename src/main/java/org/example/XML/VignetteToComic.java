@@ -51,7 +51,7 @@ public class VignetteToComic {
 
         panel.setSetting(vignette.getBackgrounds());
 
-        String[] sourceAndTarget = null;
+        String[] sourceAndTarget;
 
         if (vignette.getLeftText() != null) {
             try {
@@ -60,7 +60,7 @@ public class VignetteToComic {
                     throw new IllegalArgumentException("Translation for " + vignette.getLeftText() + " doesn't exist.");
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new IllegalArgumentException("Call to dictionary failed.", e);
             }
 
             String translatedText = sourceAndTarget[1];

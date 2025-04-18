@@ -44,8 +44,8 @@ public class Translator {
     //EnglishTo<Target> if source is English
     //EnglishTo<Source>, <Source>To<Target> if english is not source
     private static void translateListAndWrite(List<String> input) throws IOException {
-        String sourceLanguage = ConfigurationFile.getValue("SOURCELANGUAGE");
-        String targetLanguage = ConfigurationFile.getValue("TARGETLANGUAGE");
+        String sourceLanguage = ConfigurationFile.getValue("SOURCE_LANGUAGE");
+        String targetLanguage = ConfigurationFile.getValue("TARGET_LANGUAGE");
         if(sourceLanguage.equals("English")) {
             Dictionary.createNewTranslationFile(sourceLanguage, targetLanguage);//Ensure file exists
             NumberedList sourceTexts = new NumberedList();

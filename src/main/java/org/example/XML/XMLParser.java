@@ -16,11 +16,11 @@ import org.example.Comic.*;
 
 public class XMLParser {
 
-    public static Comic parseComicFromResourcesPath(String xmlpath) throws JDOMException, IOException {
+    public static Comic parseComicFromResourcesPath(String xmlPath) throws JDOMException, IOException {
         ClassLoader classLoader = XMLParser.class.getClassLoader();
-        try(InputStream inputStream = classLoader.getResourceAsStream(xmlpath)) {
+        try(InputStream inputStream = classLoader.getResourceAsStream(xmlPath)) {
             if(inputStream == null) {
-                throw new FileNotFoundException("Resource not found: " + xmlpath);
+                throw new FileNotFoundException("Resource not found: " + xmlPath);
             }
             String xmlContent = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
             return parseComic(xmlContent);

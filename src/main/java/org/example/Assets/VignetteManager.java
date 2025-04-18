@@ -26,7 +26,6 @@ public class VignetteManager {
                 List<String> backgrounds = parseCell(tokens[4]);
                 vignetteSchemas.add(new VignetteSchema(leftPose, combinedText, leftText, rightPose, backgrounds));
             }
-            System.out.println("AssetMapping file loaded successfully.");
         } catch (IOException e) {
             System.err.println("Error reading AssetMapping file: " + e.getMessage());
         }

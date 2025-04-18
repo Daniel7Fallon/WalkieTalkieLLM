@@ -65,13 +65,4 @@ public class MessageParser {
 
         return sceneDialogue;
     }
-
-    public static String parseSingleTranslation(String response) {
-        // Used for handling response formats
-        Pattern pattern = Pattern.compile("\"?([^\"]+?)\"?$");
-        Matcher matcher = pattern.matcher(response.trim());
-        return matcher.find() ? matcher.group(1) : response;
-    }
-
-    // Will add more methods relevant to processing responses as needed
 }

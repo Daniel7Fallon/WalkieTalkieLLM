@@ -1,13 +1,11 @@
 package org.example.Assets;
 
-import java.util.List;
-
 public class Vignette {
-    private String leftPose = null;
-    private String combinedText = null;
-    private String leftText = null;
-    private String rightPose = null;
-    private String background = null;
+    private final String leftPose;
+    private final String combinedText;
+    private final String leftText;
+    private final String rightPose;
+    private final String background;
 
     public Vignette(String leftPose, String combinedText, String leftText, String rightPose, String background) {
         this.leftPose = leftPose;

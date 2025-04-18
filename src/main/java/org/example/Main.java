@@ -46,8 +46,8 @@ public class Main {
             System.out.println("\nTranslating first 20 of vignette schemas");
             Translator.translateVignetteSchemasInRange(0,20);
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         // Sprint 3 tasks

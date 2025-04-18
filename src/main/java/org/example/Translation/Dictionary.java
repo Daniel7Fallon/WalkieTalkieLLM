@@ -29,8 +29,6 @@ public class Dictionary {
         try {
             if(file.createNewFile()) {
                 System.out.println("Translation file created: " + fileName);
-            } else {
-                System.out.println("Translation file already exists: " + fileName);
             }
         } catch (IOException e) {
             throw new IOException("Error creating translation file: " + e.getMessage());
@@ -77,8 +75,8 @@ public class Dictionary {
     }
 
     public static String[] getSourceAndTargetTranslations(String text) throws IOException{
-        String sourceLang = ConfigurationFile.getValue("SOURCELANGUAGE");
-        String targetLang = ConfigurationFile.getValue("TARGETLANGUAGE");
+        String sourceLang = ConfigurationFile.getValue("SOURCE_LANGUAGE");
+        String targetLang = ConfigurationFile.getValue("TARGET_LANGUAGE");
         String[] output = new String[2];
         if(sourceLang.equals("English")) {
             output[0] = text;

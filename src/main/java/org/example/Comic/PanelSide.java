@@ -4,17 +4,17 @@ import org.example.Comic.Dialogue.CharacterDialogue;
 
 public class PanelSide {
     private PanelFigure panelFigure;
-    private String ballonStatus;
+    private String balloonStatus;
     private String balloonContent;
 
     // Getters and setters
     public PanelFigure getPanelFigure() { return panelFigure; }
     public void setPanelFigure(PanelFigure panelFigure) { this.panelFigure = panelFigure; }
     public String getBalloonStatus() {
-        return ballonStatus;
+        return balloonStatus;
     }
-    public void setBalloonStatus(String ballonStatus) {
-        this.ballonStatus = ballonStatus;
+    public void setBalloonStatus(String balloonStatus) {
+        this.balloonStatus = balloonStatus;
     }
     public String getBalloonContent() {
         return balloonContent;
@@ -48,7 +48,7 @@ public class PanelSide {
     public PanelSide copy() {
         PanelSide panelSide = new PanelSide();
         panelSide.panelFigure = this.panelFigure;
-        panelSide.ballonStatus = this.ballonStatus;
+        panelSide.balloonStatus = this.balloonStatus;
         panelSide.balloonContent = this.balloonContent;
         return panelSide;
     }
@@ -57,7 +57,7 @@ public class PanelSide {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if(panelFigure != null) sb.append(" -PanelFigure: " + panelFigure);
-        if(ballonStatus != null) sb.append(" -BallonStatus: " + ballonStatus);
+        if(balloonStatus != null) sb.append(" -BalloonStatus: " + balloonStatus);
         if(balloonContent != null) sb.append(" -BalloonContent: " + balloonContent);
         return sb.toString();
     }

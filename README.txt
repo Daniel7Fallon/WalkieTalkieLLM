@@ -3,8 +3,8 @@ java -jar <path-to-jar> <path-to-configuration-file>
 
 Example configuration file:
 ```
-SOURCELANGUAGE	ENGLISH
-TARGETLANGUAGE	GERMAN
+SOURCE_LANGUAGE	ENGLISH
+TARGET_LANGUAGE	GERMAN
 
 COMPLETIONS_URL	https://api.openai.com/v1/chat/completions
 EMBEDDINGS_URL	https://api.openai.com/v1/embeddings

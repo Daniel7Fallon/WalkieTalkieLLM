@@ -1,7 +1,7 @@
 package org.example.Comic;
 
 public class PanelFigure {
-    private Figure figure;
+    private final Figure figure;
 
     private String pose;
     private String horizontal;

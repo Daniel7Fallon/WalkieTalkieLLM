@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import org.example.Utils.ConfigurationFile;
-import org.example.Utils.StringUtil;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -69,17 +69,13 @@ public class CompletionSession {
             String responseContent = completionResponse.getFirstMessageContent();
 
             if (ResponseValidator.isDenial(responseContent)) {
-                System.err.println("[DENIAL DETECTED]\nAssistant refused to answer prompt: " + content + "\nResonse: " + responseContent);
+                System.err.println("[DENIAL DETECTED]\nAssistant refused to answer prompt: " + content + "\nResponse: " + responseContent);
                 return "[ERROR] Denial: " + responseContent;
             }
             messageList.add(new CompletionMessage("assistant", responseContent));
             return responseContent;
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
-        return "Message failed";
     }
-
-
-
 }

@@ -39,7 +39,7 @@ public class NumberedList {
         for (String s : list) {
             sb.append(++i).append(". ").append(s).append("\n");
         }
-        if(sb.length()>0) sb.deleteCharAt(sb.length()-1);
+        if(!sb.isEmpty()) sb.deleteCharAt(sb.length()-1);
         return sb.toString();
     }
 }

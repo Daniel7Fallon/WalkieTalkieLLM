@@ -34,10 +34,10 @@ public final class ConfigurationFile {
     }
 
     private static void validateConfigurationFile() {
-        String sourceLanguage = configMap.get("SOURCELANGUAGE");
-        if(sourceLanguage == null || sourceLanguage.isEmpty()) throw new IllegalArgumentException("SOURCELANGUAGE parameter is missing in configuration file.");
-        String targetLanguage = configMap.get("TARGETLANGUAGE");
-        if(targetLanguage == null || targetLanguage.isEmpty()) throw new IllegalArgumentException("TARGETLANGUAGE parameter is missing in configuration file.");
+        String sourceLanguage = configMap.get("SOURCE_LANGUAGE");
+        if(sourceLanguage == null || sourceLanguage.isEmpty()) throw new IllegalArgumentException("SOURCE_LANGUAGE parameter is missing in configuration file.");
+        String targetLanguage = configMap.get("TARGET_LANGUAGE");
+        if(targetLanguage == null || targetLanguage.isEmpty()) throw new IllegalArgumentException("TARGET_LANGUAGE parameter is missing in configuration file.");
         String completionsUrl = configMap.get("COMPLETIONS_URL");
         if(completionsUrl == null || completionsUrl.isEmpty()) throw new IllegalArgumentException("COMPLETIONS_URL parameter is missing in configuration file.");
         String ttsEndpointUrl = configMap.get("TTS_URL");
@@ -76,8 +76,8 @@ public final class ConfigurationFile {
         if(audioTarget == null || audioTarget.isEmpty()) System.out.println("[WARNING] AUDIO_TARGET parameter is missing in configuration file.");
 
         //Format Languages
-        configMap.put("SOURCELANGUAGE", StringUtil.capitalize(sourceLanguage));
-        configMap.put("TARGETLANGUAGE", StringUtil.capitalize(targetLanguage));
+        configMap.put("SOURCE_LANGUAGE", StringUtil.capitalize(sourceLanguage));
+        configMap.put("TARGET_LANGUAGE", StringUtil.capitalize(targetLanguage));
         try{
             Integer.parseInt(translationBatchSize);
         } catch(NumberFormatException e) {

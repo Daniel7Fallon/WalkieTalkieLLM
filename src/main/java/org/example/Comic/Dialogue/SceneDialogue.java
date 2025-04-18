@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SceneDialogue {
-    List<PanelDialogue> panelDialogues = new ArrayList<PanelDialogue>();
+    List<PanelDialogue> panelDialogues = new ArrayList<>();
 
     public List<PanelDialogue> getPanelDialogues() {
         return panelDialogues;

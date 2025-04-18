@@ -26,7 +26,7 @@ public class StringUtil {
 
     public static List<String> cleanList(List<String> list) {
         if(list == null) return null;
-        List<String> cleanedList = new ArrayList<String>();
+        List<String> cleanedList = new ArrayList<>();
         for(String s : list) {
             cleanedList.add(clean(s));
         }

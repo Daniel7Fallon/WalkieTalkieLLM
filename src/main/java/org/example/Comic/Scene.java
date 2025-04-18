@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.example.Comic.Dialogue.SceneDialogue;
-import org.example.Comic.Panel;
 
 public class Scene {
-    private List<Panel> panels = new ArrayList<>();
+    private final List<Panel> panels = new ArrayList<>();
 
     public void addPanel(Panel panel) {
         panels.add(panel);
@@ -25,6 +24,24 @@ public class Scene {
 
     public void addPanelAtIndex(int index, Panel panel) {
         panels.add(index, panel);
+    }
+
+    public String getSpeechTemplate() {
+        StringBuilder sb = new StringBuilder();
+        for(int i = 1; i < this.getPanels().size(); i++) {
+            Panel panel = this.getPanelByIndex(i);
+            sb.append(i + ". " + panel.getSpeechTemplate() + "\n");
+        }
+        return sb.toString();
+    }
+
+    public String generateAudiovisualDescription() {
+        StringBuilder sb = new StringBuilder();
+        for(int i = 1; i < this.getPanels().size(); i++) {
+            Panel panel = this.getPanels().get(i);
+            sb.append(i + ". " + panel.getAudiovisualDescription() + "\n");
+        }
+        return sb.toString();
     }
 
     public void skipTitleReplaceDialogue(SceneDialogue sceneDialogue) {

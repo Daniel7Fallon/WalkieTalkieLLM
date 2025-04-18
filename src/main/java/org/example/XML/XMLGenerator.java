@@ -15,7 +15,6 @@ import java.util.List;
 
 public class XMLGenerator {
     private static final String DEFAULT_BORDER = "white";
-    //private static final String DEFAULT_DURATION = "500";
 
     /* Translates comic dialogue
      * returns new comic with inserted translated panels

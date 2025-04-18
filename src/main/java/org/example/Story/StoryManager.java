@@ -1,7 +1,6 @@
 package org.example.Story;
 
 import org.example.Comic.*;
-import org.example.Comic.Dialogue.DialogueManager;
 import org.example.Comic.Dialogue.SceneDialogue;
 import org.example.Utils.ConfigurationFile;
 import org.example.XML.XMLParser;
@@ -27,11 +26,12 @@ public class StoryManager {
         Comic comic = XMLParser.parseComicFromFilePath(STORIES_SPEC);
         List<Scene> scenes = getRandomScenesFromComic(comic, numberOfStories);
 
-        List<SceneDialogue> sceneDialogues = DialogueManager.generateDialogueForScenes(scenes);
-
         Comic finalComic = new Comic();
         finalComic.setFigures(comic.getFigures());
         finalComic.addAllScenes(scenes);
+
+        List<SceneDialogue> sceneDialogues = finalComic.generateDialogueFromAudioDescriptionComic();
+
         finalComic.replaceDialogue(sceneDialogues);
 
         return finalComic;

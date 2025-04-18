@@ -1,5 +1,8 @@
 package org.example.Comic.Dialogue;
 
+import org.example.Completion.CompletionSession;
+import org.example.Utils.MessageParser;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +17,21 @@ public class SceneDialogue {
     }
     public void addPanelDialogue(PanelDialogue panelDialogues) {
         this.panelDialogues.add(panelDialogues);
+    }
+
+    public static SceneDialogue generateSceneDialogueFromDescriptions(String input, String format) {
+        String messageContent = "Generate natural character dialogue in this exact format:\n"
+                + "1. [Character1]: \"[Dialogue1]\" / [Character2]: \"[Dialogue2]\"\n"
+                + "2. [Character1]: \"[Dialogue3]\"\n"
+                + "...\n"
+                + "Based on this scene description:\n"
+                + input + "\n"
+                + "Template:\n" + format;
+
+        CompletionSession session = new CompletionSession();
+        String response = session.sendMessage("user", messageContent);
+
+        return MessageParser.parseNumberedDialogue(response);
     }
 
     @Override

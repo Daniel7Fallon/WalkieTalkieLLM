@@ -1,7 +1,6 @@
 package org.example.Comic;
 
 import org.example.Comic.Dialogue.CharacterDialogue;
-import org.example.XML.XMLParser;
 
 public class PanelSide {
     private PanelFigure panelFigure;
@@ -37,6 +36,13 @@ public class PanelSide {
             this.setBalloonStatus("speech");
             this.setBalloonContent(characterDialogue.getContent());
         }
+    }
+
+    public String getAudiovisualDescription() {
+        if(this.getPanelFigure() != null && this.getPanelFigure().getName() != null) {
+            return this.getPanelFigure().getName() + " is " + this.getBalloonContent() + ".";
+        }
+        return "";
     }
 
     public PanelSide copy() {

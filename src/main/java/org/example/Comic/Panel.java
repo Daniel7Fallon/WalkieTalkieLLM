@@ -2,7 +2,6 @@ package org.example.Comic;
 
 import org.example.Comic.Dialogue.CharacterDialogue;
 import org.example.Comic.Dialogue.PanelDialogue;
-import org.example.XML.XMLParser;
 
 public class Panel {
     private String above;
@@ -69,6 +68,38 @@ public class Panel {
         if(this.hasMiddle() && this.getMiddleSide().hasBalloonContent()) return true;
         if(this.hasRight() && this.getRightSide().hasBalloonContent()) return true;
         return false;
+    }
+
+    public String getSpeechTemplate() {
+        StringBuilder sb = new StringBuilder();
+        if(this.hasLeft() && this.getLeftSide().hasCharacter()) {
+            String name = this.getLeftSide().getPanelFigure().getName();
+            if(name != null) sb.append(" " + name + ": ___");
+        }
+        if(this.hasMiddle() && this.getMiddleSide().hasCharacter()) {
+            String name = this.getMiddleSide().getPanelFigure().getName();
+            if(name != null) sb.append(" " + name + ": ___");
+        }
+        if(this.hasRight() && this.getRightSide().hasCharacter()) {
+            String name = this.getRightSide().getPanelFigure().getName();
+            if(name != null) sb.append(" " + name + ": ___");
+        }
+        return sb.toString();
+    }
+
+    public String getAudiovisualDescription() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("(" + this.getAudioVisualSetting() + ")");
+        if(this.hasLeft() && this.getLeftSide().hasCharacter()) sb.append(" On the left " + this.getLeftSide().getAudiovisualDescription());
+        if(this.hasMiddle() && this.getMiddleSide().hasCharacter()) sb.append(" In the middle " + this.getMiddleSide().getAudiovisualDescription());
+        if(this.hasRight() && this.getRightSide().hasCharacter()) sb.append(" On the right " + this.getRightSide().getAudiovisualDescription());
+        if(this.getBelow() != null) sb.append(" " + this.getBelow() + ".");
+        return sb.toString();
+    }
+
+    private String getAudioVisualSetting() {
+        if(this.getAbove() != null) return this.getAbove();
+        return this.getSetting();
     }
 
     @Override

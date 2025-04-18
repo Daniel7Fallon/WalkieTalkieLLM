@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.example.Comic.Dialogue.SceneDialogue.generateSceneDialogueFromDescriptions;
 import static org.example.Utils.StringUtil.removePluralIdentifier;
 
 public class Comic {
@@ -53,6 +54,20 @@ public class Comic {
             if(figure.getId().equals(id)) return figure;
         }
         return null;
+    }
+
+
+    // Returns a list of scene dialogues generated from a comic containing audiovisual descriptions
+    public List<SceneDialogue> generateDialogueFromAudioDescriptionComic() {
+        List<SceneDialogue> sceneDialogues = new ArrayList<>();
+
+        for(Scene originalScene : this.scenes) {
+            String visualDescription = originalScene.generateAudiovisualDescription();
+            String speechTemplate = originalScene.getSpeechTemplate();
+            sceneDialogues.add(generateSceneDialogueFromDescriptions(visualDescription, speechTemplate));
+        }
+
+        return sceneDialogues;
     }
 
     public List<String> getAllBalloonContent() {

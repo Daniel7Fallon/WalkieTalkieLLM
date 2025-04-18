@@ -15,6 +15,7 @@ import java.util.List;
 import org.example.Assets.VignetteManager;
 import org.example.Assets.VignetteSchema;
 import org.example.XML.XMLGenerator;
+import org.example.XML.XMLParser;
 import org.jdom2.JDOMException;
 
 
@@ -51,7 +52,7 @@ public class Main {
 
         // Sprint 3 tasks
         if(ConfigurationFile.containsKey("LESSON_TARGET")) {
-            ArrayList<Figure> figures = new ArrayList<Figure>();
+            ArrayList<Figure> figures = new ArrayList<>();
             Figure leftFigure = new Figure();
             leftFigure.setName("Daniel");
             leftFigure.setSkin("Brown");
@@ -74,7 +75,18 @@ public class Main {
         if(ConfigurationFile.containsKey("CONJUGATION_XML") && ConfigurationFile.containsKey("CONJUGATION_TARGET")) {
             String conjugationSpec = ConfigurationFile.getValue("CONJUGATION_XML");
             String conjugationTarget = ConfigurationFile.getValue("CONJUGATION_TARGET");
-            XMLGenerator.generateBilingualXML(conjugationSpec, conjugationTarget);
+            try {
+                /* Parses XML Spec to comic
+                 * Translates all dialogue and adds in translated panels
+                 * Writes new XML to target
+                 */
+                Comic conjugationTemplateComic = XMLParser.parseComicFromFilePath(conjugationSpec);
+                Comic newComic = XMLGenerator.generateBilingualComic(conjugationTemplateComic);
+                XMLGenerator.generateXMLFromComic(newComic, conjugationTarget);
+            } catch (IOException | JDOMException e) {
+                System.out.println(e.getMessage());
+            }
+
         } else {
             System.out.println("Skipping generation of conjugation lesson (Sprint 4)");
         }
@@ -85,7 +97,7 @@ public class Main {
                 Comic finalComic = StoryManager.generateRandomStoriesComic(10);
                 XMLGenerator.generateXMLFromComic(finalComic, ConfigurationFile.getValue("STORIES_TARGET"));
             } catch (IOException | JDOMException e) {
-                System.out.println(e);
+                System.out.println(e.getMessage());
             }
         } else {
             System.out.println("Skipping generation of random stories (Sprint 5)");
@@ -101,16 +113,10 @@ public class Main {
                XMLGenerator.generateXMLFromComic(singleComic, "test.xml");
                singleComic.splitAllMultiDialoguePanels();
                XMLGenerator.generateXMLFromComic(singleComic, "test_output.xml");
-               try {
-                   AudioManager.addAudio(singleComic);
-               } catch (IOException e) {
-                   throw new RuntimeException(e);
-               } catch (InterruptedException e) {
-                   throw new RuntimeException(e);
-               }
+               AudioManager.addAudio(singleComic);
                XMLGenerator.generateXMLFromComic(singleComic, "test_audio_output.xml");
            } catch (Exception e) {
-               System.out.println(e);
+               System.out.println(e.getMessage());
            }
 
         } else {

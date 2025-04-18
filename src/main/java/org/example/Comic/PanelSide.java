@@ -23,6 +23,10 @@ public class PanelSide {
         this.balloonContent = balloonContent;
     }
 
+    public boolean hasBalloonContent() {
+        return balloonContent != null;
+    }
+
     public PanelSide copy() {
         PanelSide panelSide = new PanelSide();
         panelSide.panelFigure = this.panelFigure;

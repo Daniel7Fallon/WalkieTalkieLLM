@@ -11,9 +11,11 @@ public class Scene {
     public void addPanel(Panel panel) {
         panels.add(panel);
     }
-
     public List<Panel> getPanels() {
         return panels;
+    }
+    public void addAllPanels(List<Panel> panels) {
+        this.panels.addAll(panels);
     }
 
     public Panel getPanelByIndex(int index) {

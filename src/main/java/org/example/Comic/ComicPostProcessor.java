@@ -3,7 +3,6 @@ package org.example.Comic;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.example.Comic.Dialogue.PanelDialogues;
 import org.example.Comic.Dialogue.SceneDialogue;
@@ -13,20 +12,23 @@ import org.example.Utils.ConfigurationFile;
 import org.example.Comic.Dialogue.DialogueManager;
 
 public class ComicPostProcessor {
-    public static void addTranslationPanels(Comic comic) {
-        for (Scene scene : comic.getScenes()) {
+
+    /* Takes a comic that has it's dialogues already translated
+     * Returns new comic with translated panels interleaved
+     */
+    public static Comic addTranslationPanels(Comic originalComic) {
+        Comic newComic = new Comic();
+        List<Scene> newScenes = new ArrayList<>();
+        for (Scene scene : originalComic.getScenes()) {
+
             List<Panel> newPanels = new ArrayList<>();
-
-            for (Panel original : scene.getPanels()) {
-                // Keep original panel
-               comic.removePluralIdentifiers();
-
-                newPanels.add(original);
+            for (Panel originalPanel : scene.getPanels()) {
+                newPanels.add(originalPanel.deepCopy());
 
                 // Create translated version if translatable
-                if (hasTranslatableContent(original)) {
+                if (originalPanel.hasBalloonContent()) {
                     try {
-                        Panel translated = createTranslatedPanel(original);
+                        Panel translated = createTranslatedPanel(originalPanel);
                         if (translated != null) {
                             newPanels.add(translated);
                         }
@@ -34,15 +36,13 @@ public class ComicPostProcessor {
                     }
                 }
             }
-
-            scene.getPanels().clear();
-            scene.getPanels().addAll(newPanels);
+            Scene newScene = new Scene();
+            newScene.addAllPanels(newPanels);
+            newScenes.add(newScene);
         }
-    }
-
-    private static boolean hasTranslatableContent(Panel panel) {
-        return Stream.of(panel.getLeftSide(), panel.getMiddleSide(), panel.getRightSide())
-                .anyMatch(side -> side != null && side.getBalloonContent() != null);
+        newComic.addAllScenes(newScenes);
+        newComic.removePluralIdentifiers();
+        return newComic;
     }
 
     private static Panel createTranslatedPanel(Panel original) {
@@ -52,39 +52,38 @@ public class ComicPostProcessor {
         translated.setBelow(original.getBelow());
 
         // Map original side to translated sides
-        if (original.getLeftSide() != null) {
-            translated.setRightSide(translateSide(original.getLeftSide()));
+        if (original.hasLeft()) {
+            translated.setLeftSide(createTranslatedSide(original.getLeftSide()));
         }
 
-        if (original.getMiddleSide() != null) {
-            translated.setMiddleSide(translateSide(original.getMiddleSide()));
+        if (original.hasMiddle()) {
+            translated.setMiddleSide(createTranslatedSide(original.getMiddleSide()));
         }
 
-        if (original.getRightSide() != null) {
-            translated.setLeftSide(translateSide(original.getRightSide()));
+        if (original.hasRight()) {
+            translated.setRightSide(createTranslatedSide(original.getRightSide()));
         }
 
         return translated;
     }
 
-    private static PanelSide translateSide(PanelSide original) {
-        PanelSide translated = new PanelSide();
-        translated.setPanelFigure(original.getPanelFigure());
+    private static PanelSide createTranslatedSide(PanelSide originalPanelSide) {
+        PanelSide translatedPanelSide = new PanelSide();
+        translatedPanelSide.setPanelFigure(originalPanelSide.getPanelFigure());
 
-        if (original.getBalloonContent() != null) {
+        if (originalPanelSide.hasBalloonContent()) {
             try {
                 String[] translations = Dictionary.getSourceAndTargetTranslations(
-                        original.getBalloonContent()
+                        originalPanelSide.getBalloonContent()
                 );
-                translated.setBalloonContent(translations[1]);
-                translated.setBalloonStatus("speaking");
+                translatedPanelSide.setBalloonContent(translations[1]);
+                translatedPanelSide.setBalloonStatus("speaking");
             } catch (IOException | NullPointerException e) {
-                translated.setBalloonContent("[TRANSLATION MISSING]");
-                translated.setBalloonStatus("error");
+                translatedPanelSide.setBalloonContent("[TRANSLATION FAILED]");
+                translatedPanelSide.setBalloonStatus("error");
             }
         }
-
-        return translated;
+        return translatedPanelSide;
     }
 
     public static Scene createBilingualScene(Scene originalScene, SceneDialogue sceneDialogue) {

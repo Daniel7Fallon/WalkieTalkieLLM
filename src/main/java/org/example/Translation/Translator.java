@@ -15,7 +15,6 @@ public class Translator {
 
     //Translates leftTexts and combinedTexts of vignetteSchemas in range given
     public static void translateVignetteSchemasInRange(int start, int end) throws IOException{
-        int batchSize = Integer.parseInt(ConfigurationFile.getValue("TRANSLATION_BATCH_SIZE"));
         List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemasInRange(start, end);
         List<String> toTranslate = VignetteManager.getLeftAndCombinedTexts(vignetteSchemas);
         batchTranslateList(toTranslate);

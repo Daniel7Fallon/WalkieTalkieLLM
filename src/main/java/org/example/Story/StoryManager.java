@@ -24,7 +24,7 @@ public class StoryManager {
     static final Random RAND = new Random();
 
     public static Comic generateRandomStoriesComic(int numberOfStories) throws IOException, JDOMException {
-        Comic comic = loadComicFromXML();
+        Comic comic = XMLParser.parseComicFromFilePath(STORIES_SPEC);
         List<Scene> scenes = getRandomScenesFromComic(comic, numberOfStories);
         DialogueManager.DialogueGenerationResult dialoguesResult = DialogueManager.generateDialogueForScenes(scenes);
         List<SceneDialogue> sceneDialogues = dialoguesResult.getSceneDialogues();
@@ -46,11 +46,6 @@ public class StoryManager {
         }
 
         return finalComic;
-    }
-
-    private static Comic loadComicFromXML() throws IOException, JDOMException {
-        String xmlContent = new String(Files.readAllBytes(Paths.get(STORIES_SPEC)));
-        return XMLParser.parseComic(xmlContent);
     }
 
     private static List<Scene> getRandomScenesFromComic(Comic comic, int numOfScenes) {

@@ -17,23 +17,12 @@ public class XMLGenerator {
     private static final String DEFAULT_BORDER = "white";
     //private static final String DEFAULT_DURATION = "500";
 
-    /* Takes XML Specification file, deserialises to in memory comic,
-     * Translates all balloons, then duplicates all slides with 2nd character saying the translation,
-     * Writes to target file
+    /* Translates comic dialogue
+     * returns new comic with inserted translated panels
      */
-    public static void generateBilingualXML(String xmlPath, String target) {
-        try {
-            String xmlContent = new String(Files.readAllBytes(Paths.get(xmlPath)));
-            Comic conjugationTemplate = XMLParser.parseComic(xmlContent);
-            List<String> balloonContents = conjugationTemplate.getAllBalloonContent();
-            Translator.batchTranslateList(balloonContents);
-            ComicPostProcessor.addTranslationPanels(conjugationTemplate);
-            generateXMLFromComic(conjugationTemplate, target);
-
-        } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
-            e.printStackTrace();
-        }
+    public static Comic generateBilingualComic(Comic comic) throws IOException{
+        comic.translateAllDialogue();
+        return ComicPostProcessor.addTranslationPanels(comic);
     }
 
     public static void generateXMLFromComic(Comic comic, String filename) {

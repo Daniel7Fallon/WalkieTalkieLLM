@@ -62,6 +62,14 @@ public class Panel {
         return panel;
     }
 
+    public boolean hasBalloonContent() {
+        if(this.hasLeft() && this.getLeftSide().hasBalloonContent()) return true;
+        if(this.hasMiddle() && this.getMiddleSide().hasBalloonContent()) return true;
+        if(this.hasRight() && this.getRightSide().hasBalloonContent()) return true;
+
+        return false;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

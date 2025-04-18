@@ -1,5 +1,8 @@
 package org.example.Comic;
 
+import org.example.Translation.Translator;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,15 +25,15 @@ public class Comic {
     }
 
     public List<String> getAllBalloonContent() {
-        List<String> allBalloonContent = new ArrayList<>();
-        for(Scene scene : scenes) {
+        List<String> balloonContents = new ArrayList<>();
+        for(Scene scene: this.getScenes()) {
             for(Panel panel : scene.getPanels()) {
-                if(panel.getLeftSide() != null && panel.getLeftSide().getBalloonContent() != null) allBalloonContent.add(panel.getLeftSide().getBalloonContent());
-                if(panel.getMiddleSide() != null && panel.getMiddleSide().getBalloonContent() != null) allBalloonContent.add(panel.getMiddleSide().getBalloonContent());
-                if(panel.getRightSide() != null && panel.getRightSide().getBalloonContent() != null) allBalloonContent.add(panel.getRightSide().getBalloonContent());
+                if(panel.hasLeft() && panel.getLeftSide().hasBalloonContent()) balloonContents.add(panel.getLeftSide().getBalloonContent());
+                if(panel.hasMiddle() && panel.getMiddleSide().hasBalloonContent()) balloonContents.add(panel.getMiddleSide().getBalloonContent());
+                if(panel.hasRight() && panel.getRightSide().hasBalloonContent()) balloonContents.add(panel.getRightSide().getBalloonContent());
             }
         }
-        return allBalloonContent;
+        return balloonContents;
     }
 
     public void removePluralIdentifiers() {
@@ -40,9 +43,9 @@ public class Comic {
                 PanelSide middle = panel.getMiddleSide();
                 PanelSide right = panel.getRightSide();
 
-                if(left != null && left.getBalloonContent() != null) left.setBalloonContent(removePluralIdentifier(left.getBalloonContent()));
-                if(middle != null && middle.getBalloonContent() != null) middle.setBalloonContent(removePluralIdentifier(middle.getBalloonContent()));
-                if(right != null && right.getBalloonContent() != null) right.setBalloonContent(removePluralIdentifier(right.getBalloonContent()));
+                if(left != null && left.hasBalloonContent()) left.setBalloonContent(removePluralIdentifier(left.getBalloonContent()));
+                if(middle != null && middle.hasBalloonContent()) middle.setBalloonContent(removePluralIdentifier(middle.getBalloonContent()));
+                if(right != null && right.hasBalloonContent()) right.setBalloonContent(removePluralIdentifier(right.getBalloonContent()));
             }
         }
     }
@@ -51,6 +54,10 @@ public class Comic {
         for(Scene scene: this.getScenes()) {
             scene.splitMultiDialoguePanels();
         }
+    }
+
+    public void translateAllDialogue() throws IOException {
+        Translator.batchTranslateList(this.getAllBalloonContent());
     }
 
     public List<Figure> getFigures() {

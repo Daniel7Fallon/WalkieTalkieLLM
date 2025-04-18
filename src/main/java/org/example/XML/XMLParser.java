@@ -5,14 +5,22 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.example.Comic.*;
 
 public class XMLParser {
+
+    public static Comic parseComicFromFilePath(String xmlPath) throws IOException, JDOMException {
+        String xmlContent = new String(Files.readAllBytes(Paths.get(xmlPath)));
+        return parseComic(xmlContent);
+    }
 
     public static Comic parseComic(String xmlContent) throws IOException, JDOMException {
         SAXBuilder saxBuilder = new SAXBuilder();

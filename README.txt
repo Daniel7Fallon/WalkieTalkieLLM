@@ -97,3 +97,8 @@ Sprint 5:
   -Generates Audiovisual descriptions for each mini-story, and calls the LLM to generate dialogue for the stories.
   -Translates the dialogue and creates a new XML, with the characters speaking the new dialogue followed by a duplicate slide with the translations in place of the previous dialogue.
   -Writes this output to a file specified in the configuration file.
+
+Sprint 6:
+-Created TTSSession, textToSpeech method takes phrase and returns a HTTPResponse<InputStream> of the .mp3 file.
+-Created AudioManager for calling textToSpeech and interacting with files related to audio, i.e. storing mp3's and maintaining index file.
+-Massive refactoring of code to remove god-classes and feature-envy, poor code purpose and the likes.

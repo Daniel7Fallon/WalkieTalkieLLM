@@ -2,18 +2,18 @@ package org.example;
 
 import org.example.Audio.AudioManager;
 import org.example.Comic.*;
-import org.example.Story.StoryManager;
+import org.example.Orchestration.Orchestrator;
 import org.example.Translation.Dictionary;
 import org.example.Translation.Translator;
 import org.example.Utils.ConfigurationFile;
-import org.example.XML.VignetteToComic;
+import org.example.Vignette.VignetteToComic;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.example.Assets.VignetteManager;
-import org.example.Assets.VignetteSchema;
+import org.example.Vignette.VignetteManager;
+import org.example.Vignette.VignetteSchema;
 import org.example.XML.XMLGenerator;
 import org.example.XML.XMLParser;
 import org.jdom2.JDOMException;
@@ -97,7 +97,7 @@ public class Main {
             try {
                 String storiesSpec = ConfigurationFile.getValue("STORIES_XML");
                 Comic wholeAudioVisualStoriesComic = XMLParser.parseComicFromResourcesPath(storiesSpec);
-                Comic aiDialogueComic = StoryManager.generateRandomStoriesComic(wholeAudioVisualStoriesComic, 10);
+                Comic aiDialogueComic = Orchestrator.generateRandomStoriesComic(wholeAudioVisualStoriesComic, 10);
                 Comic bilingualStoriesComic = ComicPostProcessor.generateBilingualComic(aiDialogueComic);
                 XMLGenerator.generateXMLFromComic(bilingualStoriesComic, ConfigurationFile.getValue("STORIES_TARGET"));
             } catch (IOException | JDOMException e) {
@@ -114,7 +114,7 @@ public class Main {
                //Create single scene comic
                String storiesSpec = ConfigurationFile.getValue("STORIES_XML");
                Comic wholeAudioVisualStoriesComic = XMLParser.parseComicFromResourcesPath(storiesSpec);
-               Comic singleComic = StoryManager.generateRandomStoriesComic(wholeAudioVisualStoriesComic, 1);
+               Comic singleComic = Orchestrator.generateRandomStoriesComic(wholeAudioVisualStoriesComic, 1);
                singleComic = ComicPostProcessor.generateBilingualComic(singleComic);
                 //Split panels and add audio
                singleComic.splitAllMultiDialoguePanels();

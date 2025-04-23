@@ -1,4 +1,4 @@
-package org.example.Assets;
+package org.example.Vignette;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

@@ -1,4 +1,4 @@
-package org.example.Assets;
+package org.example.Vignette;
 
 import java.util.List;
 import java.util.Random;

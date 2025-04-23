@@ -1,9 +1,8 @@
-package org.example.XML;
+package org.example.Vignette;
 
-import org.example.Assets.Vignette;
-import org.example.Assets.VignetteSchema;
 import org.example.Comic.*;
 import org.example.Translation.Dictionary;
+import org.example.XML.PanelTemplate;
 
 import java.io.IOException;
 import java.util.List;

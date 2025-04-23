@@ -1,4 +1,4 @@
-package org.example.Story;
+package org.example.Orchestration;
 
 import org.example.Comic.*;
 import org.example.Comic.Dialogue.SceneDialogue;
@@ -9,15 +9,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class StoryManager {
-    static final Random RAND = new Random();
+public class Orchestrator {
 
     /* Takes numberOfStories scenes from stories spec
      * Generates dialogue for those scenes
      * Returns a comic with those scenes with AI dialogue
      */
+
+    /*
+        Move all the comic stuff from main here, turn them into methods.
+        Feel free to not use the current framework and change anything as needed.
+     */
+
     public static Comic generateRandomStoriesComic(Comic originalComic, int numberOfStories) throws IOException, JDOMException {
-        List<Scene> scenes = getRandomScenesFromComic(originalComic, numberOfStories);
+        List<Scene> scenes = originalComic.getRandomScenes(numberOfStories);
 
         Comic finalComic = new Comic();
         finalComic.setFigures(originalComic.getFigures());
@@ -31,13 +36,23 @@ public class StoryManager {
         return finalComic;
     }
 
-    private static List<Scene> getRandomScenesFromComic(Comic comic, int numOfScenes) {
-        List<Scene> scenes = new ArrayList<>();
-        for (int i = 0; i < numOfScenes; i++) {
-            int randomIndex = RAND.nextInt(comic.getScenes().size());
-            Scene scene = comic.getScenes().get(randomIndex);
-            if(!scenes.contains(scene)) scenes.add(scene);
-        }
-        return scenes;
+    public static Comic generateVignetteComic(int num) {
+        Comic comic = new Comic();
+
+        // TODO
+
+        return comic;
     }
+
+    public static Comic generateConjugationComic(int num) {
+        Comic comic = new Comic();
+
+        // TODO
+
+        return comic;
+    }
+
+
+
+
 }

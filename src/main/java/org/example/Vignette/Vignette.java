@@ -1,4 +1,4 @@
-package org.example.Assets;
+package org.example.Vignette;
 
 public class Vignette {
     private final String leftPose;

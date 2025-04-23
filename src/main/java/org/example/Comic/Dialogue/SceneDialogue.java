@@ -1,10 +1,12 @@
 package org.example.Comic.Dialogue;
 
 import org.example.Completion.CompletionSession;
-import org.example.Utils.MessageParser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SceneDialogue {
     List<PanelDialogue> panelDialogues = new ArrayList<>();
@@ -31,7 +33,37 @@ public class SceneDialogue {
         CompletionSession session = new CompletionSession();
         String response = session.sendMessage("user", messageContent);
 
-        return MessageParser.parseNumberedDialogue(response);
+        return parseNumberedDialogue(response);
+    }
+
+    private static SceneDialogue parseNumberedDialogue(String input) {
+        Pattern panelPattern = Pattern.compile("^(\\d+)\\.\\s*(.*)$");
+        Pattern dialoguePattern = Pattern.compile("(\\w+):\\s*\"([^\"]*)\"");
+
+        SceneDialogue sceneDialogue = new SceneDialogue();
+
+        Scanner scanner = new Scanner(input);
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine().trim();
+            if (line.isEmpty()) continue;
+
+            Matcher panelMatcher = panelPattern.matcher(line);
+            if (panelMatcher.matches()) {
+                String content = panelMatcher.group(2);
+                Matcher dialogueMatcher = dialoguePattern.matcher(content);
+
+                PanelDialogue panelDialogue = new PanelDialogue();
+                while (dialogueMatcher.find()) {
+                    String speaker = dialogueMatcher.group(1);
+                    String text = dialogueMatcher.group(2);
+                    CharacterDialogue characterDialogue = new CharacterDialogue(speaker, text);
+                    panelDialogue.addCharacterDialogue(characterDialogue);
+                }
+                sceneDialogue.addPanelDialogue(panelDialogue);
+            }
+        }
+
+        return sceneDialogue;
     }
 
     @Override

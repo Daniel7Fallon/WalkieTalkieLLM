@@ -4,11 +4,13 @@ import org.example.Comic.Dialogue.SceneDialogue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import static org.example.Comic.Dialogue.SceneDialogue.generateSceneDialogueFromDescriptions;
 import static org.example.Utils.StringUtil.removePluralIdentifier;
 
 public class Comic {
+    static final Random RAND = new Random();
     private List<Figure> figures;
     private List<Scene> scenes;
 
@@ -98,6 +100,16 @@ public class Comic {
         for(Scene scene: this.getScenes()) {
             scene.removeAllAboveAndBelow();
         }
+    }
+
+    public List<Scene> getRandomScenes(int numOfScenes) {
+        List<Scene> scenes = new ArrayList<>();
+        for (int i = 0; i < numOfScenes; i++) {
+            int randomIndex = RAND.nextInt(this.getScenes().size());
+            Scene scene = this.getScenes().get(randomIndex);
+            if(!scenes.contains(scene)) scenes.add(scene);
+        }
+        return scenes;
     }
 
     public List<Figure> getFigures() {

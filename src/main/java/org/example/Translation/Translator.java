@@ -1,12 +1,11 @@
 package org.example.Translation;
 
-import org.example.Assets.VignetteManager;
-import org.example.Assets.VignetteSchema;
+import org.example.Utils.StringUtil;
+import org.example.Vignette.VignetteManager;
+import org.example.Vignette.VignetteSchema;
 import org.example.Completion.CompletionSession;
-import org.example.Utils.MessageParser;
 import org.example.Utils.NumberedList;
 import org.example.Utils.ConfigurationFile;
-import org.example.Utils.StringUtil;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -115,7 +114,7 @@ public class Translator {
         String response = translationSession.sendMessage("user", messageContent.toString());
 
         NumberedList targetTexts = new NumberedList();
-        targetTexts.addAll(MessageParser.parseNumberedList(response));
+        targetTexts.addAll(StringUtil.parseNumberedList(response));
         return targetTexts;
     }
 

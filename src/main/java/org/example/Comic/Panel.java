@@ -1,7 +1,10 @@
 package org.example.Comic;
 
+import org.example.Audio.AudioManager;
 import org.example.Comic.Dialogue.CharacterDialogue;
 import org.example.Comic.Dialogue.PanelDialogue;
+
+import java.io.IOException;
 
 public class Panel {
     private String above;
@@ -61,6 +64,25 @@ public class Panel {
         if(this.hasRight()) panel.setRightSide(this.rightSide.copy());
         panel.setAudio(this.audio);
         return panel;
+    }
+
+    public void addAudio() throws IOException , InterruptedException {
+        if(hasLeft() && getLeftSide().getBalloonStatus() != null) {
+            String dialogue = getLeftSide().getBalloonContent();
+            AudioManager.createNewAudio(dialogue);
+            String audioFile = AudioManager.getIndexByPhrase(dialogue) + ".mp3";
+            setAudio(audioFile);
+        } else if(hasMiddle() && getMiddleSide().getBalloonStatus() != null) {
+            String dialogue = getMiddleSide().getBalloonContent();
+            AudioManager.createNewAudio(dialogue);
+            String audioFile = AudioManager.getIndexByPhrase(dialogue) + ".mp3";
+            setAudio(audioFile);
+        } else if(hasRight() && getRightSide().getBalloonStatus() != null) {
+            String dialogue = getRightSide().getBalloonContent();
+            AudioManager.createNewAudio(dialogue);
+            String audioFile = AudioManager.getIndexByPhrase(dialogue) + ".mp3";
+            setAudio(audioFile);
+        }
     }
 
     public boolean hasBalloonContent() {

@@ -3,6 +3,7 @@ java -jar <path-to-jar> <path-to-configuration-file>
 
 Example configuration file:
 ```
+###Hyperparameters###
 SOURCE_LANGUAGE	ENGLISH
 TARGET_LANGUAGE	GERMAN
 
@@ -10,47 +11,26 @@ COMPLETIONS_URL	https://api.openai.com/v1/chat/completions
 EMBEDDINGS_URL	https://api.openai.com/v1/embeddings
 MODELS_URL	https://api.openai.com/v1/models
 TTS_URL	https://api.openai.com/v1/audio/speech
-
 ORG_KEY	org-gZ7peQP5XmIRVhs78U8WH
 API_KEY	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
-
 MODEL	gpt-4o-mini
-
 TTS_MODEL	tts-1
 TTS_VOICE	alloy
 
-TRANSLATIONS_FOLDER	Translations
 TRANSLATION_BATCH_SIZE	40
 
-#Resource folder paths
-#The xml specification containing left character speech only (required for sprint 4).
-CONJUGATION_XML	conjugation.xml
-#The xml specification containing stories populated with audiovisual descriptions (required for sprints 5 & 6).
-STORIES_XML	stories.xml
+###Output###
+#Target for output
+LESSON_TARGET	lesson.xml
+#Order of comic elements for output
+#Valid arguments are: "conjugation", "left", "whole", and "story"
+#Arguments are space separated
+LESSON_SCHEDULE	conjugation left whole story
 
-
-#Following are the key-values specific to each sprint
-#Comment them out to skip them
-
-#Sprint 3
-#The destination for Comic generated from vignette
-#LESSON_TARGET	lesson.xml
-
-#Sprint 4
-#New comic with right character repeating the translations.
-#CONJUGATION_TARGET	conjugationLesson.xml
-
-#Sprint 5
-#New comic with AI dialogue and AI translations.
-#STORIES_TARGET	storiesLesson.xml
-
-#Sprint 6
-#Target for .mp3 files.
+###External Resources###
+TRANSLATIONS_FOLDER	Translations
 AUDIO_FOLDER	Audio
-#Target for phrase\tindex mappings.
 AUDIO_INDEX	audioIndex.txt
-#Target for output story
-AUDIO_TARGET	audioLesson.xml
 ```
 
 Dependencies:

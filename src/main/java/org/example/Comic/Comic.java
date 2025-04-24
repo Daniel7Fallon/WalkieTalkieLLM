@@ -2,6 +2,7 @@ package org.example.Comic;
 
 import org.example.Comic.Dialogue.SceneDialogue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -32,6 +33,11 @@ public class Comic {
             Scene currentScene = this.getScenes().get(i);
             currentScene.skipTitleReplaceDialogue(sceneDialogue);
         }
+    }
+
+    public void appendComic(Comic that) {
+        this.addAllFigures(that.getFigures());
+        this.addAllScenes(that.getScenes());
     }
 
     public Comic deepCopy() {
@@ -96,6 +102,12 @@ public class Comic {
         }
     }
 
+    public void addAudio() throws IOException, InterruptedException {
+        for(Scene scene : getScenes()) {
+            scene.addAudio();
+        }
+    }
+
     public void removeAllAboveAndBelow() {
         for(Scene scene: this.getScenes()) {
             scene.removeAllAboveAndBelow();
@@ -118,11 +130,18 @@ public class Comic {
     public void setFigures(List<Figure> figures) {
         this.figures = figures;
     }
+    //Skips existing ids or names
     public void addFigure(Figure figure) {
+        for(Figure f : figures) {
+            if(f.getId().equals(figure.getId()) || f.getName().equals(figure.getName())) return;
+        }
         this.figures.add(figure);
     }
+    //Skips existing ids or names
     public void addAllFigures(List<Figure> figures) {
-        this.figures.addAll(figures);
+        for(Figure f : figures) {
+            this.addFigure(f);
+        }
     }
 
     public List<Scene> getScenes() {

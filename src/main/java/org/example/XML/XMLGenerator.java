@@ -13,7 +13,7 @@ import java.util.List;
 public class XMLGenerator {
     private static final String DEFAULT_BORDER = "white";
 
-    public static void generateXMLFromComic(Comic comic, String target) {
+    public static void generateXMLFromComic(Comic comic, String target) throws IOException {
         Element root = new Element("comic");
         Document document = new Document(root);
 
@@ -116,14 +116,12 @@ public class XMLGenerator {
         return figureElement;
     }
 
-    private static void writeXML(Document document, String filename) {
+    private static void writeXML(Document document, String filename) throws IOException {
         XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-        try (FileWriter writer = new FileWriter(filename)) {
-            outputter.output(document, writer);
-            System.out.println("Successfully generated XML: " + filename);
-        } catch (IOException e) {
-            System.err.println("Error writing XML: " + e.getMessage());
-        }
+        FileWriter writer = new FileWriter(filename);
+        outputter.output(document, writer);
+        System.out.println("Successfully generated XML: " + filename);
+
     }
 
     private static void addIfNotNull(Element parent, String name, String value) {

@@ -1,19 +1,14 @@
 package org.example;
 
-import org.example.Audio.AudioManager;
 import org.example.Comic.*;
 import org.example.Orchestration.Orchestrator;
 import org.example.Translation.Dictionary;
-import org.example.Translation.Translator;
 import org.example.Utils.ConfigurationFile;
-import org.example.Vignette.VignetteToComic;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.example.Vignette.VignetteManager;
-import org.example.Vignette.VignetteSchema;
 import org.example.XML.XMLGenerator;
 import org.example.XML.XMLParser;
 import org.jdom2.JDOMException;
@@ -35,22 +30,21 @@ public class Main {
         VignetteManager.initialize();
         Dictionary.initialize();
 
-        //Sprint 2 task
+        final String CONJUGATION_XML = "conjugation.xml";
+        final String STORIES_XML = "stories.xml";
+        final List<String> LESSON_SCHEDULE = List.of(ConfigurationFile.getValue("LESSON_SCHEDULE").split(" "));
+        final String LESSON_TARGET = ConfigurationFile.getValue("LESSON_TARGET");
+
+        Comic storiesComic = null;
         try {
-            System.out.println("\nTranslating first 5 of vignette schemas");
-            Translator.translateVignetteSchemasInRange(0,5);
-
-            System.out.println("\nTranslating first 10 of vignette schemas");
-            Translator.translateVignetteSchemasInRange(0,10);
-
-            System.out.println("\nTranslating first 20 of vignette schemas");
-            Translator.translateVignetteSchemasInRange(0,20);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            storiesComic = XMLParser.parseComicFromResourcesPath(STORIES_XML);
+        } catch (IOException | JDOMException e) {
+            System.out.println("Error parsing stories comic: " + e.getMessage());
         }
 
         // Sprint 3 tasks
+        //LESSON_TARGET is now used for sprint 7
+        /*
         if(ConfigurationFile.containsKey("LESSON_TARGET")) {
             ArrayList<Figure> figures = new ArrayList<>();
             Figure leftFigure = new Figure();
@@ -70,70 +64,62 @@ public class Main {
         } else {
             System.out.println("Skipping generation of lesson from vignette schemas (Sprint 3)");
         }
+        */
 
-        // Sprint 4 task
-        if(ConfigurationFile.containsKey("CONJUGATION_XML") && ConfigurationFile.containsKey("CONJUGATION_TARGET")) {
-            String conjugationSpec = ConfigurationFile.getValue("CONJUGATION_XML");
-
-            String conjugationTarget = ConfigurationFile.getValue("CONJUGATION_TARGET");
-            try {
-                /* Parses XML Spec to comic
-                 * Translates all dialogue and adds in translated panels
-                 * Writes new XML to target
-                 */
-                Comic conjugationTemplateComic = XMLParser.parseComicFromResourcesPath(conjugationSpec);
-                Comic newComic = ComicPostProcessor.generateBilingualComic(conjugationTemplateComic);
-                XMLGenerator.generateXMLFromComic(newComic, conjugationTarget);
-            } catch (IOException | JDOMException e) {
-                System.out.println(e.getMessage());
+        //Sprint 7
+        int i = 0;
+        Comic finalComic = new Comic();
+        for(String s : LESSON_SCHEDULE) {
+            System.out.println((++i) + ". " + s);
+            if(s.equals("conjugation")) {
+                try {
+                    Comic conjugationComic = XMLParser.parseComicFromResourcesPath(CONJUGATION_XML);
+                    conjugationComic = ComicPostProcessor.generateBilingualComic(conjugationComic);
+                    finalComic.appendComic(conjugationComic);
+                } catch (IOException | JDOMException e) {
+                    System.out.println("Creation of Conjugation Section failed: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            } else if (s.equals("left")) {
+                //Create comic using only left figure and left text
+                //Where left figure only speaks, and repeats translation in the next panel
+                //Append this comic to final comic
+            } else if(s.equals("whole")) {
+                //Create comic using left and right figures, and combined text
+                //Where left figure speaks source language, and right speaks target language
+                //No need to split panels yet
+                //Append this comic to final comic
+            } else if(s.equals("story")) {
+                if(storiesComic == null) {
+                    System.out.println("Stories comic is null!");
+                    continue;
+                }
+                try {
+                    Comic aiDialogueComic = Orchestrator.generateRandomStoriesComic(storiesComic, 1);
+                    Comic bilingualStoriesComic = ComicPostProcessor.generateBilingualComic(aiDialogueComic);
+                    finalComic.appendComic(bilingualStoriesComic);
+                } catch (IOException | JDOMException e) {
+                    System.out.println("Creation of Stories comic failed: " + e.getMessage());
+                    e.printStackTrace();
+                }
             }
-
-        } else {
-            System.out.println("Skipping generation of conjugation lesson (Sprint 4)");
         }
 
-        //Sprint 5 task
-        if(ConfigurationFile.containsKey("STORIES_XML") && ConfigurationFile.containsKey("STORIES_TARGET") ) {
-            try {
-                String storiesSpec = ConfigurationFile.getValue("STORIES_XML");
-                Comic wholeAudioVisualStoriesComic = XMLParser.parseComicFromResourcesPath(storiesSpec);
-                Comic aiDialogueComic = Orchestrator.generateRandomStoriesComic(wholeAudioVisualStoriesComic, 10);
-                Comic bilingualStoriesComic = ComicPostProcessor.generateBilingualComic(aiDialogueComic);
-                XMLGenerator.generateXMLFromComic(bilingualStoriesComic, ConfigurationFile.getValue("STORIES_TARGET"));
-            } catch (IOException | JDOMException e) {
-                System.out.println(e.getMessage());
-            }
-        } else {
-            System.out.println("Skipping generation of random stories (Sprint 5)");
+        finalComic.splitAllMultiDialoguePanels();
+
+        try {
+            finalComic.addAudio();
+        } catch (IOException | InterruptedException e) {
+            System.out.println("Error adding audio: " + e.getMessage());
+            e.printStackTrace();
         }
 
-        // Sprint 6 task
-        if(ConfigurationFile.containsKey("STORIES_XML") && ConfigurationFile.containsKey("AUDIO_FOLDER")
-                && ConfigurationFile.containsKey("AUDIO_INDEX") && ConfigurationFile.containsKey("AUDIO_TARGET")) {
-           try {
-               //Create single scene comic
-               String storiesSpec = ConfigurationFile.getValue("STORIES_XML");
-               Comic wholeAudioVisualStoriesComic = XMLParser.parseComicFromResourcesPath(storiesSpec);
-               Comic singleComic = Orchestrator.generateRandomStoriesComic(wholeAudioVisualStoriesComic, 1);
-               singleComic = ComicPostProcessor.generateBilingualComic(singleComic);
-                //Split panels and add audio
-               singleComic.splitAllMultiDialoguePanels();
-               AudioManager.addAudio(singleComic);
-               //Store output
-               String audioTarget = ConfigurationFile.getValue("AUDIO_TARGET");
-               XMLGenerator.generateXMLFromComic(singleComic, audioTarget);
-           } catch (Exception e) {
-               System.out.println(e.getMessage());
-           }
-
-        } else {
-            System.out.println("Skipping generation of audio story (Sprint 6)");
+        try {
+            XMLGenerator.generateXMLFromComic(finalComic, LESSON_TARGET);
+        } catch (IOException e) {
+            System.out.println("Error generating XML: " + e.getMessage());
+            e.printStackTrace();
         }
-
-
-
 
     }
-
-
 }

@@ -70,7 +70,7 @@ public class CompletionSession {
 
             if (ResponseValidator.isDenial(responseContent)) {
                 System.err.println("[DENIAL DETECTED]\nAssistant refused to answer prompt: " + content + "\nResponse: " + responseContent);
-                return "[ERROR] Denial: " + responseContent;
+                return "[ERROR] Denial:\n" + responseContent;
             }
             messageList.add(new CompletionMessage("assistant", responseContent));
             return responseContent;

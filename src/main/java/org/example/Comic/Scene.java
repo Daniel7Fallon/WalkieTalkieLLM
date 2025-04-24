@@ -1,5 +1,6 @@
 package org.example.Comic;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -84,6 +85,12 @@ public class Scene {
                 this.addPanelAtIndex(i+1, newPanel);
             }
             i++;
+        }
+    }
+
+    public void addAudio() throws IOException, InterruptedException {
+        for(Panel panel : getPanels()) {
+            panel.addAudio();
         }
     }
 

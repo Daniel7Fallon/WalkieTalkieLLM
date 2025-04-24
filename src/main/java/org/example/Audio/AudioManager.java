@@ -16,29 +16,11 @@ public class AudioManager {
     private static final String AUDIO_INDEX_FILE_PATH = ConfigurationFile.getValue("AUDIO_INDEX");
     private static final String RESPONSE_FORMAT = "mp3";
 
-
+    /*
     public static void addAudio(Comic comic) throws IOException, InterruptedException {
-        for(Scene scene : comic.getScenes()) {
-            for(Panel panel : scene.getPanels()) {
-                if(panel.hasLeft() && panel.getLeftSide().getBalloonStatus() != null) {
-                    String dialogue = panel.getLeftSide().getBalloonContent();
-                    createNewAudio(dialogue);
-                    String audioFile = getIndexByPhrase(dialogue) + ".mp3";
-                    panel.setAudio(audioFile);
-                } else if(panel.hasMiddle() && panel.getMiddleSide().getBalloonStatus() != null) {
-                    String dialogue = panel.getMiddleSide().getBalloonContent();
-                    createNewAudio(dialogue);
-                    String audioFile = getIndexByPhrase(dialogue) + ".mp3";
-                    panel.setAudio(audioFile);
-                } else if(panel.hasRight() && panel.getRightSide().getBalloonStatus() != null) {
-                    String dialogue = panel.getRightSide().getBalloonContent();
-                    createNewAudio(dialogue);
-                    String audioFile = getIndexByPhrase(dialogue) + ".mp3";
-                    panel.setAudio(audioFile);
-                }
-            }
-        }
+
     }
+    */
 
     public static void createNewAudio(String phrase) throws IOException, InterruptedException {
         //Ensure Audio folder exists

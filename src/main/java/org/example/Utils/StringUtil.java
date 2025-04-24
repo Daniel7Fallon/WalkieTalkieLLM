@@ -1,13 +1,8 @@
 package org.example.Utils;
 
-import org.example.Comic.Dialogue.CharacterDialogue;
-import org.example.Comic.Dialogue.PanelDialogue;
-import org.example.Comic.Dialogue.SceneDialogue;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

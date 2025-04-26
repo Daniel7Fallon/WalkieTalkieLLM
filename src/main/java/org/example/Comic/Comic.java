@@ -43,7 +43,8 @@ public class Comic {
 
     public void addSectionPanel(int n, String sectionType) {
         Panel sectionPanel = new Panel();
-        sectionPanel.setBelow("Section " + n + ": " + sectionType);
+        sectionPanel.setAbove("Section " + n);
+        sectionPanel.setBelow(sectionType);
         sectionPanel.setBorder("white");
         PanelSide middle = new PanelSide();
         PanelFigure panelFigure = new PanelFigure(figures.getFirst());

@@ -35,18 +35,20 @@ public class Main {
         final List<String> LESSON_SCHEDULE = List.of(ConfigurationFile.getValue("LESSON_SCHEDULE").split(" "));
         final String LESSON_TARGET = ConfigurationFile.getValue("LESSON_TARGET");
 
-        Comic storiesComic = null;
-        try {
-            storiesComic = XMLParser.parseComicFromResourcesPath(STORIES_XML);
-        } catch (IOException | JDOMException e) {
-            System.out.println("Error parsing stories comic: " + e.getMessage());
-        }
         Comic conjugationComic = null;
         try {
             conjugationComic = XMLParser.parseComicFromResourcesPath(CONJUGATION_XML);
         } catch (IOException | JDOMException e) {
             System.out.println("Error parsing conjugation comic: " + e.getMessage());
         }
+
+        Comic storiesComic = null;
+        try {
+            storiesComic = XMLParser.parseComicFromResourcesPath(STORIES_XML);
+        } catch (IOException | JDOMException e) {
+            System.out.println("Error parsing stories comic: " + e.getMessage());
+        }
+
 
         // Sprint 3 tasks
         //LESSON_TARGET is now used for sprint 7
@@ -78,6 +80,7 @@ public class Main {
         for(String s : LESSON_SCHEDULE) {
             //Adding conjugation section
             if(s.equals("conjugation")) {
+                System.out.println("Adding verb conjugation section.");
                 if(conjugationComic == null) {
                     System.out.println("Conjugation Comic is null!");
                     continue;
@@ -91,7 +94,7 @@ public class Main {
                     finalComic.appendComic(verbComic);
                     System.out.println("Successfully added conjugation section");
                 } else {
-                    System.out.println("Failed to remove verb comic first panel. Scenes size = " + verbComic.getScenes().size());
+                    System.out.println("Failed to remove verb conjugation comic's first panel. Scenes size = " + verbComic.getScenes().size());
                 }
 
             //Adding left vignette section
@@ -109,23 +112,23 @@ public class Main {
 
             //Adding mini-story section
             } else if(s.equals("story")) {
+                System.out.println("Adding mini-story section.");
                 if(storiesComic == null) {
                     System.out.println("Stories comic is null!");
                     continue;
                 }
-                try {
-                    Comic storyComic = Orchestrator.generateRandomStoriesComic(storiesComic, 1);
 
-                    if(storyComic.removeFirstPanel()) {
-                        storyComic.addSectionPanel(++i, "Mini-Story");
-                        finalComic.appendComic(storyComic);
+                Comic storyComic = Orchestrator.generateRandomStoriesComic(storiesComic, 1);
 
-                        System.out.println("Successfully added mini-story section");
-                    }
-                } catch (IOException | JDOMException e) {
-                    System.out.println("Creation of Stories comic failed: " + e.getMessage());
-                    e.printStackTrace();
+                if(storyComic.removeFirstPanel()) {
+                    storyComic.addSectionPanel(++i, "Mini-Story");
+                    finalComic.appendComic(storyComic);
+                    System.out.println("Successfully added mini-story section");
+                } else {
+                    System.out.println("Failed to remove mini-story comic's first panel. Scenes size = " + storyComic.getScenes().size());
                 }
+
+            //Improper lesson schedule argument encountered
             } else {
                 System.out.println("Invalid lesson schedule argument: " + s);
             }

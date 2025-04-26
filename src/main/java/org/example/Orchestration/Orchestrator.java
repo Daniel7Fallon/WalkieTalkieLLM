@@ -3,11 +3,7 @@ package org.example.Orchestration;
 import org.example.Comic.*;
 import org.example.Comic.Dialogue.SceneDialogue;
 
-import org.jdom2.JDOMException;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class Orchestrator {
 
@@ -15,7 +11,7 @@ public class Orchestrator {
      * Generates dialogue for those scenes
      * Returns a comic with those scenes with AI dialogue
      */
-    public static Comic generateRandomStoriesComic(Comic originalComic, int numberOfStories) throws IOException, JDOMException {
+    public static Comic generateRandomStoriesComic(Comic originalComic, int numberOfStories) {
         List<Scene> scenes = originalComic.getRandomScenes(numberOfStories);
 
         Comic finalComic = new Comic();

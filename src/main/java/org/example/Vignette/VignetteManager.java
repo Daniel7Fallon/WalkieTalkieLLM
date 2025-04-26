@@ -1,12 +1,16 @@
 package org.example.Vignette;
 
+import org.example.Translation.Translator;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class VignetteManager {
     private static final List<VignetteSchema> vignetteSchemas = new ArrayList<>();
+    static private final Random rand = new Random();
 
     //Deserialises pose pairings with backgrounds.tsv
     public static void initialize() {
@@ -47,12 +51,13 @@ public class VignetteManager {
         return vignetteSchemas;
     }
 
-    public static List<VignetteSchema> getVignetteSchemasInRange(int start, int end) {
-        List<VignetteSchema> result = new ArrayList<>();
-        for(int i = start; i < end; i++) {
-            result.add(vignetteSchemas.get(i));
-        }
-        return result;
+    public static VignetteSchema getRandomVignetteSchema() {
+        return (vignetteSchemas.isEmpty()) ? null : vignetteSchemas.get(rand.nextInt(vignetteSchemas.size()));
+    }
+
+    public static void translateAllVignetteSchemas() throws IOException {
+        List<String> phrases = getLeftAndCombinedTexts(vignetteSchemas);
+        Translator.batchTranslateList(phrases);
     }
 
     public static List<String> getLeftAndCombinedTexts(List<VignetteSchema> input) {

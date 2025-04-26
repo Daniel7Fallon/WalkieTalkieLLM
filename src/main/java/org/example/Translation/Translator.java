@@ -13,13 +13,6 @@ import java.util.List;
 
 public class Translator {
 
-    //Translates leftTexts and combinedTexts of vignetteSchemas in range given
-    public static void translateVignetteSchemasInRange(int start, int end) throws IOException{
-        List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemasInRange(start, end);
-        List<String> toTranslate = VignetteManager.getLeftAndCombinedTexts(vignetteSchemas);
-        batchTranslateList(toTranslate);
-    }
-
     //Batches prompts in configurable size
     public static void batchTranslateList(List<String> input) throws IOException{
         int batchSize = Integer.parseInt(ConfigurationFile.getValue("TRANSLATION_BATCH_SIZE"));
@@ -39,7 +32,6 @@ public class Translator {
     }
 
 
-    //Translates the leftText entries from the given vignettes and serialises them.
     //EnglishTo<Target> if source is English
     //EnglishTo<Source>, <Source>To<Target> if english is not source
     private static void translateListAndWrite(List<String> input) throws IOException {

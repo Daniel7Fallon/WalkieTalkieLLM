@@ -2,93 +2,97 @@ package org.example.Vignette;
 
 import org.example.Comic.*;
 import org.example.Translation.Dictionary;
-import org.example.XML.PanelTemplate;
+import org.example.Translation.Translator;
 
 import java.io.IOException;
 import java.util.List;
 
 public class VignetteToComic {
 
-    public static Comic createComicFromVignette (List<Figure> figures, List<VignetteSchema> vignetteSchemas) {
+    //Returns a comic with two characters speaking the source and target for the combined text of a vignette respectively
+    public static Comic createWholeVignetteComic(Figure leftFigure, Figure rightFigure) throws IOException {
+        VignetteSchema vignetteSchema = null;
+        while(vignetteSchema == null || vignetteSchema.getCombinedTexts().isEmpty()) {
+            vignetteSchema = VignetteManager.getRandomVignetteSchema();
+        }
+        Vignette vignette = vignetteSchema.getRandomVignette();
         Comic comic = new Comic();
-
-        comic.addAllFigures(figures);
-        createScenesFromSchemas(comic, vignetteSchemas);
-
+        comic.addFigure(leftFigure);
+        comic.addFigure(rightFigure);
+        comic.addScene(createWholeVignetteScene(vignette, leftFigure, rightFigure));
         return comic;
     }
 
-    private static void createScenesFromSchemas(Comic comic, List<VignetteSchema> vignetteSchemas) {
-        vignetteSchemas.stream()
-                .map(VignetteSchema::getRandVignette)
-                .forEach(vignette -> createSceneFromVignette(comic, vignette));
-    }
-
-    private static void createSceneFromVignette(Comic comic, Vignette vignette) {
+    private static Scene createWholeVignetteScene(Vignette vignette, Figure leftFigure, Figure rightFigure) throws IOException {
         Scene scene = new Scene();
-        comic.addScene(scene);
-        createPanel(comic, scene, vignette, PanelTemplate.INTRO);
-        createPanel(comic, scene, vignette, PanelTemplate.LEFT_SPEAKS);
-        createPanel(comic, scene, vignette, PanelTemplate.RIGHT_SPEAKS);
-    }
+        String combinedText = vignette.getCombinedText();
+        Translator.batchTranslateList(List.of(combinedText));
+        String[] translations = Dictionary.getSourceAndTargetTranslations(combinedText);
 
-    private static void createPanel(Comic comic, Scene scene, Vignette vignette, PanelTemplate template) {
         Panel panel = new Panel();
-        List<Figure> figures = comic.getFigures();
-
-        PanelSide left = new PanelSide();
-        PanelSide right = new PanelSide();
-
-        PanelFigure leftFigure = new PanelFigure(figures.get(0));
-        PanelFigure rightFigure = new PanelFigure(figures.get(1));
-
-        leftFigure.setPose(vignette.getLeftPose());
-        rightFigure.setPose(vignette.getRightPose());
-
-        left.setPanelFigure(leftFigure);
-        right.setPanelFigure(rightFigure);
-
         panel.setSetting(vignette.getBackgrounds());
+        //Left
+        PanelSide leftSide = new PanelSide();
+        PanelFigure leftPanelFigure = new PanelFigure(leftFigure);
+        leftPanelFigure.setPose(vignette.getLeftPose());
+        leftSide.setPanelFigure(leftPanelFigure);
+        leftSide.setBalloonStatus("Speech");
+        leftSide.setBalloonContent(translations[0]);
+        panel.setLeftSide(leftSide);
+        //Right
+        PanelSide rightSide = new PanelSide();
+        PanelFigure rightPanelFigure = new PanelFigure(rightFigure);
+        rightPanelFigure.setPose(vignette.getRightPose());
+        rightSide.setPanelFigure(rightPanelFigure);
+        rightSide.setBalloonStatus("Speech");
+        rightSide.setBalloonContent(translations[1]);
+        panel.setRightSide(rightSide);
 
-        String[] sourceAndTarget;
-
-        if (vignette.getLeftText() != null) {
-            try {
-                sourceAndTarget = Dictionary.getSourceAndTargetTranslations(vignette.getLeftText());
-                if (sourceAndTarget == null) {
-                    throw new IllegalArgumentException("Translation for " + vignette.getLeftText() + " doesn't exist.");
-                }
-            } catch (IOException e) {
-                throw new IllegalArgumentException("Call to dictionary failed.", e);
-            }
-
-            String translatedText = sourceAndTarget[1];
-
-            switch (template) {
-                case INTRO -> {
-
-                }
-                case LEFT_SPEAKS -> {
-                    left.setBalloonStatus("speaking");
-                    left.setBalloonContent(vignette.getLeftText());
-                }
-                case RIGHT_SPEAKS -> {
-                    right.setBalloonStatus("speaking");
-                    right.setBalloonContent(translatedText);
-                }
-                case BOTH_SPEAK -> {
-                    left.setBalloonStatus("speaking");
-                    left.setBalloonContent(vignette.getLeftText());
-
-                    right.setBalloonStatus("speaking");
-                    right.setBalloonContent(translatedText);
-                }
-            }
-        }
-
-        panel.setLeftSide(left);
-        panel.setRightSide(right);
         scene.addPanel(panel);
+        return scene;
     }
 
+    //Returns a comic with only one character speaking the source and target for the left text of a vignette
+    public static Comic createLeftVignetteComic(Figure figure) throws IOException {
+        VignetteSchema vignetteSchema = null;
+        while(vignetteSchema == null || vignetteSchema.getLeftTexts().isEmpty()) {
+            vignetteSchema = VignetteManager.getRandomVignetteSchema();
+        }
+        Vignette vignette = vignetteSchema.getRandomVignette();
+        Comic comic = new Comic();
+        comic.addFigure(figure);
+        comic.addScene(createLeftVignetteScene(vignette, figure));
+        return comic;
+    }
+
+    private static Scene createLeftVignetteScene(Vignette vignette, Figure figure) throws IOException {
+        Scene scene = new Scene();
+        String leftText = vignette.getLeftText();
+        Translator.batchTranslateList(List.of(leftText));
+        String[] translations = Dictionary.getSourceAndTargetTranslations(leftText);
+
+        //Source Panel
+        Panel sourcePanel = new Panel();
+        sourcePanel.setSetting(vignette.getBackgrounds());
+        PanelSide sourceMiddle = new PanelSide();
+        PanelFigure panelFigure = new PanelFigure(figure);
+        panelFigure.setPose(vignette.getLeftPose());
+        sourceMiddle.setPanelFigure(panelFigure);
+        sourceMiddle.setBalloonStatus("Speech");
+        sourceMiddle.setBalloonContent(translations[0]);
+        sourcePanel.setMiddleSide(sourceMiddle);
+
+        //Target Panel
+        Panel targetPanel = new Panel();
+        targetPanel.setSetting(vignette.getBackgrounds());
+        PanelSide targetMiddle = new PanelSide();
+        targetMiddle.setPanelFigure(panelFigure);
+        targetMiddle.setBalloonStatus("Speech");
+        targetMiddle.setBalloonContent(translations[1]);
+        targetPanel.setMiddleSide(targetMiddle);
+
+        scene.addPanel(sourcePanel);
+        scene.addPanel(targetPanel);
+        return scene;
+    }
 }

@@ -68,6 +68,7 @@ public class XMLGenerator {
         Element panelElement = new Element("panel");
         addIfNotNull(panelElement, "setting", panel.getSetting());
         addIfNotNull(panelElement, "below", panel.getBelow());
+        addIfNotNull(panelElement, "above", panel.getAbove());
         addIfNotNull(panelElement, "border", panel.getBorder() != null ? panel.getBorder() : DEFAULT_BORDER);
         addIfNotNull(panelElement, "audio", panel.getAudio());
         //panelElement.addContent(new Element("duration").setText(DEFAULT_DURATION));

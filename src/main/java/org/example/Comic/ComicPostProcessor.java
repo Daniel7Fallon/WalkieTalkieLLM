@@ -22,6 +22,7 @@ public class ComicPostProcessor {
      */
     private static Comic addTranslationPanels(Comic originalComic) {
         Comic newComic = new Comic();
+        newComic.addAllFigures(originalComic.getFigures());
         List<Scene> newScenes = new ArrayList<>();
         for (Scene scene : originalComic.getScenes()) {
 

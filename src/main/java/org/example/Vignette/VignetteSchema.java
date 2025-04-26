@@ -20,7 +20,7 @@ public class VignetteSchema {
         this.backgrounds = backgrounds;
     }
 
-    public Vignette getRandVignette() {
+    public Vignette getRandomVignette() {
         String cT = ((combinedTexts.isEmpty()) ? null : combinedTexts.get(rand.nextInt(combinedTexts.size())) );
         String lT = ((leftTexts.isEmpty()) ? null : leftTexts.get(rand.nextInt(leftTexts.size())) );
         String rT = ((rightPoses.isEmpty()) ? null : rightPoses.get(rand.nextInt(rightPoses.size())) );

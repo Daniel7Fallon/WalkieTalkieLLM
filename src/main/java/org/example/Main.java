@@ -1,7 +1,7 @@
 package org.example;
 
 import org.example.Comic.*;
-import org.example.Orchestration.Orchestrator;
+import org.example.Story.StoryGenerator;
 import org.example.Translation.Dictionary;
 import org.example.Utils.ConfigurationFile;
 
@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.example.Vignette.VignetteManager;
+import org.example.Vignette.VignetteToComic;
 import org.example.XML.XMLGenerator;
 import org.example.XML.XMLParser;
 import org.jdom2.JDOMException;
@@ -49,32 +50,28 @@ public class Main {
             System.out.println("Error parsing stories comic: " + e.getMessage());
         }
 
-
-        // Sprint 3 tasks
-        //LESSON_TARGET is now used for sprint 7
-        /*
-        if(ConfigurationFile.containsKey("LESSON_TARGET")) {
-            ArrayList<Figure> figures = new ArrayList<>();
-            Figure leftFigure = new Figure();
-            leftFigure.setName("Daniel");
-            leftFigure.setSkin("Brown");
-
-            Figure rightFigure = new Figure();
-            rightFigure.setName("Harry");
-            rightFigure.setSkin("White");
-
-            figures.add(leftFigure);
-            figures.add(rightFigure);
-
-            List<VignetteSchema> vignetteSchemas = VignetteManager.getVignetteSchemasInRange(0, 10);
-            Comic comic = VignetteToComic.createComicFromVignette(figures, vignetteSchemas);
-            XMLGenerator.generateXMLFromComic(comic, ConfigurationFile.getValue("LESSON_TARGET"));
-        } else {
-            System.out.println("Skipping generation of lesson from vignette schemas (Sprint 3)");
+        //Translate all vignettes
+        try {
+            VignetteManager.translateAllVignetteSchemas();
+        } catch (IOException e) {
+            System.out.println("Error translating all vignette schemas: " + e.getMessage());
+            e.printStackTrace();
         }
-        */
 
-        //Sprint 7
+        //Figures for vignette comics
+        Figure leftFigure = new Figure();
+        leftFigure.setId("Daniel");
+        leftFigure.setName("Daniel");
+        leftFigure.setSkin("white");
+        leftFigure.setFacing("right");
+
+        Figure rightFigure = new Figure();
+        rightFigure.setId("Harry");
+        rightFigure.setName("Harry");
+        rightFigure.setSkin("white");
+        rightFigure.setFacing("left");
+
+        //Lesson construction
         int i = 0;
         Comic finalComic = new Comic();
         for(String s : LESSON_SCHEDULE) {
@@ -86,12 +83,22 @@ public class Main {
                     continue;
                 }
                 Comic verbComic = new Comic();
+                verbComic.addAllFigures(conjugationComic.getFigures());
                 verbComic.addAllScenes(conjugationComic.getRandomScenes(1));
                 verbComic.addAllFigures(conjugationComic.getFigures());
 
                 if(verbComic.removeFirstPanel()) {
                     verbComic.addSectionPanel(++i, "Verb Conjugation");
+
+                    try {
+                        verbComic = ComicPostProcessor.generateBilingualComic(verbComic);
+                    } catch (IOException e) {
+                        System.out.println("Creation of Bilingual verb comic failed: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+
                     finalComic.appendComic(verbComic);
+
                     System.out.println("Successfully added conjugation section");
                 } else {
                     System.out.println("Failed to remove verb conjugation comic's first panel. Scenes size = " + verbComic.getScenes().size());
@@ -99,16 +106,37 @@ public class Main {
 
             //Adding left vignette section
             } else if (s.equals("left")) {
-                //Create comic using only left figure and left text
-                //Where left figure only speaks, and repeats translation in the next panel
-                //Append this comic to final comic
+                Comic leftComic = new Comic();
+                try {
+                    leftComic = VignetteToComic.createLeftVignetteComic(leftFigure);
+                } catch (IOException e) {
+                    System.out.println("Error creating left vignette comic: " + e.getMessage());
+                    e.printStackTrace();
+                }
+                if(leftComic != null) {
+                    leftComic.addSectionPanel(++i, "Simple Vocabulary");
+                    finalComic.appendComic(leftComic);
+                    System.out.println("Successfully added left section");
+                } else {
+                    System.out.println("Left Vignette Comic is null.");
+                }
 
             //Adding whole vignette section
             } else if(s.equals("whole")) {
-                //Create comic using left and right figures, and combined text
-                //Where left figure speaks source language, and right speaks target language
-                //No need to split panels yet
-                //Append this comic to final comic
+                Comic wholeComic = new Comic();
+                try {
+                    wholeComic = VignetteToComic.createWholeVignetteComic(leftFigure, rightFigure);
+                } catch (IOException e) {
+                    System.out.println("Error creating whole vignette comic: " + e.getMessage());
+                    e.printStackTrace();
+                }
+                if(wholeComic != null) {
+                    wholeComic.addSectionPanel(++i, "Vocabulary");
+                    finalComic.appendComic(wholeComic);
+                    System.out.println("Successfully added whole section");
+                } else {
+                    System.out.println("Whole Vignette Comic is null.");
+                }
 
             //Adding mini-story section
             } else if(s.equals("story")) {
@@ -118,10 +146,18 @@ public class Main {
                     continue;
                 }
 
-                Comic storyComic = Orchestrator.generateRandomStoriesComic(storiesComic, 1);
-
+                Comic storyComic = StoryGenerator.generateRandomStoriesComic(storiesComic, 1);
                 if(storyComic.removeFirstPanel()) {
                     storyComic.addSectionPanel(++i, "Mini-Story");
+
+                    try {
+                        storyComic = ComicPostProcessor.generateBilingualComic(storyComic);
+                    } catch (IOException e) {
+                        System.out.println("Creation of Bilingual mini-story comic failed: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+
+
                     finalComic.appendComic(storyComic);
                     System.out.println("Successfully added mini-story section");
                 } else {
@@ -134,16 +170,8 @@ public class Main {
             }
         }
 
-        //Swap the order of generateBilingualComic and splitAllMultiDialogue panels for desired result
-        //
         //Interleave Translated Panels
-        try {
-            finalComic = ComicPostProcessor.generateBilingualComic(finalComic);
-            System.out.println("Successfully generated add translated panels");
-        } catch (IOException e) {
-            System.out.println("Creation of Bilingual comic failed: " + e.getMessage());
-            e.printStackTrace();
-        }
+
         finalComic.splitAllMultiDialoguePanels();
         System.out.println("Split all multi dialogue panels");
 

@@ -53,6 +53,11 @@ public final class ConfigurationFile {
         if(ttsVoice == null || ttsVoice.isEmpty()) throw new IllegalArgumentException("TTS_VOICE parameter is missing in configuration file.");
         String translationBatchSize = configMap.get("TRANSLATION_BATCH_SIZE");
         if(translationBatchSize == null || translationBatchSize.isEmpty()) throw new IllegalArgumentException("TRANSLATION_BATCH_SIZE parameter is missing in configuration file.");
+        String translateAllVignettes = configMap.get("TRANSLATE_ALL_VIGNETTES");
+        if(translateAllVignettes == null || translateAllVignettes.isEmpty()) throw new IllegalArgumentException("TRANSLATE_ALL_VIGNETTES parameter is missing in configuration file.");
+        //Output
+        String lessonTarget = configMap.get("LESSON_TARGET");
+        if(lessonTarget == null || lessonTarget.isEmpty()) throw new IllegalArgumentException("LESSON_TARGET parameter is missing in configuration file.");
         String lessonSchedule = configMap.get("LESSON_SCHEDULE");
         if(lessonSchedule == null || lessonSchedule.isEmpty()) throw new IllegalArgumentException("LESSON_SCHEDULE parameter is missing in configuration file.");
         //External Resources
@@ -62,9 +67,7 @@ public final class ConfigurationFile {
         if(audioFolder == null || audioFolder.isEmpty()) throw new IllegalArgumentException("AUDIO_FOLDER parameter is missing in configuration file.");
         String audioIndexPath = configMap.get("AUDIO_INDEX");
         if(audioIndexPath == null || audioIndexPath.isEmpty()) throw new IllegalArgumentException("AUDIO_INDEX parameter is missing in configuration file.");
-        //Output
-        String lessonTarget = configMap.get("LESSON_TARGET");
-        if(lessonTarget == null || lessonTarget.isEmpty()) throw new IllegalArgumentException("LESSON_TARGET parameter is missing in configuration file.");
+
 
         //Format Languages
         configMap.put("SOURCE_LANGUAGE", StringUtil.capitalize(sourceLanguage));
@@ -73,6 +76,9 @@ public final class ConfigurationFile {
             Integer.parseInt(translationBatchSize);
         } catch(NumberFormatException e) {
             throw new IllegalArgumentException("TRANSLATION_BATCH_SIZE parameter must be an integer.");
+        }
+        if(!translateAllVignettes.equals("true") && !translateAllVignettes.equals("false")) {
+            throw new IllegalArgumentException("TRANSLATION_BATCH_SIZE parameter must be \"true\" or \"false\".");
         }
     }
 

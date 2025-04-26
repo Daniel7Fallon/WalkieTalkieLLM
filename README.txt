@@ -18,6 +18,8 @@ TTS_MODEL	tts-1
 TTS_VOICE	alloy
 
 TRANSLATION_BATCH_SIZE	40
+#Valid parameters "true" or "false", translates all leftText and combinedText fields of all vignette schemas if true.
+TRANSLATE_ALL_VIGNETTES	false
 
 ###Output###
 #Target for output

@@ -51,11 +51,16 @@ public class Main {
         }
 
         //Translate all vignettes
-        try {
-            VignetteManager.translateAllVignetteSchemas();
-        } catch (IOException e) {
-            System.out.println("Error translating all vignette schemas: " + e.getMessage());
-            e.printStackTrace();
+        if(ConfigurationFile.getValue("TRANSLATE_ALL_VIGNETTES").equals("true")) {
+            System.out.println("Translating all vignette schemas.");
+            try {
+                VignetteManager.translateAllVignetteSchemas();
+            } catch (IOException e) {
+                System.out.println("Error translating all vignette schemas: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } else if(ConfigurationFile.getValue("TRANSLATE_ALL_VIGNETTES").equals("false")) {
+            System.out.println("Skipping translation of all vignette schemas.");
         }
 
         //Figures for vignette comics

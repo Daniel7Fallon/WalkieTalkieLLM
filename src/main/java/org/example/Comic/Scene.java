@@ -28,6 +28,13 @@ public class Scene {
         panels.add(index, panel);
     }
 
+    //Returns true if successful
+    public boolean removeFirstPanel() {
+        if(panels.isEmpty()) return false;
+        panels.removeFirst();
+        return true;
+    }
+
     public String getSpeechTemplate() {
         StringBuilder sb = new StringBuilder();
         for(int i = 1; i < this.getPanels().size(); i++) {

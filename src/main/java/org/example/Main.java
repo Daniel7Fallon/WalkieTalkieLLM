@@ -77,30 +77,38 @@ public class Main {
         Comic finalComic = new Comic();
         for(String s : LESSON_SCHEDULE) {
             System.out.println((++i) + ". " + s);
+            //Adding conjugation section
             if(s.equals("conjugation")) {
-
+                if(conjugationComic == null) {
+                    System.out.println("Conjugation Comic is null!");
+                    continue;
+                }
                 Comic verbComic = new Comic();
                 verbComic.addAllScenes(conjugationComic.getRandomScenes(1));
                 verbComic.addAllFigures(conjugationComic.getFigures());
-                /*
-                try {
-                    verbComic = ComicPostProcessor.generateBilingualComic(verbComic);
-                } catch (IOException e) {
-                    System.out.println("Error generating bilingual verb comic: " + e.getMessage());
+
+                if(verbComic.removeFirstPanel()) {
+                    verbComic.addSectionPanel(i, "Verb Conjugation");
+                    finalComic.appendComic(verbComic);
+                    System.out.println("Successfully added conjugation section");
+                } else {
+                    System.out.println("Failed to remove verb comic first panel. Scenes size = " + verbComic.getScenes().size());
                 }
 
-                 */
-                finalComic.appendComic(verbComic);
-
+            //Adding left vignette section
             } else if (s.equals("left")) {
                 //Create comic using only left figure and left text
                 //Where left figure only speaks, and repeats translation in the next panel
                 //Append this comic to final comic
+
+            //Adding whole vignette section
             } else if(s.equals("whole")) {
                 //Create comic using left and right figures, and combined text
                 //Where left figure speaks source language, and right speaks target language
                 //No need to split panels yet
                 //Append this comic to final comic
+
+            //Adding mini-story section
             } else if(s.equals("story")) {
                 if(storiesComic == null) {
                     System.out.println("Stories comic is null!");
@@ -108,12 +116,19 @@ public class Main {
                 }
                 try {
                     Comic storyComic = Orchestrator.generateRandomStoriesComic(storiesComic, 1);
-                    //Comic bilingualStoriesComic = ComicPostProcessor.generateBilingualComic(aiDialogueComic);
-                    finalComic.appendComic(storyComic);
+
+                    if(storyComic.removeFirstPanel()) {
+                        storyComic.addSectionPanel(i, "Mini-Story");
+                        finalComic.appendComic(storyComic);
+
+                        System.out.println("Successfully added mini-story section");
+                    }
                 } catch (IOException | JDOMException e) {
                     System.out.println("Creation of Stories comic failed: " + e.getMessage());
                     e.printStackTrace();
                 }
+            } else {
+                System.out.println("Invalid lesson schedule argument: " + s);
             }
         }
 
@@ -122,16 +137,18 @@ public class Main {
         //Interleave Translated Panels
         try {
             finalComic = ComicPostProcessor.generateBilingualComic(finalComic);
-
+            System.out.println("Successfully generated add translated panels");
         } catch (IOException e) {
             System.out.println("Creation of Bilingual comic failed: " + e.getMessage());
             e.printStackTrace();
         }
         finalComic.splitAllMultiDialoguePanels();
+        System.out.println("Split all multi dialogue panels");
 
         /* Commented out for speed of testing
         try {
-            //finalComic.addAudio();
+            finalComic.addAudio();
+            System.out.println("Added audio successfully");
         } catch (IOException | InterruptedException e) {
             System.out.println("Error adding audio: " + e.getMessage());
             e.printStackTrace();

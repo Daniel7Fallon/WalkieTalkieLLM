@@ -35,6 +35,25 @@ public class Comic {
         }
     }
 
+    //Returns true if successful
+    public boolean removeFirstPanel() {
+        if(getScenes().isEmpty()) return false;
+        return getScenes().getFirst().removeFirstPanel();
+    }
+
+    public void addSectionPanel(int n, String sectionType) {
+        Panel sectionPanel = new Panel();
+        sectionPanel.setBelow("Section " + n + ": " + sectionType);
+        sectionPanel.setBorder("white");
+        PanelSide middle = new PanelSide();
+        PanelFigure panelFigure = new PanelFigure(figures.getFirst());
+        panelFigure.setFacing("right");
+        middle.setPanelFigure(panelFigure);
+        sectionPanel.setMiddleSide(middle);
+
+        scenes.getFirst().addPanelAtIndex(0, sectionPanel);
+    }
+
     public void appendComic(Comic that) {
         this.addAllFigures(that.getFigures());
         this.addAllScenes(that.getScenes());

@@ -76,7 +76,6 @@ public class Main {
         int i = 0;
         Comic finalComic = new Comic();
         for(String s : LESSON_SCHEDULE) {
-            System.out.println((++i) + ". " + s);
             //Adding conjugation section
             if(s.equals("conjugation")) {
                 if(conjugationComic == null) {
@@ -88,7 +87,7 @@ public class Main {
                 verbComic.addAllFigures(conjugationComic.getFigures());
 
                 if(verbComic.removeFirstPanel()) {
-                    verbComic.addSectionPanel(i, "Verb Conjugation");
+                    verbComic.addSectionPanel(++i, "Verb Conjugation");
                     finalComic.appendComic(verbComic);
                     System.out.println("Successfully added conjugation section");
                 } else {
@@ -118,7 +117,7 @@ public class Main {
                     Comic storyComic = Orchestrator.generateRandomStoriesComic(storiesComic, 1);
 
                     if(storyComic.removeFirstPanel()) {
-                        storyComic.addSectionPanel(i, "Mini-Story");
+                        storyComic.addSectionPanel(++i, "Mini-Story");
                         finalComic.appendComic(storyComic);
 
                         System.out.println("Successfully added mini-story section");

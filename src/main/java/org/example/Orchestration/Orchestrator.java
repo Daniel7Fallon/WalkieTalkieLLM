@@ -15,12 +15,6 @@ public class Orchestrator {
      * Generates dialogue for those scenes
      * Returns a comic with those scenes with AI dialogue
      */
-
-    /*
-        Move all the comic stuff from main here, turn them into methods.
-        Feel free to not use the current framework and change anything as needed.
-     */
-
     public static Comic generateRandomStoriesComic(Comic originalComic, int numberOfStories) throws IOException, JDOMException {
         List<Scene> scenes = originalComic.getRandomScenes(numberOfStories);
 

@@ -41,6 +41,12 @@ public class Main {
         } catch (IOException | JDOMException e) {
             System.out.println("Error parsing stories comic: " + e.getMessage());
         }
+        Comic conjugationComic = null;
+        try {
+            conjugationComic = XMLParser.parseComicFromResourcesPath(CONJUGATION_XML);
+        } catch (IOException | JDOMException e) {
+            System.out.println("Error parsing conjugation comic: " + e.getMessage());
+        }
 
         // Sprint 3 tasks
         //LESSON_TARGET is now used for sprint 7
@@ -72,14 +78,20 @@ public class Main {
         for(String s : LESSON_SCHEDULE) {
             System.out.println((++i) + ". " + s);
             if(s.equals("conjugation")) {
+
+                Comic verbComic = new Comic();
+                verbComic.addAllScenes(conjugationComic.getRandomScenes(1));
+                verbComic.addAllFigures(conjugationComic.getFigures());
+                /*
                 try {
-                    Comic conjugationComic = XMLParser.parseComicFromResourcesPath(CONJUGATION_XML);
-                    conjugationComic = ComicPostProcessor.generateBilingualComic(conjugationComic);
-                    finalComic.appendComic(conjugationComic);
-                } catch (IOException | JDOMException e) {
-                    System.out.println("Creation of Conjugation Section failed: " + e.getMessage());
-                    e.printStackTrace();
+                    verbComic = ComicPostProcessor.generateBilingualComic(verbComic);
+                } catch (IOException e) {
+                    System.out.println("Error generating bilingual verb comic: " + e.getMessage());
                 }
+
+                 */
+                finalComic.appendComic(verbComic);
+
             } else if (s.equals("left")) {
                 //Create comic using only left figure and left text
                 //Where left figure only speaks, and repeats translation in the next panel
@@ -95,9 +107,9 @@ public class Main {
                     continue;
                 }
                 try {
-                    Comic aiDialogueComic = Orchestrator.generateRandomStoriesComic(storiesComic, 1);
-                    Comic bilingualStoriesComic = ComicPostProcessor.generateBilingualComic(aiDialogueComic);
-                    finalComic.appendComic(bilingualStoriesComic);
+                    Comic storyComic = Orchestrator.generateRandomStoriesComic(storiesComic, 1);
+                    //Comic bilingualStoriesComic = ComicPostProcessor.generateBilingualComic(aiDialogueComic);
+                    finalComic.appendComic(storyComic);
                 } catch (IOException | JDOMException e) {
                     System.out.println("Creation of Stories comic failed: " + e.getMessage());
                     e.printStackTrace();
@@ -105,14 +117,27 @@ public class Main {
             }
         }
 
+        //Swap the order of generateBilingualComic and splitAllMultiDialogue panels for desired result
+        //
+        //Interleave Translated Panels
+        try {
+            finalComic = ComicPostProcessor.generateBilingualComic(finalComic);
+
+        } catch (IOException e) {
+            System.out.println("Creation of Bilingual comic failed: " + e.getMessage());
+            e.printStackTrace();
+        }
         finalComic.splitAllMultiDialoguePanels();
 
+        /* Commented out for speed of testing
         try {
-            finalComic.addAudio();
+            //finalComic.addAudio();
         } catch (IOException | InterruptedException e) {
             System.out.println("Error adding audio: " + e.getMessage());
             e.printStackTrace();
         }
+
+         */
 
         try {
             XMLGenerator.generateXMLFromComic(finalComic, LESSON_TARGET);

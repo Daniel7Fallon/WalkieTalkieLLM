@@ -10,7 +10,7 @@ import org.example.Translation.Translator;
 public class ComicPostProcessor {
 
     /* Translates comic dialogue
-     * returns new comic with inserted translated panels
+     * Returns new comic with translated panels interleaved
      */
     public static Comic generateBilingualComic(Comic comic) throws IOException{
         Translator.batchTranslateList(comic.getAllBalloonContent());

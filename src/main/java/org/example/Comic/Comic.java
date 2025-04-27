@@ -20,9 +20,12 @@ public class Comic {
         scenes = new ArrayList<>();
     }
 
-    /* Takes a list of SceneDialogues
-     * Copies comic and inserts new dialogue
-     * Skips title card
+    /**
+     * Replaces the dialogue in each scene of this comic with corresponding dialogue
+     * from the provided list of SceneDialogues. Skips potential title cards in scenes.
+     *
+     * @param sceneDialogues A list of SceneDialogue objects, matching the order and number of scenes.
+     * @throws IllegalArgumentException if the size of sceneDialogues does not match the number of scenes.
      */
     public void replaceDialogue(List<SceneDialogue> sceneDialogues) {
         if(sceneDialogues.size() != scenes.size()) {
@@ -35,12 +38,19 @@ public class Comic {
         }
     }
 
-    //Returns true if successful
+    // Removes the first panel of the comic. Returns true if successful
     public boolean removeFirstPanel() {
         if(getScenes().isEmpty()) return false;
         return getScenes().getFirst().removeFirstPanel();
     }
 
+    /**
+     * Adds a special panel at the beginning of the first scene to denote a section.
+     * Uses the first figure defined in the comic for the panel visual.
+     *
+     * @param n The section number.
+     * @param sectionType The title or description of the section.
+     */
     public void addSectionPanel(int n, String sectionType) {
         Panel sectionPanel = new Panel();
         sectionPanel.setAbove("Section " + n);
@@ -55,11 +65,18 @@ public class Comic {
         scenes.getFirst().addPanelAtIndex(0, sectionPanel);
     }
 
+    /**
+     * Appends all figures and scenes from another comic to this comic.
+     * Avoids adding duplicate figures based on ID or name.
+     *
+     * @param that The Comic object whose figures and scenes are to be appended.
+     */
     public void appendComic(Comic that) {
         this.addAllFigures(that.getFigures());
         this.addAllScenes(that.getScenes());
     }
 
+    // Creates a deep copy of this comic object.
     public Comic deepCopy() {
         Comic newComic = new Comic();
         newComic.figures = figures;
@@ -69,6 +86,7 @@ public class Comic {
         return newComic;
     }
 
+    // Finds and returns a Figure object by ID.
     public Figure getFigureById(String id) {
         for (Figure figure : figures) {
             if(figure.getId().equals(id)) return figure;
@@ -77,7 +95,12 @@ public class Comic {
     }
 
 
-    // Returns a list of scene dialogues generated from a comic containing audiovisual descriptions
+    /**
+     * Generates a list of SceneDialogue objects by processing the audiovisual descriptions
+     * and speech templates present in each scene of this comic.
+     *
+     * @return A list of SceneDialogue objects corresponding to each scene.
+     */
     public List<SceneDialogue> generateDialogueFromAudioDescriptionComic() {
         List<SceneDialogue> sceneDialogues = new ArrayList<>();
 
@@ -90,6 +113,7 @@ public class Comic {
         return sceneDialogues;
     }
 
+    // Gets and returns all non-empty balloon contents from all panels in the comic.
     public List<String> getAllBalloonContent() {
         List<String> balloonContents = new ArrayList<>();
         for(Scene scene: this.getScenes()) {
@@ -102,6 +126,7 @@ public class Comic {
         return balloonContents;
     }
 
+    // Removes the plural identifiers found in the conjugation comic.
     public void removePluralIdentifiers() {
         for(Scene scene : scenes) {
             for(Panel panel : scene.getPanels()) {
@@ -116,24 +141,39 @@ public class Comic {
         }
     }
 
+    // Goes through all scenes and splits panels that contain multiple panels. The comic is modified in place.
     public void splitAllMultiDialoguePanels() {
         for(Scene scene: this.getScenes()) {
             scene.splitMultiDialoguePanels();
         }
     }
 
+    /**
+     * Iterates through all scenes and adds audio references (via AudioManager). Modifies the comic in place.
+     *
+     * @throws IOException if audio file operations fail.
+     * @throws InterruptedException if audio generation is interrupted (from AudioManager.createNewAudio()).
+     */
     public void addAudio() throws IOException, InterruptedException {
         for(Scene scene : getScenes()) {
             scene.addAudio();
         }
     }
 
+    // Removes all "above" and "below" elements from every panel in the comic.
     public void removeAllAboveAndBelow() {
         for(Scene scene: this.getScenes()) {
             scene.removeAllAboveAndBelow();
         }
     }
 
+    /**
+     * Selects a specified number of unique random scenes from this comic.
+     *
+     * @param numOfScenes The number of random scenes you want.
+     * @return A list containing unique random Scene objects. The size may be less than
+     * numOfScenes if the comic has fewer unique scenes than requested.
+     */
     public List<Scene> getRandomScenes(int numOfScenes) {
         List<Scene> scenes = new ArrayList<>();
         for (int i = 0; i < numOfScenes; i++) {
@@ -157,6 +197,7 @@ public class Comic {
         }
         this.figures.add(figure);
     }
+
     //Skips existing ids or names
     public void addAllFigures(List<Figure> figures) {
         for(Figure f : figures) {

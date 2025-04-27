@@ -17,6 +17,7 @@ import org.jdom2.JDOMException;
 
 public class Main {
 
+    // Lesson Section Types
     private enum LessonSectionType {
         CONJUGATION("conjugation"),
         LEFT_VIGNETTE("left"),

@@ -53,6 +53,7 @@ public class Panel {
         return rightSide != null;
     }
 
+    // Creates a deep copy of this panel.
     public Panel deepCopy() {
         Panel panel = new Panel();
         panel.setAbove(this.above);
@@ -66,6 +67,12 @@ public class Panel {
         return panel;
     }
 
+    /**
+     * Generates or retrieves audio for the first available dialogue in this panel
+     * and sets the audio reference field.
+     * @throws IOException if audio generation/file operations fail.
+     * @throws InterruptedException if audio generation is interrupted.
+     */
     public void addAudio() throws IOException , InterruptedException {
         if(hasLeft() && getLeftSide().getBalloonStatus() != null) {
             String dialogue = getLeftSide().getBalloonContent();
@@ -85,6 +92,7 @@ public class Panel {
         }
     }
 
+    // Checks if any PanelSide in this panel contains balloon content.
     public boolean hasBalloonContent() {
         if(this.hasLeft() && this.getLeftSide().hasBalloonContent()) return true;
         if(this.hasMiddle() && this.getMiddleSide().hasBalloonContent()) return true;
@@ -92,6 +100,11 @@ public class Panel {
         return false;
     }
 
+    /**
+     * Generates a string template representing potential speech in the panel,
+     * based on characters present. Format: " [Name1]: ___ [Name2]: ___ ..."
+     * @return A string representing the speech template.
+     */
     public String getSpeechTemplate() {
         StringBuilder sb = new StringBuilder();
         if(this.hasLeft() && this.getLeftSide().hasCharacter()) {
@@ -109,6 +122,11 @@ public class Panel {
         return sb.toString();
     }
 
+    /**
+     * Generates a combined audiovisual description string for the panel,
+     * including setting and descriptions from each side.
+     * @return A string description of the panel's visual and setting elements.
+     */
     public String getAudiovisualDescription() {
         StringBuilder sb = new StringBuilder();
         sb.append("(" + this.getAudioVisualSetting() + ")");
@@ -119,6 +137,7 @@ public class Panel {
         return sb.toString();
     }
 
+    // Helper to get the primary setting description with priority on the "Above" element.
     private String getAudioVisualSetting() {
         if(this.getAbove() != null) return this.getAbove();
         return this.getSetting();
@@ -137,6 +156,11 @@ public class Panel {
         return sb.toString();
     }
 
+    /**
+     * Replaces dialogue in the panel's sides based on matching speaker names
+     * from the provided PanelDialogue.
+     * @param panelDialogue The PanelDialogue containing CharacterDialogues to potentially insert.
+     */
     public void replaceDialogue(PanelDialogue panelDialogue) {
         for(CharacterDialogue characterDialogue : panelDialogue.getCharacterDialogues()) {
             if(this.hasLeft()) this.getLeftSide().attemptReplaceDialogue(characterDialogue);

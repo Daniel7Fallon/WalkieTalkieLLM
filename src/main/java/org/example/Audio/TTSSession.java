@@ -20,6 +20,15 @@ public class TTSSession {
     private static final String VOICE = ConfigurationFile.getValue("TTS_VOICE");
     private static final String RESPONSE_FORMAT = "mp3";
 
+    /**
+     * Sends the given text to the configured TTS API and returns the audio stream response.
+     * Constructs and sends an HTTP POST request with necessary headers and JSON payload.
+     *
+     * @param text The text to be converted into speech.
+     * @return An HttpResponse containing the audio data as an InputStream if successful (status 200).
+     * @throws InterruptedException if the HTTP request sending thread is interrupted.
+     * @throws IOException if an I/O error occurs during the HTTP request/response process.
+     */
     public static HttpResponse<InputStream> textToSpeech(String text) throws InterruptedException, IOException {
         // Http client
         HttpClient client = HttpClient.newBuilder()

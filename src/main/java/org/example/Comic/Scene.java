@@ -35,6 +35,11 @@ public class Scene {
         return true;
     }
 
+    /**
+     * Generates a formatted string representing the speech template for panels in this scene.
+     *
+     * @return A multi-line string containing numbered speech templates for each panel.
+     */
     public String getSpeechTemplate() {
         StringBuilder sb = new StringBuilder();
         for(int i = 1; i < this.getPanels().size(); i++) {
@@ -44,6 +49,10 @@ public class Scene {
         return sb.toString();
     }
 
+    /**
+     * Generates a formatted string representing the audiovisual description for panels in this scene.
+     * @return A multi-line string containing numbered audiovisual descriptions for each panel.
+     */
     public String generateAudiovisualDescription() {
         StringBuilder sb = new StringBuilder();
         for(int i = 1; i < this.getPanels().size(); i++) {
@@ -53,6 +62,12 @@ public class Scene {
         return sb.toString();
     }
 
+    /**
+     * Replaces the dialogue in panels of this scene (skipping the first panel)
+     * with dialogue from the provided SceneDialogue object.
+     * @param sceneDialogue The SceneDialogue containing PanelDialogues to insert.
+     * @throws IllegalArgumentException if the number of PanelDialogues + 1 does not match the number of panels in the scene.
+     */
     public void skipTitleReplaceDialogue(SceneDialogue sceneDialogue) {
         if(sceneDialogue.getPanelDialogues().size() +1 != panels.size()) {
 
@@ -71,6 +86,7 @@ public class Scene {
         }
     }
 
+    // Creates a deep copy of this scene.
     public Scene deepCopy() {
         Scene newScene = new Scene();
         for (Panel panel : this.panels) {
@@ -79,6 +95,7 @@ public class Scene {
         return newScene;
     }
 
+    // Splits panels with multiple dialogues into separate panels. This is done in place.
     public void splitMultiDialoguePanels() {
         int i = 0;
         while (i < panels.size()) {
@@ -95,12 +112,19 @@ public class Scene {
         }
     }
 
+    /**
+     * Adds audio references to all panels within this scene.
+     * Delegates the actual audio generation/linking to the Panel objects.
+     * @throws IOException if audio file operations fail.
+     * @throws InterruptedException if audio generation is interrupted (from AudioManager.createNewAudio()).
+     */
     public void addAudio() throws IOException, InterruptedException {
         for(Panel panel : getPanels()) {
             panel.addAudio();
         }
     }
 
+    // Removes "Above" and "Below" elements from all panels in this scene.
     public void removeAllAboveAndBelow() {
         for(Panel panel : panels) {
             panel.setAbove(null);

@@ -16,12 +16,16 @@ public class AudioManager {
     private static final String AUDIO_INDEX_FILE_PATH = ConfigurationFile.getValue("AUDIO_INDEX");
     private static final String RESPONSE_FORMAT = "mp3";
 
-    /*
-    public static void addAudio(Comic comic) throws IOException, InterruptedException {
-
-    }
-    */
-
+    /**
+     * Creates a new audio file for the given phrase using TTS if it doesn't already exist.
+     * Ensures the audio folder and index file exist, calls the TTS service,
+     * saves the audio, and updates the index file.
+     *
+     * @param phrase The text phrase to convert to speech and save.
+     * @throws IOException if file operations fail.
+     * @throws InterruptedException if the TTS HTTP request is interrupted.
+     * @throws RuntimeException if the TTS API call fails (any status code other than 200).
+     */
     public static void createNewAudio(String phrase) throws IOException, InterruptedException {
         //Ensure Audio folder exists
         Path audioFolderPath = Paths.get(AUDIO_FOLDER);
@@ -74,9 +78,12 @@ public class AudioManager {
 
     }
 
-    /* Add to audio index file in the following format:
-     * phrase    nameOfFile
-     * Where the text is separated from the path to the audio file by a tab.
+    /**
+     * Appends a mapping between a text phrase and its audio file index to the index file.
+     * Format: phrase<tab>index<newline>. Sanitises the phrase to remove tabs and/or newlines.
+     *
+     * @param text The original text phrase.
+     * @param index The numerical index (as a String) corresponding to the audio file name.
      */
     private static void addToAudioIndex(String text, String index) {
         Path indexFilePath = Paths.get(AUDIO_INDEX_FILE_PATH);
@@ -99,6 +106,13 @@ public class AudioManager {
         }
     }
 
+    /**
+     * Reads the audio index file and returns the last numerical index found.
+     * Assumes the index is the second tab-separated value on each line.
+     *
+     * @return The last index found in the file, or -1 if the file is empty or indices cannot be parsed.
+     * @throws IOException if reading the index file fails.
+     */
     private static int getLastIndex() throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(AUDIO_INDEX_FILE_PATH));
         String last = null;
@@ -113,6 +127,13 @@ public class AudioManager {
         return -1;
     }
 
+    /**
+     * Searches the audio index file for a given phrase and returns its corresponding index.
+     *
+     * @param phrase The text phrase to search for in the index.
+     * @return The numerical index associated with the phrase, or -1 if the phrase is not found.
+     * @throws IOException if reading the index file fails.
+     */
     public static int getIndexByPhrase(String phrase) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(AUDIO_INDEX_FILE_PATH));
         String line;
@@ -123,6 +144,13 @@ public class AudioManager {
         return -1;
     }
 
+    /**
+     * Checks if a mapping for the given phrase already exists in the audio index file.
+     *
+     * @param phrase The text phrase to check for existence.
+     * @return true if a line starting with the phrase exists in the index, false otherwise.
+     * @throws IOException if reading the index file fails.
+     */
     private static boolean phraseMappingExists(String phrase) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(AUDIO_INDEX_FILE_PATH));
         String line;

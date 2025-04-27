@@ -9,16 +9,27 @@ import org.example.Translation.Translator;
 
 public class ComicPostProcessor {
 
-    /* Translates comic dialogue
-     * Returns new comic with translated panels interleaved
+    /**
+     * Translates the dialogue within a given comic and generates a new comic
+     * where each original panel with dialogue is followed by its translated counterpart.
+     *
+     * @param comic The original Comic object whose dialogue needs translation.
+     * @return A new Comic object containing the original panels interleaved with
+     * their corresponding translated panels. Figures are copied from the original.
+     * @throws IOException if the batch translation process encounters an I/O error.
      */
     public static Comic generateBilingualComic(Comic comic) throws IOException{
         Translator.batchTranslateList(comic.getAllBalloonContent());
         return ComicPostProcessor.addTranslationPanels(comic);
     }
 
-    /* Takes a comic that has it's dialogues already translated
-     * Returns new comic with translated panels interleaved
+    /**
+     * Creates a new comic by interleaving translated panels after original panels
+     * that contain dialogue.
+     *
+     * @param originalComic The Comic object containing original panels.
+     * @return A new Comic object with original and translated panels interleaved.
+     * Figures are copied from the original comic.
      */
     private static Comic addTranslationPanels(Comic originalComic) {
         Comic newComic = new Comic();
@@ -46,6 +57,13 @@ public class ComicPostProcessor {
         return newComic;
     }
 
+    /**
+     * Creates a translated version of a single Panel based on an original Panel.
+     *
+     * @param original The original Panel object to translate.
+     * @return A new Panel object representing the translated version of the original.
+     * Contains translated dialogue where applicable.
+     */
     private static Panel createTranslatedPanel(Panel original) {
         Panel translated = new Panel();
         translated.setSetting(original.getSetting());
@@ -60,6 +78,14 @@ public class ComicPostProcessor {
         return translated;
     }
 
+    /**
+     * Creates a translated version of a PanelSide based on an original PanelSide.
+     *
+     * @param originalPanelSide The original PanelSide object containing the figure
+     * and potentially dialogue to be translated.
+     * @return A new PanelSide object with the figure copied and balloon content
+     * set to the translation or an error message.
+     */
     private static PanelSide createTranslatedSide(PanelSide originalPanelSide) {
         PanelSide translatedPanelSide = new PanelSide();
         translatedPanelSide.setPanelFigure(originalPanelSide.getPanelFigure());

@@ -9,9 +9,11 @@ import java.util.List;
 
 public class LessonSectionBuilder {
 
-    /* Takes numberOfStories scenes from stories spec
-     * Generates dialogue for those scenes
-     * Returns a comic with those scenes with AI dialogue
+    /**
+     * Generates a new Comic containing a specified number of randomly selected scenes from stories.xml
+     * @param originalComic The comic to pull scenes and figures from
+     * @param numberOfStories The number of random scenes to select.
+     * @return The new comic containing the randomly selected scenes.
      */
     private static Comic generateRandomStoriesComic(Comic originalComic, int numberOfStories) {
         List<Scene> scenes = originalComic.getRandomScenes(numberOfStories);

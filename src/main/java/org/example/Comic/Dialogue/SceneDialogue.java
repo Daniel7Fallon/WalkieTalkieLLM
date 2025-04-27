@@ -21,6 +21,14 @@ public class SceneDialogue {
         this.panelDialogues.add(panelDialogues);
     }
 
+    /**
+     * Generates SceneDialogue by sending scene descriptions and format templates
+     * to the LLM.
+     *
+     * @param input The description of the scene as a string.
+     * @param format The template for the desired dialogue format.
+     * @return A SceneDialogue object parsed from the completion service's response.
+     */
     public static SceneDialogue generateSceneDialogueFromDescriptions(String input, String format) {
         String messageContent = "Generate natural character dialogue in this exact format:\n"
                 + "1. [Character1]: \"[Dialogue1]\" / [Character2]: \"[Dialogue2]\"\n"
@@ -36,6 +44,13 @@ public class SceneDialogue {
         return parseNumberedDialogue(response);
     }
 
+    /**
+     * Parses a string containing numbered lines of dialogue into a SceneDialogue object.
+     * Expects format like: 1. Speaker1: "Text1" / Speaker2: "Text2".
+     *
+     * @param input The multi-line string containing the numbered dialogue.
+     * @return A SceneDialogue object populated with the parsed dialogues.
+     */
     private static SceneDialogue parseNumberedDialogue(String input) {
         Pattern panelPattern = Pattern.compile("^(\\d+)\\.\\s*(.*)$");
         Pattern dialoguePattern = Pattern.compile("(\\w+):\\s*\"([^\"]*)\"");

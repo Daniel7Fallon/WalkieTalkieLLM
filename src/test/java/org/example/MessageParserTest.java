@@ -1,6 +1,6 @@
 package org.example;
 
-import org.example.Utils.NumberedList;
+import org.example.Translation.NumberedList;
 import org.example.Utils.StringUtil;
 import org.junit.jupiter.api.Test;
 import java.util.List;

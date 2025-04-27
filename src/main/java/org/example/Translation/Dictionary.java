@@ -1,6 +1,5 @@
 package org.example.Translation;
 
-import org.example.Utils.NumberedList;
 import org.example.Utils.ConfigurationFile;
 import org.example.Utils.StringUtil;
 

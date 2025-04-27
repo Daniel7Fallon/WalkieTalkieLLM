@@ -1,10 +1,7 @@
 package org.example.Translation;
 
 import org.example.Utils.StringUtil;
-import org.example.Vignette.VignetteManager;
-import org.example.Vignette.VignetteSchema;
 import org.example.Completion.CompletionSession;
-import org.example.Utils.NumberedList;
 import org.example.Utils.ConfigurationFile;
 
 import java.io.*;

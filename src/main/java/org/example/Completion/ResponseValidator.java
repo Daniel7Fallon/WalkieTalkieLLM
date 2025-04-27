@@ -18,6 +18,7 @@ public class ResponseValidator {
             Pattern.compile("(?i)^\\bI\\s+(can't|cannot|can\\s+not)\\s+(help\\s+(you|with|in)|provide|assist|answer|comply|respond)\\b.*")
     );
 
+    // Returns true if the input matches any of the denial patterns
     public static boolean isDenial(String response) {
         if (response == null || response.isEmpty()) {
             return false;

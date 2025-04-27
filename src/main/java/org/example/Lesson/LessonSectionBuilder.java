@@ -24,7 +24,7 @@ public class LessonSectionBuilder {
 
         List<SceneDialogue> sceneDialogues = outputComic.generateDialogueFromAudioDescriptionComic();
 
-        outputComic.removeAllAboveAndBelow();
+        outputComic.removeAllAboveAndBelow(); // Optional
         outputComic.replaceDialogue(sceneDialogues);
 
         return outputComic;

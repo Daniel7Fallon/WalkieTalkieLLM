@@ -1,4 +1,6 @@
-package org.example.Utils;
+package org.example.Translation;
+
+import org.example.Utils.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -66,16 +66,17 @@ public class XMLGenerator {
 
     private static Element createPanelElement(Panel panel) {
         Element panelElement = new Element("panel");
-        addIfNotNull(panelElement, "setting", panel.getSetting());
-        addIfNotNull(panelElement, "below", panel.getBelow());
-        addIfNotNull(panelElement, "above", panel.getAbove());
-        addIfNotNull(panelElement, "border", panel.getBorder() != null ? panel.getBorder() : DEFAULT_BORDER);
-        addIfNotNull(panelElement, "audio", panel.getAudio());
         //panelElement.addContent(new Element("duration").setText(DEFAULT_DURATION));
 
         addPanelSideIfExists(panelElement, panel.getLeftSide(), "left");
         addPanelSideIfExists(panelElement, panel.getMiddleSide(), "middle");
         addPanelSideIfExists(panelElement, panel.getRightSide(), "right");
+
+        addIfNotNull(panelElement, "setting", panel.getSetting());
+        addIfNotNull(panelElement, "below", panel.getBelow());
+        addIfNotNull(panelElement, "above", panel.getAbove());
+        addIfNotNull(panelElement, "border", panel.getBorder() != null ? panel.getBorder() : DEFAULT_BORDER);
+        addIfNotNull(panelElement, "audio", panel.getAudio());
 
         return panelElement;
     }

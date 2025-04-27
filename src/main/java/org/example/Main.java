@@ -1,69 +1,82 @@
 package org.example;
 
 import org.example.Comic.*;
-import org.example.Story.StoryGenerator;
+import org.example.Lesson.LessonSectionBuilder;
 import org.example.Translation.Dictionary;
 import org.example.Utils.ConfigurationFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.example.Vignette.VignetteManager;
-import org.example.Vignette.VignetteToComic;
 import org.example.XML.XMLGenerator;
 import org.example.XML.XMLParser;
 import org.jdom2.JDOMException;
 
-
 public class Main {
+
+    private enum LessonSectionType {
+        CONJUGATION("conjugation"),
+        LEFT_VIGNETTE("left"),
+        WHOLE_VIGNETTE("whole"),
+        STORY("story");
+
+        private final String configValue;
+
+        LessonSectionType(String configValue) {
+            this.configValue = configValue;
+        }
+
+        public static LessonSectionType fromString(String text) {
+            for (LessonSectionType b : LessonSectionType.values()) {
+                if (b.configValue.equalsIgnoreCase(text)) {
+                    return b;
+                }
+            }
+            System.err.println("WARN: Unknown lesson section type in config: " + text);
+            return null;
+        }
+    }
+
     public static void main(String[] args) {
         if(args.length < 1) {
             System.out.println("Usage: java -jar <pathToJar> <pathToConfigFile>");
             return;
         }
         String configFilePath = args[0];
+
+        // Initialisation
         try {
             ConfigurationFile.initialize(configFilePath);
+            System.out.println("Loaded configuration file from: " + configFilePath);
         } catch (IllegalArgumentException e) {
-            System.out.println("Invalid config file: " + e.getMessage());
+            System.out.println("Invalid or unreadable config file: " + e.getMessage());
+            e.printStackTrace(System.err);
             return;
         }
+
         VignetteManager.initialize();
         Dictionary.initialize();
+        System.out.println("Loaded VignetteManager and Dictionary.");
 
-        final String CONJUGATION_XML = "conjugation.xml";
+        // Configuration Values
+        final String CONJUGATION_XML = "conjugation.xml"; // Can change this to be configurable
         final String STORIES_XML = "stories.xml";
-        final List<String> LESSON_SCHEDULE = List.of(ConfigurationFile.getValue("LESSON_SCHEDULE").split(" "));
         final String LESSON_TARGET = ConfigurationFile.getValue("LESSON_TARGET");
+        final boolean TRANSLATE_ALL_VIGNETTES = Boolean.parseBoolean(ConfigurationFile.getValue("TRANSLATE_ALL_VIGNETTES"));
+        final List<LessonSectionType> LESSON_SCHEDULE = Arrays.stream(ConfigurationFile.getValue("LESSON_SCHEDULE").split(" "))
+                .map(LessonSectionType::fromString)
+                .filter(Objects::nonNull) // Filtering out any unknown types
+                .toList();
 
-        Comic conjugationComic = null;
-        try {
-            conjugationComic = XMLParser.parseComicFromResourcesPath(CONJUGATION_XML);
-        } catch (IOException | JDOMException e) {
-            System.out.println("Error parsing conjugation comic: " + e.getMessage());
+        if (CONJUGATION_XML == null || STORIES_XML == null || LESSON_TARGET == null || LESSON_SCHEDULE.isEmpty()) {
+            System.err.println("ERROR: Missing required configuration values (Paths, Target, or Schedule). Check config file.");
+            return;
         }
 
-        Comic storiesComic = null;
-        try {
-            storiesComic = XMLParser.parseComicFromResourcesPath(STORIES_XML);
-        } catch (IOException | JDOMException e) {
-            System.out.println("Error parsing stories comic: " + e.getMessage());
-        }
-
-        //Translate all vignettes
-        if(ConfigurationFile.getValue("TRANSLATE_ALL_VIGNETTES").equals("true")) {
-            System.out.println("Translating all vignette schemas.");
-            try {
-                VignetteManager.translateAllVignetteSchemas();
-            } catch (IOException e) {
-                System.out.println("Error translating all vignette schemas: " + e.getMessage());
-                e.printStackTrace();
-            }
-        } else if(ConfigurationFile.getValue("TRANSLATE_ALL_VIGNETTES").equals("false")) {
-            System.out.println("Skipping translation of all vignette schemas.");
-        }
-
-        //Figures for vignette comics
+        // Figures for vignette comics
         Figure leftFigure = new Figure();
         leftFigure.setId("Daniel");
         leftFigure.setName("Daniel");
@@ -76,127 +89,116 @@ public class Main {
         rightFigure.setSkin("white");
         rightFigure.setFacing("left");
 
-        //Lesson construction
-        int i = 0;
+        // Load Base Comics
+        Comic conjugationComic = loadComicResource(CONJUGATION_XML, "conjugation");
+        Comic storiesComic = loadComicResource(STORIES_XML, "stories");
+
+        // Pre-Translation Option
+        handleVignetteTranslation(TRANSLATE_ALL_VIGNETTES);
+
+        // Lesson construction
         Comic finalComic = new Comic();
-        for(String s : LESSON_SCHEDULE) {
-            //Adding conjugation section
-            if(s.equals("conjugation")) {
-                System.out.println("Adding verb conjugation section.");
-                if(conjugationComic == null) {
-                    System.out.println("Conjugation Comic is null!");
-                    continue;
-                }
-                Comic verbComic = new Comic();
-                verbComic.addAllFigures(conjugationComic.getFigures());
-                verbComic.addAllScenes(conjugationComic.getRandomScenes(1));
-                verbComic.addAllFigures(conjugationComic.getFigures());
+        int sectionNumber = 0;
+        System.out.println("Starting lesson construction based on schedule: " + LESSON_SCHEDULE);
 
-                if(verbComic.removeFirstPanel()) {
-                    verbComic.addSectionPanel(++i, "Verb Conjugation");
+        for (LessonSectionType sectionType : LESSON_SCHEDULE) {
+            Comic sectionComic = null;
+            sectionNumber++;
 
-                    try {
-                        verbComic = ComicPostProcessor.generateBilingualComic(verbComic);
-                    } catch (IOException e) {
-                        System.out.println("Creation of Bilingual verb comic failed: " + e.getMessage());
-                        e.printStackTrace();
-                    }
+            switch (sectionType) {
+                case CONJUGATION:
+                    sectionComic = LessonSectionBuilder.createConjugationSection(conjugationComic, sectionNumber);
+                    break;
+                case LEFT_VIGNETTE:
+                    sectionComic = LessonSectionBuilder.createLeftVignetteSection(leftFigure, sectionNumber);
+                    break;
+                case WHOLE_VIGNETTE:
+                    sectionComic = LessonSectionBuilder.createWholeVignetteSection(leftFigure, rightFigure, sectionNumber);
+                    break;
+                case STORY:
+                    sectionComic = LessonSectionBuilder.createStorySection(storiesComic, sectionNumber);
+                    break;
+                // No default needed due to pre-filtering
+            }
 
-                    finalComic.appendComic(verbComic);
-
-                    System.out.println("Successfully added conjugation section");
-                } else {
-                    System.out.println("Failed to remove verb conjugation comic's first panel. Scenes size = " + verbComic.getScenes().size());
-                }
-
-            //Adding left vignette section
-            } else if (s.equals("left")) {
-                Comic leftComic = new Comic();
-                try {
-                    leftComic = VignetteToComic.createLeftVignetteComic(leftFigure);
-                } catch (IOException e) {
-                    System.out.println("Error creating left vignette comic: " + e.getMessage());
-                    e.printStackTrace();
-                }
-                if(leftComic != null) {
-                    leftComic.addSectionPanel(++i, "Simple Vocabulary");
-                    finalComic.appendComic(leftComic);
-                    System.out.println("Successfully added left section");
-                } else {
-                    System.out.println("Left Vignette Comic is null.");
-                }
-
-            //Adding whole vignette section
-            } else if(s.equals("whole")) {
-                Comic wholeComic = new Comic();
-                try {
-                    wholeComic = VignetteToComic.createWholeVignetteComic(leftFigure, rightFigure);
-                } catch (IOException e) {
-                    System.out.println("Error creating whole vignette comic: " + e.getMessage());
-                    e.printStackTrace();
-                }
-                if(wholeComic != null) {
-                    wholeComic.addSectionPanel(++i, "Vocabulary");
-                    finalComic.appendComic(wholeComic);
-                    System.out.println("Successfully added whole section");
-                } else {
-                    System.out.println("Whole Vignette Comic is null.");
-                }
-
-            //Adding mini-story section
-            } else if(s.equals("story")) {
-                System.out.println("Adding mini-story section.");
-                if(storiesComic == null) {
-                    System.out.println("Stories comic is null!");
-                    continue;
-                }
-
-                Comic storyComic = StoryGenerator.generateRandomStoriesComic(storiesComic, 1);
-                if(storyComic.removeFirstPanel()) {
-                    storyComic.addSectionPanel(++i, "Mini-Story");
-
-                    try {
-                        storyComic = ComicPostProcessor.generateBilingualComic(storyComic);
-                    } catch (IOException e) {
-                        System.out.println("Creation of Bilingual mini-story comic failed: " + e.getMessage());
-                        e.printStackTrace();
-                    }
-
-
-                    finalComic.appendComic(storyComic);
-                    System.out.println("Successfully added mini-story section");
-                } else {
-                    System.out.println("Failed to remove mini-story comic's first panel. Scenes size = " + storyComic.getScenes().size());
-                }
-
-            //Improper lesson schedule argument encountered
+            if (sectionComic != null) {
+                finalComic.appendComic(sectionComic);
+                System.out.println("Successfully added section " + sectionNumber + ": " + sectionType);
             } else {
-                System.out.println("Invalid lesson schedule argument: " + s);
+                System.err.println("WARN: Skipping section " + sectionNumber + " (" + sectionType + ") due to creation failure.");
             }
         }
 
-        //Interleave Translated Panels
+        if (finalComic.getScenes().isEmpty()) {
+            System.err.println("ERROR: Failed to create any lesson sections. Final comic is empty. Aborting.");
+            return;
+        }
 
+        // Post-Processing
+        System.out.println("Starting post-processing...");
         finalComic.splitAllMultiDialoguePanels();
-        System.out.println("Split all multi dialogue panels");
+        System.out.println("Split multi-dialogue panels.");
 
-        /* Commented out for speed of testing
         try {
             finalComic.addAudio();
-            System.out.println("Added audio successfully");
+            System.out.println("INFO: Audio added successfully.");
         } catch (IOException | InterruptedException e) {
-            System.out.println("Error adding audio: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("ERROR: Error adding audio to the final comic: " + e.getMessage());
+            e.printStackTrace(System.err);
         }
 
-         */
-
+        // Final Output
+        System.out.println("Generating final XML output to target: " + LESSON_TARGET);
         try {
             XMLGenerator.generateXMLFromComic(finalComic, LESSON_TARGET);
+            System.out.println("Successfully generated XML: " + LESSON_TARGET);
         } catch (IOException e) {
-            System.out.println("Error generating XML: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("ERROR: Error generating final XML '" + LESSON_TARGET + "': " + e.getMessage());
+            e.printStackTrace(System.err);
         }
 
+        System.out.println("Lesson generation process finished.");
+    }
+
+    /**
+     * Handles the optional translation of all vignette schemas.
+     * @param translate Flag from configuration.
+     */
+    private static void handleVignetteTranslation(boolean translate) {
+        if (translate) {
+            System.out.println("Translating all vignette schemas as per configuration.");
+            try {
+                VignetteManager.translateAllVignetteSchemas();
+                System.out.println("Finished translating vignette schemas.");
+            } catch (IOException e) {
+                System.err.println("ERROR: Error translating all vignette schemas: " + e.getMessage());
+                e.printStackTrace(System.err);
+            }
+        } else {
+            System.out.println("Skipping translation of all vignette schemas.");
+        }
+    }
+
+    /**
+     * Loads a Comic object from a resource path.
+     * @param resourcePath Path to the XML file within resources.
+     * @param comicType Descriptive name for logging (e.g., "conjugation", "stories").
+     * @return Loaded Comic object, or null if loading fails.
+     */
+    private static Comic loadComicResource(String resourcePath, String comicType) {
+        if (resourcePath == null || resourcePath.trim().isEmpty()) {
+            System.err.println("ERROR: Resource path for " + comicType + " comic is missing in configuration.");
+            return null;
+        }
+        try {
+            System.out.println("Loading " + comicType + " comic from: " + resourcePath);
+            Comic comic = XMLParser.parseComicFromResourcesPath(resourcePath);
+            System.out.println("Successfully loaded " + comicType + " comic.");
+            return comic;
+        } catch (IOException | JDOMException e) {
+            System.err.println("ERROR: Error parsing " + comicType + " comic from '" + resourcePath + "': " + e.getMessage());
+            e.printStackTrace(System.err);
+            return null;
+        }
     }
 }

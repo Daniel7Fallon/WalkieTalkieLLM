@@ -8,6 +8,10 @@ import java.io.*;
 public class Dictionary {
     private static String translationsDirectoryPath;
 
+    /**
+     * Initialises the Dictionary by setting the translations directory path from configuration
+     * and ensuring the directory exists.
+     */
     public static void initialize() {
         translationsDirectoryPath = ConfigurationFile.getValue("TRANSLATIONS_FOLDER");
         File translationsDirectory = new File(translationsDirectoryPath);
@@ -22,6 +26,14 @@ public class Dictionary {
         }
     }
 
+    /**
+     * Creates a new, empty translation file for the given language pair if it doesn't already exist.
+     * The filename is in the following format: "<sourceLanguage>To<targetLanguage>.txt".
+     *
+     * @param sourceLanguage The source language.
+     * @param targetLanguage The target language.
+     * @throws IOException if an error occurs during file creation.
+     */
     public static void createNewTranslationFile(String sourceLanguage, String targetLanguage) throws IOException {
         String fileName = sourceLanguage + "To" + targetLanguage + ".txt";
         File file = new File(translationsDirectoryPath, fileName);
@@ -34,6 +46,16 @@ public class Dictionary {
         }
     }
 
+    /**
+     * Checks if a translation for the given source text exists in the specified language pair file.
+     * Compares against the first tab-separated token on each line after cleaning the input text.
+     *
+     * @param sourceText The text to check for translation.
+     * @param sourceLanguage The source language.
+     * @param targetLanguage The target language.
+     * @return true if a matching source text entry is found, false otherwise.
+     * @throws IOException if an error occurs reading the translation file.
+     */
     public static boolean translationExists(String sourceText, String sourceLanguage, String targetLanguage) throws IOException {
         String cleanSourceText = StringUtil.clean(sourceText);
         String fileName = sourceLanguage + "To" + targetLanguage + ".txt";
@@ -47,6 +69,16 @@ public class Dictionary {
         return false;
     }
 
+    /**
+     * Retrieves the translation for a given source text from the specified language pair file.
+     * Returns the second tab-separated token from the matching line.
+     *
+     * @param sourceText The text whose translation is needed.
+     * @param sourceLanguage The source language.
+     * @param targetLanguage The target language.
+     * @return The translated text if found, otherwise null.
+     * @throws IOException if an error occurs reading the translation file.
+     */
     public static String getTranslation(String sourceText, String sourceLanguage, String targetLanguage) throws IOException {
         String cleanSourceText = StringUtil.clean(sourceText);
         String fileName = sourceLanguage + "To" + targetLanguage + ".txt";
@@ -60,6 +92,17 @@ public class Dictionary {
         return null;
     }
 
+    /**
+     * Appends translation pairs from source and target NumberedLists to the appropriate file.
+     * Cleans entries before writing. Assumes lists are parallel and of the same size.
+     *
+     * @param sourceLanguage The source language.
+     * @param sourceList A NumberedList containing source texts.
+     * @param targetLanguage The target language.
+     * @param targetList A NumberedList containing corresponding target texts.
+     * @throws IOException if an error occurs writing to the translation file.
+     * @throws IllegalArgumentException if the source and target lists have different sizes.
+     */
     public static void appendTranslations(String sourceLanguage, NumberedList sourceList, String targetLanguage, NumberedList targetList) throws IOException {
         NumberedList cleanSourceList = sourceList.cleanEntries();
         NumberedList cleanTargetList = targetList.cleanEntries();
@@ -73,6 +116,15 @@ public class Dictionary {
         }
     }
 
+    /**
+     * Retrieves both the source and target language versions of a text based on configuration.
+     * Handles cases where the configured source language is English or another language
+     * (which requires an intermediate English translation step).
+     *
+     * @param text The input text (assumed to be in English if sourceLang is not English).
+     * @return A String array [sourceText, targetText], or null if any required translation step fails.
+     * @throws IOException if an error occurs reading translation files.
+     */
     public static String[] getSourceAndTargetTranslations(String text) throws IOException{
         String sourceLang = ConfigurationFile.getValue("SOURCE_LANGUAGE");
         String targetLang = ConfigurationFile.getValue("TARGET_LANGUAGE");

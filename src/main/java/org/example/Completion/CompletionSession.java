@@ -35,6 +35,15 @@ public class CompletionSession {
         }
     }
 
+    /**
+     * Sends a message with the given role and content to the completion API,
+     * adding it to the session history. Also adds the LLM's response to the history.
+     *
+     * @param role The role of the sender.
+     * @param content The text content of the message to send.
+     * @return The content of the LLM's response message, or an error string if denial is detected.
+     * @throws RuntimeException if an IOException or InterruptedException occurs during the API call.
+     */
     public String sendMessage(String role, String content) {
         messageList.add(new CompletionMessage(role, content));
         JsonArray jsonMessageList = new JsonArray();

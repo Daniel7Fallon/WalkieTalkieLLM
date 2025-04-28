@@ -10,7 +10,13 @@ import java.util.List;
 
 public class Translator {
 
-    //Batches prompts in configurable size
+    /**
+     * Translates a list of input strings in batches of a configured size.
+     * Checks the dictionary first and only translates items not already present.
+     *
+     * @param input The list of strings to translate.
+     * @throws IOException if dictionary file operations fail or configuration values are missing/invalid.
+     */
     public static void batchTranslateList(List<String> input) throws IOException{
         int batchSize = Integer.parseInt(ConfigurationFile.getValue("TRANSLATION_BATCH_SIZE"));
         List<String> batch = new ArrayList<>();
@@ -29,8 +35,14 @@ public class Translator {
     }
 
 
-    //EnglishTo<Target> if source is English
-    //EnglishTo<Source>, <Source>To<Target> if english is not source
+    /**
+     * Translates a single batch of input strings and writes new translations to the dictionary.
+     * Handles direct translation (if source is English) or two-step translation
+     * (English -> Source -> Target) if source is not English. Filters out items already in Dictionary.
+     *
+     * @param input The batch of strings to translate (should not be empty).
+     * @throws IOException if dictionary or translation operations fail.
+     */
     private static void translateListAndWrite(List<String> input) throws IOException {
         String sourceLanguage = ConfigurationFile.getValue("SOURCE_LANGUAGE");
         String targetLanguage = ConfigurationFile.getValue("TARGET_LANGUAGE");
@@ -81,6 +93,16 @@ public class Translator {
         }
     }
 
+    /**
+     * Sends a numbered list of source texts to the completion service for translation.
+     * Parses the numbered list response. Returns empty list if sourceTexts is empty.
+     *
+     * @param sourceTexts The NumberedList of texts to translate (shouldn't be null).
+     * @param sourceLanguage The source language.
+     * @param targetLanguage The target language.
+     * @return A NumberedList containing the translated texts, potentially empty.
+     * @throws RuntimeException if the completion service call fails (from CompletionSession).
+     */
     private static NumberedList translateNumberedList(NumberedList sourceTexts, String sourceLanguage, String targetLanguage) throws IOException {
         //Build message for CompletionSession
         if (sourceTexts.size() == 0) {

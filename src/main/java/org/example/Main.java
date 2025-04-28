@@ -51,16 +51,16 @@ public class Main {
         // Initialisation
         try {
             ConfigurationFile.initialize(configFilePath);
-            System.out.println("Loaded configuration file from: " + configFilePath);
+            System.out.println("INFO: Loaded configuration file from: " + configFilePath);
         } catch (IllegalArgumentException e) {
-            System.out.println("Invalid or unreadable config file: " + e.getMessage());
+            System.out.println("ERROR: Invalid or unreadable config file: " + e.getMessage());
             e.printStackTrace(System.err);
             return;
         }
 
         VignetteManager.initialize();
         Dictionary.initialize();
-        System.out.println("Loaded VignetteManager and Dictionary.");
+        System.out.println("INFO: Loaded VignetteManager and Dictionary.");
 
         // Configuration Values
         final String CONJUGATION_XML = "conjugation.xml"; // Can change this to be configurable
@@ -100,7 +100,7 @@ public class Main {
         // Lesson construction
         Comic finalComic = new Comic();
         int sectionNumber = 0;
-        System.out.println("Starting lesson construction based on schedule: " + LESSON_SCHEDULE);
+        System.out.println("INFO: Starting lesson construction based on schedule: " + LESSON_SCHEDULE);
 
         for (LessonSectionType sectionType : LESSON_SCHEDULE) {
             Comic sectionComic = null;
@@ -124,7 +124,7 @@ public class Main {
 
             if (sectionComic != null) {
                 finalComic.appendComic(sectionComic);
-                System.out.println("Successfully added section " + sectionNumber + ": " + sectionType);
+                System.out.println("INFO: Successfully added section " + sectionNumber + ": " + sectionType);
             } else {
                 System.err.println("WARN: Skipping section " + sectionNumber + " (" + sectionType + ") due to creation failure.");
             }
@@ -136,9 +136,9 @@ public class Main {
         }
 
         // Post-Processing
-        System.out.println("Starting post-processing...");
+        System.out.println("INFO: Starting post-processing...");
         finalComic.splitAllMultiDialoguePanels();
-        System.out.println("Split multi-dialogue panels.");
+        System.out.println("INFO: Split multi-dialogue panels.");
 
         try {
             finalComic.addAudio();
@@ -149,16 +149,16 @@ public class Main {
         }
 
         // Final Output
-        System.out.println("Generating final XML output to target: " + LESSON_TARGET);
+        System.out.println("INFO: Generating final XML output to target: " + LESSON_TARGET);
         try {
             XMLGenerator.generateXMLFromComic(finalComic, LESSON_TARGET);
-            System.out.println("Successfully generated XML: " + LESSON_TARGET);
+            System.out.println("INFO: Successfully generated XML: " + LESSON_TARGET);
         } catch (IOException e) {
             System.err.println("ERROR: Error generating final XML '" + LESSON_TARGET + "': " + e.getMessage());
             e.printStackTrace(System.err);
         }
 
-        System.out.println("Lesson generation process finished.");
+        System.out.println("INFO: Lesson generation process finished.");
     }
 
     /**
@@ -167,16 +167,16 @@ public class Main {
      */
     private static void handleVignetteTranslation(boolean translate) {
         if (translate) {
-            System.out.println("Translating all vignette schemas as per configuration.");
+            System.out.println("INFO: Translating all vignette schemas as per configuration.");
             try {
                 VignetteManager.translateAllVignetteSchemas();
-                System.out.println("Finished translating vignette schemas.");
+                System.out.println("INFO: Finished translating vignette schemas.");
             } catch (IOException e) {
                 System.err.println("ERROR: Error translating all vignette schemas: " + e.getMessage());
                 e.printStackTrace(System.err);
             }
         } else {
-            System.out.println("Skipping translation of all vignette schemas.");
+            System.out.println("INFO: Skipping translation of all vignette schemas.");
         }
     }
 
@@ -192,9 +192,9 @@ public class Main {
             return null;
         }
         try {
-            System.out.println("Loading " + comicType + " comic from: " + resourcePath);
+            System.out.println("INFO: Loading " + comicType + " comic from: " + resourcePath);
             Comic comic = XMLParser.parseComicFromResourcesPath(resourcePath);
-            System.out.println("Successfully loaded " + comicType + " comic.");
+            System.out.println("INFO: Successfully loaded " + comicType + " comic.");
             return comic;
         } catch (IOException | JDOMException e) {
             System.err.println("ERROR: Error parsing " + comicType + " comic from '" + resourcePath + "': " + e.getMessage());

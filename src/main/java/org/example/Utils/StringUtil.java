@@ -11,14 +11,17 @@ public class StringUtil {
     // Can change the expression later
     private static final String NUMBERED_LIST_REGEX = "\\d+\\.\\s*(.*?)(?=\\s*\\d+\\.|$)";
 
+    // Capitalises the first letter of a string
     public static String capitalize(String str) {
         return str.substring(0, 1).toUpperCase() + str.substring(1).toLowerCase();
     }
 
+    // Removes the tag "(plural)" from a string. Used in conjugation lessons.
     public static String removePluralIdentifier(String str) {
         return str.replace(" (Plural)", "").replace(" (plural)", "");
     }
 
+    // Removes the speaker from a string. Delimited by a colon.
     public static String removeSpeaker(String str) {
         return str.replaceFirst("^\\s*[^:]+:\\s*", "").trim();
     }
@@ -39,6 +42,7 @@ public class StringUtil {
         return cleanedList;
     }
 
+    // Turns numbered list string into an array of strings.
     public static List<String> parseNumberedList(String input) {
         if(input == null || input.trim().isEmpty()) return Collections.emptyList();
 

@@ -11,8 +11,8 @@ COMPLETIONS_URL	https://api.openai.com/v1/chat/completions
 EMBEDDINGS_URL	https://api.openai.com/v1/embeddings
 MODELS_URL	https://api.openai.com/v1/models
 TTS_URL	https://api.openai.com/v1/audio/speech
-ORG_KEY	org-gZ7peQP5XmIRVhs78U8WH
-API_KEY	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
+ORG_KEY	#####
+API_KEY	#####
 MODEL	gpt-4o-mini
 TTS_MODEL	tts-1
 TTS_VOICE	alloy
@@ -84,3 +84,8 @@ Sprint 6:
 -Created TTSSession, textToSpeech method takes phrase and returns a HTTPResponse<InputStream> of the .mp3 file.
 -Created AudioManager for calling textToSpeech and interacting with files related to audio, i.e. storing mp3's and maintaining index file.
 -Massive refactoring of code to remove god-classes and feature-envy, poor code purpose and the likes.
+
+Sprint 7:
+- Created LessonSectionType for robust parsing of lesson schedule.
+- Created LessonSectionBuilder for management of final lesson construction.
+- Added extensive Javadoc documentation for ease of use and understanding.

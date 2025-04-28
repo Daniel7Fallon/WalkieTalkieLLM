@@ -63,7 +63,7 @@ public class Main {
         System.out.println("INFO: Loaded VignetteManager and Dictionary.");
 
         // Configuration Values
-        final String CONJUGATION_XML = "conjugation.xml"; // Can change this to be configurable
+        final String CONJUGATION_XML = "conjugation.xml"; // Not setting this to be configurable because the stuff is in the resources folder.
         final String STORIES_XML = "stories.xml";
         final String LESSON_TARGET = ConfigurationFile.getValue("LESSON_TARGET");
         final boolean TRANSLATE_ALL_VIGNETTES = Boolean.parseBoolean(ConfigurationFile.getValue("TRANSLATE_ALL_VIGNETTES"));

@@ -24,9 +24,7 @@ public class ComicPostProcessor {
     }
 
     /**
-     * Creates a new comic by interleaving translated panels after original panels
-     * that contain dialogue.
-     *
+     * Creates a new comic by replacing panels containing dialogue, with a source panel and target panel
      * @param originalComic The Comic object containing original panels.
      * @return A new Comic object with original and translated panels interleaved.
      * Figures are copied from the original comic.
@@ -39,15 +37,15 @@ public class ComicPostProcessor {
 
             List<Panel> newPanels = new ArrayList<>();
             for (Panel originalPanel : scene.getPanels()) {
-                newPanels.add(originalPanel.deepCopy());
-
-                // Create translated version if translatable
-                if (originalPanel.hasBalloonContent()) {
-                    Panel translatedPanel = createTranslatedPanel(originalPanel);
+                if(!originalPanel.hasBalloonContent()) {
+                    newPanels.add(originalPanel.deepCopy());
+                } else {
+                    Panel sourcePanel = createTranslatedPanel(originalPanel, 0);
+                    newPanels.add(sourcePanel);
+                    Panel translatedPanel = createTranslatedPanel(originalPanel, 1);
                     newPanels.add(translatedPanel);
                 }
             }
-
             Scene newScene = new Scene();
             newScene.addAllPanels(newPanels);
             newScenes.add(newScene);
@@ -61,19 +59,20 @@ public class ComicPostProcessor {
      * Creates a translated version of a single Panel based on an original Panel.
      *
      * @param original The original Panel object to translate.
+     * @param lang 0 for source, 1 for target language replacement.
      * @return A new Panel object representing the translated version of the original.
      * Contains translated dialogue where applicable.
      */
-    private static Panel createTranslatedPanel(Panel original) {
+    private static Panel createTranslatedPanel(Panel original, int lang) {
         Panel translated = new Panel();
         translated.setSetting(original.getSetting());
         translated.setBorder(original.getBorder());
         translated.setBelow(original.getBelow());
 
         // Map original side to translated sides
-        if (original.hasLeft()) translated.setLeftSide(createTranslatedSide(original.getLeftSide()));
-        if (original.hasMiddle()) translated.setMiddleSide(createTranslatedSide(original.getMiddleSide()));
-        if (original.hasRight()) translated.setRightSide(createTranslatedSide(original.getRightSide()));
+        if (original.hasLeft()) translated.setLeftSide(createTranslatedSide(original.getLeftSide(), lang));
+        if (original.hasMiddle()) translated.setMiddleSide(createTranslatedSide(original.getMiddleSide(), lang));
+        if (original.hasRight()) translated.setRightSide(createTranslatedSide(original.getRightSide(), lang));
 
         return translated;
     }
@@ -83,10 +82,11 @@ public class ComicPostProcessor {
      *
      * @param originalPanelSide The original PanelSide object containing the figure
      * and potentially dialogue to be translated.
+     * @param lang 0 for source, 1 for target language replacement.
      * @return A new PanelSide object with the figure copied and balloon content
      * set to the translation or an error message.
      */
-    private static PanelSide createTranslatedSide(PanelSide originalPanelSide) {
+    private static PanelSide createTranslatedSide(PanelSide originalPanelSide, int lang) {
         PanelSide translatedPanelSide = new PanelSide();
         translatedPanelSide.setPanelFigure(originalPanelSide.getPanelFigure());
 
@@ -95,7 +95,7 @@ public class ComicPostProcessor {
                 String[] translations = Dictionary.getSourceAndTargetTranslations(
                         originalPanelSide.getBalloonContent()
                 );
-                translatedPanelSide.setBalloonContent(translations[1]);
+                translatedPanelSide.setBalloonContent(translations[lang]);
                 translatedPanelSide.setBalloonStatus("speaking");
             } catch (IOException | NullPointerException e) {
                 translatedPanelSide.setBalloonContent("[TRANSLATION FAILED]");

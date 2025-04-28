@@ -1,8 +1,5 @@
 package org.example.Audio;
 
-import org.example.Comic.Comic;
-import org.example.Comic.Panel;
-import org.example.Comic.Scene;
 import org.example.Utils.ConfigurationFile;
 
 import java.io.*;
